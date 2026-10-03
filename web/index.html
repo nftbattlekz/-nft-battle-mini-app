@@ -194,6 +194,7 @@ button:disabled{
     gap:5px;
 }
 
+.xp-panel{margin-top:12px;padding:11px 12px;border:1px solid rgba(90,150,255,.16);background:rgba(12,22,42,.72);border-radius:14px}.xp-row{display:flex;justify-content:space-between;align-items:center;font-size:12px;color:#9fb0ca;margin-bottom:7px}.xp-row b{color:#fff}.xp-track{height:8px;background:rgba(255,255,255,.07);border-radius:999px;overflow:hidden}.xp-fill{height:100%;width:0%;background:linear-gradient(90deg,#5d8dff,#72b7ff);border-radius:999px;transition:width .25s ease}.xp-note{margin-top:6px;font-size:10px;color:#70829d}.profile-xp{margin-top:12px}
 .stats{
     display:grid;
     grid-template-columns:repeat(3,1fr);
@@ -867,6 +868,13 @@ input:focus,select:focus{
             </div>
 
         </div>
+
+        <div class="xp-panel">
+            <div class="xp-row"><span>⚡ XP до следующего уровня</span><b id="xpMainText">0 / 100</b></div>
+            <div class="xp-track"><div class="xp-fill" id="xpMainFill"></div></div>
+            <div class="xp-note" id="xpMainNote">Осталось 100 XP</div>
+        </div>
+
 <div style="margin-top:12px;color:#6f819d;font-size:11px">
             Telegram ID:
             <span id="telegramId">—</span>
@@ -1201,6 +1209,12 @@ input:focus,select:focus{
             🏆 Рейтинг:
             <b id="profileRating"></b>
         </p>
+
+        <div class="xp-panel profile-xp">
+            <div class="xp-row"><span>⚡ XP до следующего уровня</span><b id="profileXpText">0 / 100</b></div>
+            <div class="xp-track"><div class="xp-fill" id="profileXpFill"></div></div>
+            <div class="xp-note" id="profileXpNote">Осталось 100 XP</div>
+        </div>
 
         <p>
             🆔 Telegram ID:
@@ -1715,6 +1729,24 @@ function renderAll(){
    USER
 ============================================ */
 
+function renderXpBars(u){
+    const xp=Math.max(0,Math.min(99,Number(u?.xp||0)));
+    const percent=Math.min(100,(xp/100)*100);
+    const left=Math.max(0,100-xp);
+    const mainText=document.getElementById("xpMainText");
+    const mainFill=document.getElementById("xpMainFill");
+    const mainNote=document.getElementById("xpMainNote");
+    const profileText=document.getElementById("profileXpText");
+    const profileFill=document.getElementById("profileXpFill");
+    const profileNote=document.getElementById("profileXpNote");
+    if(mainText) mainText.textContent=`${xp} / 100 XP`;
+    if(mainFill) mainFill.style.width=`${percent}%`;
+    if(mainNote) mainNote.textContent=left>0?`Осталось ${left} XP до уровня ${Number(u.level||1)+1}`:`Следующий уровень готов`;
+    if(profileText) profileText.textContent=`${xp} / 100 XP`;
+    if(profileFill) profileFill.style.width=`${percent}%`;
+    if(profileNote) profileNote.textContent=left>0?`Осталось ${left} XP до уровня ${Number(u.level||1)+1}`:`Следующий уровень готов`;
+}
+
 function renderUser(){
 
     const u=state.user;
@@ -1740,6 +1772,8 @@ function renderUser(){
 
     document.getElementById("rating").textContent=
         format(u.rating);
+
+    renderXpBars(u);
 
     document.getElementById("bank").textContent=
         `💎 ${format(u.bank)}`;
