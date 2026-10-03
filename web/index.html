@@ -97,10 +97,22 @@ button:disabled{
 .screen{
     display:none;
     padding:8px 14px 20px;
+    animation:screenIn .16s ease;
 }
 
 .screen.active{
     display:block;
+}
+
+@keyframes screenIn{
+    from{
+        opacity:0;
+        transform:translateY(4px);
+    }
+    to{
+        opacity:1;
+        transform:translateY(0);
+    }
 }
 
 .hero{
@@ -123,6 +135,7 @@ button:disabled{
     font-size:70px;
     font-weight:1000;
     opacity:.035;
+    pointer-events:none;
 }
 
 .profile{
@@ -154,12 +167,31 @@ button:disabled{
 .creator{
     display:inline-block;
     margin-top:6px;
-    padding:4px 8px;
+    padding:5px 9px;
     border-radius:8px;
     background:linear-gradient(90deg,#805dff,#b98aff);
     color:white;
-    font-size:11px;
+    font-size:10px;
     font-weight:900;
+    box-shadow:0 0 18px rgba(139,108,255,.22);
+}
+
+.assistant{
+    display:inline-block;
+    margin-top:6px;
+    padding:5px 9px;
+    border-radius:8px;
+    background:linear-gradient(90deg,#147fa7,#45d7ff);
+    color:white;
+    font-size:10px;
+    font-weight:900;
+    box-shadow:0 0 18px rgba(84,228,255,.18);
+}
+
+.role-stack{
+    display:flex;
+    flex-wrap:wrap;
+    gap:5px;
 }
 
 .stats{
@@ -248,6 +280,15 @@ button:disabled{
     color:#03101c;
     font-weight:900;
     cursor:pointer;
+    transition:transform .12s ease,filter .12s ease;
+}
+
+.btn:active{
+    transform:scale(.98);
+}
+
+.btn:hover{
+    filter:brightness(1.06);
 }
 
 .btn.secondary{
@@ -275,10 +316,6 @@ button:disabled{
     color:#03150d;
 }
 
-.btn:active{
-    transform:scale(.98);
-}
-
 .progress{
     height:7px;
     background:#152238;
@@ -291,6 +328,7 @@ button:disabled{
     height:100%;
     background:linear-gradient(90deg,var(--blue),var(--cyan));
     border-radius:20px;
+    transition:width .25s ease;
 }
 
 .energy{
@@ -310,6 +348,7 @@ button:disabled{
     border-radius:18px;
     padding:13px;
     margin-bottom:10px;
+    box-shadow:0 8px 25px rgba(69,51,145,.12);
 }
 
 .event b{
@@ -361,6 +400,8 @@ button:disabled{
 .item-info span{
     color:var(--muted);
     font-size:12px;
+    display:block;
+    margin-top:2px;
 }
 
 .market-item{
@@ -439,6 +480,13 @@ input:focus,select:focus{
     color:#ff8797;
 }
 
+.badge.assistant{
+    background:#103442;
+    color:#62ddff;
+    box-shadow:none;
+    margin:0;
+}
+
 .owner{
     color:#54e4ff;
     font-weight:900;
@@ -456,6 +504,7 @@ input:focus,select:focus{
     background:transparent;
     font-size:10px;
     font-weight:700;
+    transition:.15s;
 }
 
 .nav div{
@@ -488,27 +537,103 @@ input:focus,select:focus{
     grid-template-columns:repeat(6,1fr);
 }
 
-.toast{
+.toast-container{
     position:fixed;
-    z-index:100;
-    left:50%;
-    bottom:90px;
-    transform:translateX(-50%) translateY(20px);
-    opacity:0;
+    z-index:1000;
+    left:12px;
+    right:12px;
+    bottom:88px;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:8px;
     pointer-events:none;
-    background:#142239;
-    border:1px solid #28476b;
-    border-radius:13px;
-    padding:11px 15px;
-    font-size:13px;
-    transition:.2s;
-    max-width:90%;
-    text-align:center;
 }
 
-.toast.show{
-    opacity:1;
-    transform:translateX(-50%) translateY(0);
+.toast{
+    position:relative;
+    width:min(390px,calc(100vw - 24px));
+    overflow:hidden;
+    background:linear-gradient(145deg,#14243a,#0b1728);
+    border:1px solid #28476b;
+    border-radius:15px;
+    padding:12px 14px 14px;
+    font-size:13px;
+    font-weight:700;
+    line-height:1.35;
+    text-align:center;
+    box-shadow:0 12px 35px rgba(0,0,0,.35);
+    animation:toastIn .22s ease forwards;
+}
+
+.toast.success{
+    border-color:#287957;
+}
+
+.toast.error{
+    border-color:#79303c;
+}
+
+.toast.warning{
+    border-color:#80652a;
+}
+
+.toast.removing{
+    animation:toastOut .2s ease forwards;
+}
+
+.toast-progress{
+    position:absolute;
+    left:0;
+    bottom:0;
+    height:3px;
+    width:100%;
+    transform-origin:left;
+    background:linear-gradient(90deg,var(--blue),var(--cyan));
+    animation:toastProgress 3s linear forwards;
+}
+
+.toast.success .toast-progress{
+    background:linear-gradient(90deg,#25b878,#67e7a6);
+}
+
+.toast.error .toast-progress{
+    background:linear-gradient(90deg,#e83f5b,#ff8493);
+}
+
+.toast.warning .toast-progress{
+    background:linear-gradient(90deg,#e2a92e,#ffd76e);
+}
+
+@keyframes toastIn{
+    from{
+        opacity:0;
+        transform:translateY(12px) scale(.96);
+    }
+    to{
+        opacity:1;
+        transform:translateY(0) scale(1);
+    }
+}
+
+@keyframes toastOut{
+    from{
+        opacity:1;
+        transform:translateY(0) scale(1);
+    }
+    to{
+        opacity:0;
+        transform:translateY(8px) scale(.97);
+    }
+}
+
+@keyframes toastProgress{
+    from{
+        transform:scaleX(1);
+    }
+    to{
+        transform:scaleX(0);
+    }
 }
 
 .modal{
@@ -563,6 +688,34 @@ input:focus,select:focus{
     margin:12px 0;
 }
 
+.rank-me{
+    border-color:#35a9ff;
+    box-shadow:0 0 0 1px rgba(53,169,255,.15),0 8px 30px rgba(53,169,255,.08);
+}
+
+.rank-number{
+    width:35px;
+    min-width:35px;
+    text-align:center;
+    font-size:18px;
+    font-weight:900;
+}
+
+.my-rank{
+    background:linear-gradient(135deg,#102b46,#0b1829);
+    border:1px solid #2c7bb4;
+    border-radius:16px;
+    padding:13px;
+    margin-bottom:10px;
+}
+
+.role-line{
+    display:flex;
+    gap:5px;
+    flex-wrap:wrap;
+    margin-top:5px;
+}
+
 @media(max-width:390px){
     .grid{
         grid-template-columns:1fr;
@@ -574,6 +727,10 @@ input:focus,select:focus{
 
     .nav{
         font-size:9px;
+    }
+
+    .nav div{
+        font-size:19px;
     }
 }
 </style>
@@ -600,15 +757,26 @@ input:focus,select:focus{
                 <div class="name" id="profileName">Загрузка...</div>
                 <div class="username" id="profileUsername">Telegram</div>
 
-                <div class="creator"
-                     id="creatorBadge"
-                     style="display:none">
-                    👑 СОЗДАТЕЛЬ NEXORA
+                <div class="role-stack">
+
+                    <div class="creator"
+                         id="creatorBadge"
+                         style="display:none">
+                        👑 СОЗДАТЕЛЬ NEXORA
+                    </div>
+
+                    <div class="assistant"
+                         id="assistantBadge"
+                         style="display:none">
+                        🛡️ ПОМОЩНИК СОЗДАТЕЛЯ
+                    </div>
+
                 </div>
             </div>
         </div>
 
         <div class="stats">
+
             <div class="stat">
                 <small>УРОВЕНЬ</small>
                 <b id="level">1</b>
@@ -623,9 +791,11 @@ input:focus,select:focus{
                 <small>БАНК</small>
                 <b id="bank">💎 0</b>
             </div>
+
         </div>
 
         <div class="energy">
+
             <div class="energy-top">
                 <span>⚡ Энергия</span>
                 <span id="energyText">100/100</span>
@@ -634,6 +804,7 @@ input:focus,select:focus{
             <div class="progress">
                 <div id="energyBar" style="width:100%"></div>
             </div>
+
         </div>
 
         <div style="margin-top:12px;color:#6f819d;font-size:11px">
@@ -686,6 +857,26 @@ input:focus,select:focus{
             <button class="btn"
                     onclick="showScreen('market')">
                 Маркет
+            </button>
+        </div>
+
+        <div class="card">
+            <div class="icon">🏆</div>
+            <h3>Рейтинг</h3>
+            <p>Сравнивай свой прогресс с игроками.</p>
+            <button class="btn purple"
+                    onclick="showScreen('rating')">
+                Открыть рейтинг
+            </button>
+        </div>
+
+        <div class="card">
+            <div class="icon">🌍</div>
+            <h3>Мир</h3>
+            <p>Планеты, питомцы и контракты.</p>
+            <button class="btn"
+                    onclick="showScreen('world')">
+                Исследовать
             </button>
         </div>
 
@@ -783,6 +974,7 @@ input:focus,select:focus{
     <div class="section-title">🛒 Маркет</div>
 
     <div class="market-tabs">
+
         <button class="btn"
                 onclick="setMarketMode('items')">
             📦 Предметы
@@ -792,11 +984,13 @@ input:focus,select:focus{
                 onclick="setMarketMode('businesses')">
             🏭 Предприятия
         </button>
+
     </div>
 
     <div id="itemMarketSection">
 
         <div class="card">
+
             <h3>Выставить предмет</h3>
 
             <div class="form">
@@ -823,6 +1017,7 @@ input:focus,select:focus{
                 </button>
 
             </div>
+
         </div>
 
         <div class="section-title">🔥 Лоты игроков</div>
@@ -830,7 +1025,6 @@ input:focus,select:focus{
         <div id="marketList"></div>
 
     </div>
-
 
     <div id="businessMarketSection"
          style="display:none">
@@ -887,11 +1081,13 @@ input:focus,select:focus{
     <div class="card">
 
         <div class="profile">
+
             <img id="avatar2"
                  class="avatar"
                  src="">
 
             <div>
+
                 <div class="name"
                      id="profileName2">
                 </div>
@@ -899,7 +1095,25 @@ input:focus,select:focus{
                 <div class="username"
                      id="profileUsername2">
                 </div>
+
+                <div class="role-stack">
+
+                    <div class="creator"
+                         id="creatorBadge2"
+                         style="display:none">
+                        👑 СОЗДАТЕЛЬ NEXORA
+                    </div>
+
+                    <div class="assistant"
+                         id="assistantBadge2"
+                         style="display:none">
+                        🛡️ ПОМОЩНИК СОЗДАТЕЛЯ
+                    </div>
+
+                </div>
+
             </div>
+
         </div>
 
         <div class="section-title">Статистика</div>
@@ -933,6 +1147,7 @@ input:focus,select:focus{
 
 
     <!-- PROMO -->
+
     <div class="section-title">🎟️ Промокод</div>
 
     <div class="card">
@@ -966,6 +1181,7 @@ input:focus,select:focus{
 
 
     <!-- BANK -->
+
     <div class="section-title">🏦 Банк</div>
 
     <div class="card">
@@ -997,25 +1213,33 @@ input:focus,select:focus{
 
     </div>
 
-
     <div id="adminPanel"></div>
 
 </section>
 
 
 <!-- RATING -->
+
 <section class="screen" id="screen-rating">
 
-    <div class="section-title">🏆 Богатейшие</div>
+    <div class="section-title">🏆 Рейтинг игроков</div>
+
+    <div id="myRankBox"></div>
+
+    <div class="section-title">💎 Богатейшие</div>
 
     <div class="notice">
-        Рейтинг считается по общему капиталу:
+        Рейтинг богатейших считается по общему капиталу:
         💎 баланс + 🏦 банк.
     </div>
 
     <div id="richestList"></div>
 
     <div class="section-title">⭐ Общий рейтинг</div>
+
+    <div class="notice">
+        Общий рейтинг формируется по рейтинговым очкам игрока.
+    </div>
 
     <div id="ratingList"></div>
 
@@ -1026,6 +1250,7 @@ input:focus,select:focus{
 
 
 <!-- BUSINESS RENAME MODAL -->
+
 <div class="modal"
      id="renameModal">
 
@@ -1062,6 +1287,7 @@ input:focus,select:focus{
 
 
 <!-- WIPE CONFIRM -->
+
 <div class="modal"
      id="wipeModal">
 
@@ -1098,6 +1324,7 @@ input:focus,select:focus{
 
 
 <!-- NAVIGATION -->
+
 <div class="bottom">
 
     <div class="bottom-inner">
@@ -1143,8 +1370,10 @@ input:focus,select:focus{
 </div>
 
 
-<div class="toast"
-     id="toast">
+<!-- TOASTS -->
+
+<div class="toast-container"
+     id="toastContainer">
 </div>
 
 
@@ -1153,6 +1382,7 @@ input:focus,select:focus{
 const tg = window.Telegram?.WebApp;
 
 if(tg){
+
     tg.ready();
     tg.expand();
 
@@ -1160,13 +1390,14 @@ if(tg){
         tg.setHeaderColor("#050914");
         tg.setBackgroundColor("#050914");
     }catch(e){}
+
 }
 
 
 let state = null;
 let loading = false;
-let toastTimer = null;
 let marketMode = "items";
+let toastId = 0;
 
 
 /* ============================================
@@ -1225,9 +1456,18 @@ async function load(){
 
         renderAll();
 
+        if(
+            document
+                .getElementById("screen-rating")
+                ?.classList
+                .contains("active")
+        ){
+            await loadRating();
+        }
+
     }catch(e){
 
-        toast(e.message);
+        toast(e.message,"error");
 
     }finally{
 
@@ -1298,7 +1538,13 @@ function renderAll(){
 
     if(state.creator){
         renderAdmin();
+    }else{
+        const panel=document.getElementById("adminPanel");
+        if(panel){
+            panel.innerHTML="";
+        }
     }
+
 }
 
 
@@ -1342,13 +1588,17 @@ function renderUser(){
         `${u.energy}/${u.max_energy}`;
 
     const energyPercent=
+        u.max_energy>0
+        ?
         Math.max(
             0,
             Math.min(
                 100,
                 u.energy/u.max_energy*100
             )
-        );
+        )
+        :
+        0;
 
     document.getElementById("energyBar")
         .style.width=energyPercent+"%";
@@ -1364,9 +1614,33 @@ function renderUser(){
     document.getElementById("avatar").src=avatar;
     document.getElementById("avatar2").src=avatar;
 
+    const isCreator=!!u.creator;
+
+    const isAssistant=
+        !!u.assistant ||
+        u.role==="assistant";
+
     document.getElementById("creatorBadge")
         .style.display=
-            u.creator
+            isCreator
+            ?"inline-block"
+            :"none";
+
+    document.getElementById("assistantBadge")
+        .style.display=
+            !isCreator && isAssistant
+            ?"inline-block"
+            :"none";
+
+    document.getElementById("creatorBadge2")
+        .style.display=
+            isCreator
+            ?"inline-block"
+            :"none";
+
+    document.getElementById("assistantBadge2")
+        .style.display=
+            !isCreator && isAssistant
             ?"inline-block"
             :"none";
 
@@ -1402,12 +1676,58 @@ function renderUser(){
    EVENTS
 ============================================ */
 
+function eventLabel(type){
+
+    if(type==="business_discount"){
+        return "🏭 СКИДКА НА ПРЕДПРИЯТИЯ";
+    }
+
+    if(type==="property_discount"){
+        return "🏠 СКИДКА НА НЕДВИЖИМОСТЬ";
+    }
+
+    if(type==="jobs"){
+        return "👷 БОНУС РАБОТ";
+    }
+
+    if(type==="businesses"){
+        return "🏭 БОНУС ПРЕДПРИЯТИЙ";
+    }
+
+    if(type==="all"){
+        return "⚡ БОНУС ВСЕЙ ЭКОНОМИКИ";
+    }
+
+    return "⚡ БОНУС";
+}
+
+
+function isDiscountEvent(type){
+
+    return type==="business_discount" ||
+           type==="property_discount";
+}
+
+
 function renderEvents(){
 
     const box=
         document.getElementById("eventsHome");
 
-    if(!state.events?.length){
+    if(!box){
+        return;
+    }
+
+    const now=
+        Math.floor(Date.now()/1000);
+
+    const events=
+        (state?.events||[])
+        .filter(event=>{
+            return Number(event.ends_at||0)>now;
+        });
+
+    if(!events.length){
 
         box.innerHTML="";
 
@@ -1415,37 +1735,26 @@ function renderEvents(){
     }
 
     box.innerHTML=
-        state.events.map(event=>{
+        events.map(event=>{
 
             const left=Math.max(
                 0,
-                event.ends_at-
-                Math.floor(Date.now()/1000)
+                Number(event.ends_at||0)-now
             );
 
-            let label="⚡ БОНУС";
+            const type=
+                String(event.event_type||"");
 
-            if(event.event_type==="business_discount"){
-                label="🏭 СКИДКА НА ПРЕДПРИЯТИЯ";
-            }
-
-            if(event.event_type==="property_discount"){
-                label="🏠 СКИДКА НА КВАРТИРЫ";
-            }
-
-            if(event.event_type==="jobs"){
-                label="👷 БОНУС РАБОТ";
-            }
-
-            if(event.event_type==="businesses"){
-                label="🏭 БОНУС ПРЕДПРИЯТИЙ";
-            }
+            const value=
+                isDiscountEvent(type)
+                ?`-${event.multiplier}%`
+                :`x${event.multiplier}`;
 
             return `
                 <div class="event">
 
                     <b>
-                        ${label}
+                        ${eventLabel(type)}
                     </b>
 
                     <div style="
@@ -1456,17 +1765,13 @@ function renderEvents(){
                     </div>
 
                     <div class="mult">
-                        ${
-                            event.event_type.endsWith("_discount")
-                            ? `-${event.multiplier}%`
-                            : `x${event.multiplier}`
-                        }
+                        ${value}
                     </div>
 
                     <div style="
                         color:#9fb1c9;
                         font-size:12px">
-                        ${escapeHtml(event.description)}
+                        ${escapeHtml(event.description||"")}
                     </div>
 
                     <div style="
@@ -1494,7 +1799,7 @@ function renderJobs(){
         document.getElementById("jobs");
 
     box.innerHTML=
-        state.jobs.map(job=>{
+        (state.jobs||[]).map(job=>{
 
             const unlocked=
                 state.user.level>=job.level;
@@ -1537,7 +1842,7 @@ function renderJobs(){
                     <button
                         class="btn ${unlocked?'':'secondary'}"
                         ${unlocked?'':'disabled'}
-                        onclick="doWork('${job.key}')">
+                        onclick="doWork('${escapeAttr(job.key)}')">
 
                         ${
                             unlocked
@@ -1587,7 +1892,7 @@ function renderInventory(){
                 <div class="item-row">
 
                     <div class="item-icon">
-                        ${item.icon}
+                        ${item.icon||"📦"}
                     </div>
 
                     <div class="item-info">
@@ -1624,14 +1929,19 @@ function renderInventory(){
     const select=
         document.getElementById("marketItem");
 
-    select.innerHTML=
-        inventory.map(item=>`
-            <option value="${item.key}">
-                ${item.icon}
-                ${escapeHtml(item.name)}
-                — ${item.quantity} шт.
-            </option>
-        `).join("");
+    if(select){
+
+        select.innerHTML=
+            inventory.map(item=>`
+                <option value="${escapeAttr(item.key)}">
+                    ${item.icon||"📦"}
+                    ${escapeHtml(item.name)}
+                    — ${item.quantity} шт.
+                </option>
+            `).join("");
+
+    }
+
 }
 
 
@@ -1664,7 +1974,7 @@ function renderMarket(){
                 <div class="market-item">
 
                     <div class="item-icon">
-                        ${item.icon}
+                        ${item.icon||"📦"}
                     </div>
 
                     <div class="market-main">
@@ -1695,7 +2005,7 @@ function renderMarket(){
                         `<button
                             class="btn red"
                             style="width:auto;margin:0"
-                            onclick="cancelListing(${item.id})">
+                            onclick="cancelListing(${Number(item.id)})">
                             Снять
                         </button>`
 
@@ -1704,7 +2014,7 @@ function renderMarket(){
                         `<button
                             class="btn"
                             style="width:auto;margin:0"
-                            onclick="buyListing(${item.id})">
+                            onclick="buyListing(${Number(item.id)})">
                             Купить
                         </button>`
                     }
@@ -1782,7 +2092,7 @@ function renderBusinessMarket(){
                         `<button
                             class="btn red"
                             style="width:auto;margin:0"
-                            onclick="cancelBusinessListing(${item.id})">
+                            onclick="cancelBusinessListing(${Number(item.id)})">
                             Снять
                         </button>`
 
@@ -1791,7 +2101,7 @@ function renderBusinessMarket(){
                         `<button
                             class="btn purple"
                             style="width:auto;margin:0"
-                            onclick="buyBusinessMarket(${item.id})">
+                            onclick="buyBusinessMarket(${Number(item.id)})">
                             Купить
                         </button>`
                     }
@@ -1832,7 +2142,7 @@ function renderBusinesses(){
         document.getElementById("businesses");
 
     box.innerHTML=
-        state.businesses.map(b=>{
+        (state.businesses||[]).map(b=>{
 
             if(!b.owned){
 
@@ -1878,7 +2188,7 @@ function renderBusinesses(){
                         <button
                             class="btn"
                             ${b.available?"":"disabled"}
-                            onclick="buyBusiness('${b.key}')">
+                            onclick="buyBusiness('${escapeAttr(b.key)}')">
 
                             ${
                                 b.available
@@ -1934,25 +2244,25 @@ function renderBusinesses(){
 
                     <button
                         class="btn gold"
-                        onclick="collectBusiness('${b.key}')">
+                        onclick="collectBusiness('${escapeAttr(b.key)}')">
                         💰 Забрать доход
                     </button>
 
                     <button
                         class="btn"
-                        onclick="upgradeBusiness('${b.key}')">
+                        onclick="upgradeBusiness('${escapeAttr(b.key)}')">
                         📈 Улучшить
                     </button>
 
                     <button
                         class="btn secondary"
-                        onclick="openRename('${b.key}','${escapeAttr(b.name)}')">
+                        onclick="openRename('${escapeAttr(b.key)}','${escapeAttr(b.name)}')">
                         ✏️ Переименовать
                     </button>
 
                     <button
                         class="btn purple"
-                        onclick="openSellBusiness('${b.key}','${escapeAttr(b.name)}')">
+                        onclick="openSellBusiness('${escapeAttr(b.key)}','${escapeAttr(b.name)}')">
                         🏷️ Выставить на продажу
                     </button>
 
@@ -1979,7 +2289,7 @@ function renderProperties(){
         document.getElementById("properties");
 
     box.innerHTML=
-        state.properties.map(p=>`
+        (state.properties||[]).map(p=>`
 
             <div class="card">
 
@@ -2017,7 +2327,7 @@ function renderProperties(){
                 <button
                     class="btn ${p.owned?'secondary':''}"
                     ${p.owned||!p.available?'disabled':''}
-                    onclick="buyProperty('${p.key}')">
+                    onclick="buyProperty('${escapeAttr(p.key)}')">
 
                     ${
                         p.owned
@@ -2043,7 +2353,7 @@ function renderProperties(){
 function renderPlanets(){
 
     document.getElementById("planets").innerHTML=
-        state.planets.map(p=>{
+        (state.planets||[]).map(p=>{
 
             const unlocked=
                 state.user.level>=p.level;
@@ -2071,7 +2381,7 @@ function renderPlanets(){
                     <button
                         class="btn ${unlocked?'':'secondary'}"
                         ${unlocked?'':'disabled'}
-                        onclick="travel('${p.key}')">
+                        onclick="travel('${escapeAttr(p.key)}')">
 
                         ${
                             unlocked
@@ -2091,7 +2401,7 @@ function renderPlanets(){
 function renderPets(){
 
     document.getElementById("pets").innerHTML=
-        state.pets.map(p=>`
+        (state.pets||[]).map(p=>`
 
             <div class="card">
 
@@ -2115,7 +2425,7 @@ function renderPets(){
                 <button
                     class="btn ${p.owned?'secondary':''}"
                     ${p.owned?'disabled':''}
-                    onclick="buyPet('${p.key}')">
+                    onclick="buyPet('${escapeAttr(p.key)}')">
 
                     ${p.owned?'✓ Есть':'Купить'}
 
@@ -2130,7 +2440,7 @@ function renderPets(){
 function renderQuests(){
 
     document.getElementById("quests").innerHTML=
-        state.quests.map(q=>`
+        (state.quests||[]).map(q=>`
 
             <div class="card"
                  style="margin-bottom:9px">
@@ -2144,12 +2454,16 @@ function renderQuests(){
                 </p>
 
                 <div class="progress">
+
                     <div style="
                         width:${Math.min(
                             100,
-                            q.progress/q.target*100
+                            q.target>0
+                            ?q.progress/q.target*100
+                            :0
                         )}%">
                     </div>
+
                 </div>
 
                 <p>
@@ -2179,7 +2493,7 @@ function renderQuests(){
 
                     `<button
                         class="btn gold"
-                        onclick="claimQuest('${q.key}')">
+                        onclick="claimQuest('${escapeAttr(q.key)}')">
                         Забрать награду
                     </button>`
 
@@ -2206,6 +2520,11 @@ function renderAdmin(){
 
     const panel=
         document.getElementById("adminPanel");
+
+    if(!state?.creator){
+        panel.innerHTML="";
+        return;
+    }
 
     panel.innerHTML=`
 
@@ -2292,6 +2611,46 @@ function renderAdmin(){
                     🆙 Установить уровень
                 </button>
 
+            </div>
+
+        </div>
+
+
+        <!-- ROLE -->
+
+        <div class="card admin"
+             style="margin-top:10px">
+
+            <h3>🛡️ Управление ролями</h3>
+
+            <p>
+                Выбери игрока в списке ниже, после чего выдай
+                или сними роль помощника создателя.
+            </p>
+
+            <div class="form">
+
+                <input
+                    id="roleTelegram"
+                    placeholder="Telegram ID игрока">
+
+                <button
+                    class="btn purple"
+                    onclick="adminSetRole('assistant')">
+                    🛡️ Выдать помощника
+                </button>
+
+                <button
+                    class="btn red"
+                    onclick="adminSetRole('player')">
+                    ❌ Снять помощника
+                </button>
+
+            </div>
+
+            <div class="small"
+                 style="margin-top:9px">
+                Только Создатель может управлять этой ролью.
             </div>
 
         </div>
@@ -2491,14 +2850,15 @@ async function doWork(job){
             });
 
         toast(
-            `+💎 ${format(data.reward)} | +${data.user.xp} XP`
+            `+💎 ${format(data.reward)} | +${data.user.xp} XP`,
+            "success"
         );
 
         await load();
 
     }catch(e){
 
-        toast(e.message);
+        toast(e.message,"error");
 
     }
 }
@@ -2520,14 +2880,15 @@ async function action(url){
                 data.quantity
                 ?"x"+data.quantity
                 :""
-            }`
+            }`,
+            "success"
         );
 
         await load();
 
     }catch(e){
 
-        toast(e.message);
+        toast(e.message,"error");
 
     }
 }
@@ -2546,13 +2907,13 @@ async function buyBusiness(key){
             body:JSON.stringify({key})
         });
 
-        toast("🏭 Предприятие куплено");
+        toast("🏭 Предприятие куплено","success");
 
         await load();
 
     }catch(e){
 
-        toast(e.message);
+        toast(e.message,"error");
 
     }
 }
@@ -2569,14 +2930,15 @@ async function collectBusiness(key){
             });
 
         toast(
-            `💎 Получено ${format(data.income)}`
+            `💎 Получено ${format(data.income)}`,
+            "success"
         );
 
         await load();
 
     }catch(e){
 
-        toast(e.message);
+        toast(e.message,"error");
 
     }
 }
@@ -2593,14 +2955,15 @@ async function upgradeBusiness(key){
             });
 
         toast(
-            `📈 Предприятие теперь Lv.${data.level}`
+            `📈 Предприятие теперь Lv.${data.level}`,
+            "success"
         );
 
         await load();
 
     }catch(e){
 
-        toast(e.message);
+        toast(e.message,"error");
 
     }
 }
@@ -2624,7 +2987,9 @@ async function renameBusiness(){
         document.getElementById("renameTitle").value.trim();
 
     if(!title){
-        toast("Введите название");
+
+        toast("Введите название","warning");
+
         return;
     }
 
@@ -2640,13 +3005,16 @@ async function renameBusiness(){
 
         closeModal("renameModal");
 
-        toast("✏️ Название изменено");
+        toast(
+            "✏️ Название изменено",
+            "success"
+        );
 
         await load();
 
     }catch(e){
 
-        toast(e.message);
+        toast(e.message,"error");
 
     }
 }
@@ -2665,7 +3033,12 @@ function openSellBusiness(key,name){
     const numericPrice=Number(price);
 
     if(!numericPrice || numericPrice<=0){
-        toast("Введите корректную цену");
+
+        toast(
+            "Введите корректную цену",
+            "warning"
+        );
+
         return;
     }
 
@@ -2686,13 +3059,16 @@ async function sellBusiness(key,price,name){
             })
         });
 
-        toast("🏷️ Предприятие выставлено");
+        toast(
+            "🏷️ Предприятие выставлено",
+            "success"
+        );
 
         await load();
 
     }catch(e){
 
-        toast(e.message);
+        toast(e.message,"error");
 
     }
 }
@@ -2709,14 +3085,15 @@ async function buyBusinessMarket(id){
             });
 
         toast(
-            `🏭 Предприятие куплено за 💎 ${format(data.price)}`
+            `🏭 Предприятие куплено за 💎 ${format(data.price)}`,
+            "success"
         );
 
         await load();
 
     }catch(e){
 
-        toast(e.message);
+        toast(e.message,"error");
 
     }
 }
@@ -2731,13 +3108,16 @@ async function cancelBusinessListing(id){
             body:JSON.stringify({id})
         });
 
-        toast("Лот снят");
+        toast(
+            "Лот снят",
+            "success"
+        );
 
         await load();
 
     }catch(e){
 
-        toast(e.message);
+        toast(e.message,"error");
 
     }
 }
@@ -2756,13 +3136,16 @@ async function buyProperty(key){
             body:JSON.stringify({key})
         });
 
-        toast("🏠 Недвижимость куплена");
+        toast(
+            "🏠 Недвижимость куплена",
+            "success"
+        );
 
         await load();
 
     }catch(e){
 
-        toast(e.message);
+        toast(e.message,"error");
 
     }
 }
@@ -2781,13 +3164,16 @@ async function buyPet(key){
             body:JSON.stringify({key})
         });
 
-        toast("🐾 Питомец добавлен");
+        toast(
+            "🐾 Питомец добавлен",
+            "success"
+        );
 
         await load();
 
     }catch(e){
 
-        toast(e.message);
+        toast(e.message,"error");
 
     }
 }
@@ -2804,14 +3190,15 @@ async function travel(key){
             });
 
         toast(
-            `🚀 Ты посетил ${data.planet}`
+            `🚀 Ты посетил ${data.planet}`,
+            "success"
         );
 
         await load();
 
     }catch(e){
 
-        toast(e.message);
+        toast(e.message,"error");
 
     }
 }
@@ -2838,7 +3225,10 @@ async function createListing(){
 
     if(!item_key||quantity<=0||price_each<=0){
 
-        toast("Заполни все поля");
+        toast(
+            "Заполни все поля",
+            "warning"
+        );
 
         return;
     }
@@ -2854,13 +3244,16 @@ async function createListing(){
             })
         });
 
-        toast("🛒 Лот выставлен");
+        toast(
+            "🛒 Лот выставлен",
+            "success"
+        );
 
         await load();
 
     }catch(e){
 
-        toast(e.message);
+        toast(e.message,"error");
 
     }
 }
@@ -2877,14 +3270,15 @@ async function buyListing(id){
             });
 
         toast(
-            `🛒 Куплено за 💎 ${format(data.total)}`
+            `🛒 Куплено за 💎 ${format(data.total)}`,
+            "success"
         );
 
         await load();
 
     }catch(e){
 
-        toast(e.message);
+        toast(e.message,"error");
 
     }
 }
@@ -2899,13 +3293,16 @@ async function cancelListing(id){
             body:JSON.stringify({id})
         });
 
-        toast("Лот снят");
+        toast(
+            "Лот снят",
+            "success"
+        );
 
         await load();
 
     }catch(e){
 
-        toast(e.message);
+        toast(e.message,"error");
 
     }
 }
@@ -2926,14 +3323,15 @@ async function claimQuest(key){
             });
 
         toast(
-            `🎁 Получено 💎 ${format(data.reward)}`
+            `🎁 Получено 💎 ${format(data.reward)}`,
+            "success"
         );
 
         await load();
 
     }catch(e){
 
-        toast(e.message);
+        toast(e.message,"error");
 
     }
 }
@@ -2952,7 +3350,10 @@ async function bankAction(action){
 
     if(!amount){
 
-        toast("Введите сумму");
+        toast(
+            "Введите сумму",
+            "warning"
+        );
 
         return;
     }
@@ -2967,13 +3368,16 @@ async function bankAction(action){
             })
         });
 
-        toast("🏦 Операция выполнена");
+        toast(
+            "🏦 Операция выполнена",
+            "success"
+        );
 
         await load();
 
     }catch(e){
 
-        toast(e.message);
+        toast(e.message,"error");
 
     }
 }
@@ -2992,7 +3396,10 @@ async function redeemPromo(){
 
     if(!code){
 
-        toast("Введите промокод");
+        toast(
+            "Введите промокод",
+            "warning"
+        );
 
         return;
     }
@@ -3008,7 +3415,8 @@ async function redeemPromo(){
             });
 
         toast(
-            `🎁 ${data.code}: +${format(data.coins)} 💎 +${data.xp} XP`
+            `🎁 ${data.code}: +${format(data.coins)} 💎 +${data.xp} XP`,
+            "success"
         );
 
         document.getElementById("promoCode").value="";
@@ -3017,7 +3425,7 @@ async function redeemPromo(){
 
     }catch(e){
 
-        toast(e.message);
+        toast(e.message,"error");
 
     }
 }
@@ -3046,7 +3454,10 @@ async function adminMoney(action){
 
     if(!telegram_id||!amount){
 
-        toast("Заполни Telegram ID и сумму");
+        toast(
+            "Заполни Telegram ID и сумму",
+            "warning"
+        );
 
         return;
     }
@@ -3067,14 +3478,15 @@ async function adminMoney(action){
         toast(
             action==="give"
             ?`💎 Выдано ${format(data.amount)}`
-            :`💎 Забрано ${format(data.amount)}`
+            :`💎 Забрано ${format(data.amount)}`,
+            "success"
         );
 
         await loadAdminPlayers();
 
     }catch(e){
 
-        toast(e.message);
+        toast(e.message,"error");
 
     }
 }
@@ -3099,7 +3511,10 @@ async function adminXP(){
 
     if(!telegram_id||!amount){
 
-        toast("Укажи Telegram ID и XP");
+        toast(
+            "Укажи Telegram ID и XP",
+            "warning"
+        );
 
         return;
     }
@@ -3116,14 +3531,15 @@ async function adminXP(){
             });
 
         toast(
-            `⭐ Выдано ${format(amount)} XP. Lv.${data.level}`
+            `⭐ Выдано ${format(amount)} XP. Lv.${data.level}`,
+            "success"
         );
 
         await load();
 
     }catch(e){
 
-        toast(e.message);
+        toast(e.message,"error");
 
     }
 }
@@ -3148,7 +3564,10 @@ async function adminLevel(){
 
     if(!telegram_id||!level){
 
-        toast("Укажи Telegram ID и уровень");
+        toast(
+            "Укажи Telegram ID и уровень",
+            "warning"
+        );
 
         return;
     }
@@ -3165,14 +3584,79 @@ async function adminLevel(){
             });
 
         toast(
-            `🆙 Уровень установлен: ${data.level}`
+            `🆙 Уровень установлен: ${data.level}`,
+            "success"
         );
 
         await load();
 
     }catch(e){
 
-        toast(e.message);
+        toast(e.message,"error");
+
+    }
+}
+
+
+/* ============================================
+   ADMIN ROLE
+============================================ */
+
+async function adminSetRole(role){
+
+    const input=
+        document.getElementById("roleTelegram");
+
+    const fallback=
+        document.getElementById("adminTelegram");
+
+    const telegram_id=
+        (input?.value||fallback?.value||"")
+        .trim();
+
+    if(!telegram_id){
+
+        toast(
+            "Укажи Telegram ID игрока",
+            "warning"
+        );
+
+        return;
+    }
+
+    try{
+
+        const data=
+            await api("/api/admin/role",{
+                method:"POST",
+                body:JSON.stringify({
+                    telegram_id,
+                    role
+                })
+            });
+
+        if(role==="assistant"){
+
+            toast(
+                `🛡️ ${data.name||"Игрок"} теперь помощник создателя`,
+                "success"
+            );
+
+        }else{
+
+            toast(
+                "❌ Роль помощника снята",
+                "success"
+            );
+
+        }
+
+        await loadAdminPlayers();
+        await load();
+
+    }catch(e){
+
+        toast(e.message,"error");
 
     }
 }
@@ -3201,10 +3685,10 @@ async function loadAdminItems(){
         }
 
         select.innerHTML=
-            data.items.map(item=>`
+            (data.items||[]).map(item=>`
 
-                <option value="${item.key}">
-                    ${item.icon}
+                <option value="${escapeAttr(item.key)}">
+                    ${item.icon||"📦"}
                     ${escapeHtml(item.name)}
                     — 💎 ${format(item.price)}
                 </option>
@@ -3213,7 +3697,7 @@ async function loadAdminItems(){
 
     }catch(e){
 
-        toast(e.message);
+        toast(e.message,"error");
 
     }
 }
@@ -3238,7 +3722,10 @@ async function adminItem(){
 
     if(!telegram_id||!item_key||quantity<=0){
 
-        toast("Заполни Telegram ID, предмет и количество");
+        toast(
+            "Заполни Telegram ID, предмет и количество",
+            "warning"
+        );
 
         return;
     }
@@ -3254,13 +3741,16 @@ async function adminItem(){
             })
         });
 
-        toast("🎁 Предмет выдан");
+        toast(
+            "🎁 Предмет выдан",
+            "success"
+        );
 
         await load();
 
     }catch(e){
 
-        toast(e.message);
+        toast(e.message,"error");
 
     }
 }
@@ -3273,10 +3763,10 @@ async function adminItem(){
 async function createEvent(){
 
     const title=
-        document.getElementById("eventTitle").value;
+        document.getElementById("eventTitle").value.trim();
 
     const description=
-        document.getElementById("eventDescription").value;
+        document.getElementById("eventDescription").value.trim();
 
     const event_type=
         document.getElementById("eventType").value;
@@ -3298,7 +3788,10 @@ async function createEvent(){
         !duration_minutes
     ){
 
-        toast("Заполни параметры события");
+        toast(
+            "Заполни параметры события",
+            "warning"
+        );
 
         return;
     }
@@ -3316,13 +3809,16 @@ async function createEvent(){
             })
         });
 
-        toast("⚡ Событие запущено");
+        toast(
+            "⚡ Событие запущено",
+            "success"
+        );
 
         await load();
 
     }catch(e){
 
-        toast(e.message);
+        toast(e.message,"error");
 
     }
 }
@@ -3346,7 +3842,7 @@ async function loadAdminEvents(){
             return;
         }
 
-        if(!data.events.length){
+        if(!data.events?.length){
 
             box.innerHTML=`
                 <div class="small">
@@ -3361,9 +3857,12 @@ async function loadAdminEvents(){
             data.events.slice(0,20).map(event=>{
 
                 const active=
-                    event.active &&
-                    event.ends_at>
+                    !!event.active &&
+                    Number(event.ends_at||0)>
                     Math.floor(Date.now()/1000);
+
+                const type=
+                    String(event.event_type||"");
 
                 return `
                     <div class="card"
@@ -3375,12 +3874,12 @@ async function loadAdminEvents(){
 
                         <div class="small"
                              style="margin-top:4px">
-                            ${escapeHtml(event.description)}
+                            ${escapeHtml(event.description||"")}
                         </div>
 
-                        <div style="margin-top:5px">
+                        <div style="margin-top:5px;color:#ffc85c;font-weight:900">
                             ${
-                                event.event_type.endsWith("_discount")
+                                isDiscountEvent(type)
                                 ?`-${event.multiplier}%`
                                 :`x${event.multiplier}`
                             }
@@ -3396,7 +3895,7 @@ async function loadAdminEvents(){
                             ?
                             `<button
                                 class="btn red"
-                                onclick="stopEvent(${event.id})">
+                                onclick="stopEvent(${Number(event.id)})">
                                 Остановить
                             </button>`
                             :""
@@ -3409,7 +3908,7 @@ async function loadAdminEvents(){
 
     }catch(e){
 
-        toast(e.message);
+        toast(e.message,"error");
 
     }
 }
@@ -3426,14 +3925,17 @@ async function stopEvent(id){
             })
         });
 
-        toast("Событие остановлено");
+        toast(
+            "Событие остановлено",
+            "success"
+        );
 
         await loadAdminEvents();
         await load();
 
     }catch(e){
 
-        toast(e.message);
+        toast(e.message,"error");
 
     }
 }
@@ -3473,9 +3975,11 @@ async function loadAdminPlayers(){
         const data=
             await api(
                 "/api/admin/players"+
-                (q
+                (
+                    q
                     ?"?q="+encodeURIComponent(q)
-                    :"")
+                    :""
+                )
             );
 
         const box=
@@ -3485,7 +3989,7 @@ async function loadAdminPlayers(){
             return;
         }
 
-        if(!data.players.length){
+        if(!data.players?.length){
 
             box.innerHTML=`
                 <div class="small">
@@ -3497,7 +4001,20 @@ async function loadAdminPlayers(){
         }
 
         box.innerHTML=
-            data.players.map(p=>`
+            data.players.map(p=>{
+
+                const isCreator=
+                    !!p.creator ||
+                    p.role==="creator";
+
+                const isAssistant=
+                    !isCreator &&
+                    (
+                        !!p.assistant ||
+                        p.role==="assistant"
+                    );
+
+                return `
 
                 <div class="card"
                      style="margin-top:7px;padding:10px">
@@ -3510,8 +4027,30 @@ async function loadAdminPlayers(){
                         )}
                     </b>
 
+                    <div class="role-line">
+
+                        ${
+                            isCreator
+                            ?
+                            `<span class="badge gold">
+                                👑 Создатель
+                            </span>`
+                            :
+                            isAssistant
+                            ?
+                            `<span class="badge assistant">
+                                🛡️ Помощник
+                            </span>`
+                            :
+                            `<span class="badge">
+                                Игрок
+                            </span>`
+                        }
+
+                    </div>
+
                     <div class="small"
-                         style="margin-top:3px">
+                         style="margin-top:5px">
 
                         ${
                             p.username
@@ -3520,7 +4059,7 @@ async function loadAdminPlayers(){
                         }
 
                         · ID:
-                        ${p.telegram_id}
+                        ${escapeHtml(p.telegram_id)}
 
                     </div>
 
@@ -3537,17 +4076,19 @@ async function loadAdminPlayers(){
 
                     <button
                         class="btn secondary"
-                        onclick="selectAdminPlayer('${p.telegram_id}')">
+                        onclick="selectAdminPlayer('${escapeAttr(p.telegram_id)}')">
                         Выбрать
                     </button>
 
                 </div>
 
-            `).join("");
+                `;
+
+            }).join("");
 
     }catch(e){
 
-        toast(e.message);
+        toast(e.message,"error");
 
     }
 }
@@ -3558,16 +4099,22 @@ function selectAdminPlayer(id){
     const input=
         document.getElementById("adminTelegram");
 
+    const roleInput=
+        document.getElementById("roleTelegram");
+
     if(input){
         input.value=id;
     }
 
-    toast("Игрок выбран");
+    if(roleInput){
+        roleInput.value=id;
+    }
 
-    window.scrollTo({
-        top:document.body.scrollHeight,
-        behavior:"smooth"
-    });
+    toast(
+        "👤 Игрок выбран",
+        "success"
+    );
+
 }
 
 
@@ -3589,7 +4136,7 @@ async function loadAdminLogs(){
             return;
         }
 
-        if(!data.logs.length){
+        if(!data.logs?.length){
 
             box.innerHTML=`
                 <div class="small">
@@ -3635,7 +4182,7 @@ async function loadAdminLogs(){
 
     }catch(e){
 
-        toast(e.message);
+        toast(e.message,"error");
 
     }
 }
@@ -3654,7 +4201,10 @@ async function executeWipe(){
 
     if(confirmValue!=="WIPE"){
 
-        toast("Введите WIPE");
+        toast(
+            "Введите WIPE",
+            "warning"
+        );
 
         return;
     }
@@ -3675,14 +4225,15 @@ async function executeWipe(){
             .value="";
 
         toast(
-            `🧹 WIPE выполнен. Игроков: ${data.affected_users}`
+            `🧹 WIPE выполнен. Игроков: ${data.affected_users}`,
+            "success"
         );
 
         await load();
 
     }catch(e){
 
-        toast(e.message);
+        toast(e.message,"error");
 
     }
 }
@@ -3692,6 +4243,106 @@ async function executeWipe(){
    RATING
 ============================================ */
 
+function renderRankPlayer(p,mode){
+
+    const isCreator=
+        !!p.creator ||
+        p.role==="creator";
+
+    const isAssistant=
+        !isCreator &&
+        (
+            !!p.assistant ||
+            p.role==="assistant"
+        );
+
+    const isMe=
+        !!p.me ||
+        (
+            state?.user &&
+            String(p.telegram_id)===
+            String(state.user.telegram_id)
+        );
+
+    const medal=
+        p.place===1
+        ?"🥇"
+        :p.place===2
+        ?"🥈"
+        :p.place===3
+        ?"🥉"
+        :p.place;
+
+    return `
+
+        <div class="card ${isMe?'rank-me':''}"
+             style="margin-bottom:8px">
+
+            <div class="item-row">
+
+                <div class="rank-number">
+                    ${medal}
+                </div>
+
+                <img
+                    class="avatar"
+                    style="width:42px;height:42px"
+                    src="${
+                        p.photo_url||
+                        "https://ui-avatars.com/api/?name="+
+                        encodeURIComponent(p.name||"Игрок")
+                    }">
+
+                <div class="item-info">
+
+                    <b>
+                        ${escapeHtml(p.name||"Игрок")}
+
+                        ${
+                            isCreator
+                            ?" 👑"
+                            :
+                            isAssistant
+                            ?" 🛡️"
+                            :""
+                        }
+
+                        ${
+                            isMe
+                            ?" <span class='badge green'>ТЫ</span>"
+                            :""
+                        }
+
+                    </b>
+
+                    <span>
+                        Lv.${p.level||1}
+                    </span>
+
+                    ${
+                        mode==="richest"
+                        ?
+                        `<span>
+                            💎 Капитал:
+                            ${format(p.total)}
+                        </span>`
+                        :
+                        `<span>
+                            ⭐ Рейтинг:
+                            ${format(p.rating)}
+                        </span>`
+                    }
+
+                </div>
+
+            </div>
+
+        </div>
+
+    `;
+}
+
+
 async function loadRating(){
 
     try{
@@ -3699,131 +4350,144 @@ async function loadRating(){
         const richest=
             await api("/api/richest");
 
-        const richBox=
-            document.getElementById("richestList");
-
-        richBox.innerHTML=
-            richest.players.map(p=>`
-
-                <div class="card"
-                     style="margin-bottom:8px">
-
-                    <div class="item-row">
-
-                        <div style="
-                            width:35px;
-                            text-align:center;
-                            font-size:18px">
-
-                            ${
-                                p.place===1
-                                ?"🥇"
-                                :p.place===2
-                                ?"🥈"
-                                :p.place===3
-                                ?"🥉"
-                                :p.place
-                            }
-
-                        </div>
-
-                        <img
-                            class="avatar"
-                            style="width:42px;height:42px"
-                            src="${
-                                p.photo_url||
-                                "https://ui-avatars.com/api/?name="+
-                                encodeURIComponent(p.name)
-                            }">
-
-                        <div class="item-info">
-
-                            <b>
-                                ${escapeHtml(p.name)}
-                                ${p.creator?" 👑":""}
-                            </b>
-
-                            <span>
-                                Lv.${p.level}
-                            </span>
-
-                            <span>
-                                💎 Капитал:
-                                ${format(p.total)}
-                            </span>
-
-                        </div>
-
-                    </div>
-
-                </div>
-
-            `).join("");
-
-
         const rating=
             await api("/api/leaderboard");
+
+        const richBox=
+            document.getElementById("richestList");
 
         const box=
             document.getElementById("ratingList");
 
+        const myRankBox=
+            document.getElementById("myRankBox");
+
+        if(
+            !richest.players?.length &&
+            !rating.players?.length
+        ){
+
+            richBox.innerHTML=`
+                <div class="empty">
+                    Пока нет игроков для рейтинга.
+                </div>
+            `;
+
+            box.innerHTML="";
+
+            return;
+        }
+
+        richBox.innerHTML=
+            richest.players?.length
+            ?
+            richest.players
+                .map(p=>renderRankPlayer(p,"richest"))
+                .join("")
+            :
+            `
+                <div class="empty">
+                    Пока нет игроков.
+                </div>
+            `;
+
         box.innerHTML=
-            rating.players.map(p=>`
+            rating.players?.length
+            ?
+            rating.players
+                .map(p=>renderRankPlayer(p,"rating"))
+                .join("")
+            :
+            `
+                <div class="empty">
+                    Пока нет игроков.
+                </div>
+            `;
 
-                <div class="card"
-                     style="margin-bottom:8px">
 
-                    <div class="item-row">
+        const myPlace=
+            rating.my_place||
+            rating.current_place||
+            rating.user_place||
+            null;
+
+        const myRating=
+            state?.user?.rating||0;
+
+        if(myPlace){
+
+            myRankBox.innerHTML=`
+
+                <div class="my-rank">
+
+                    <div style="
+                        font-size:11px;
+                        color:#7f91ad">
+                        ТВОЁ МЕСТО
+                    </div>
+
+                    <div style="
+                        margin-top:3px;
+                        display:flex;
+                        align-items:center;
+                        justify-content:space-between">
+
+                        <b style="
+                            font-size:26px;
+                            color:#54e4ff">
+                            #${myPlace}
+                        </b>
 
                         <div style="
-                            width:35px;
-                            text-align:center;
-                            font-size:18px">
+                            text-align:right">
 
-                            ${
-                                p.place===1
-                                ?"🥇"
-                                :p.place===2
-                                ?"🥈"
-                                :p.place===3
-                                ?"🥉"
-                                :p.place
-                            }
+                            <div style="
+                                color:#ffc85c;
+                                font-weight:900">
+                                ⭐ ${format(myRating)}
+                            </div>
 
-                        </div>
-
-                        <img
-                            class="avatar"
-                            style="width:42px;height:42px"
-                            src="${
-                                p.photo_url||
-                                "https://ui-avatars.com/api/?name="+
-                                encodeURIComponent(p.name)
-                            }">
-
-                        <div class="item-info">
-
-                            <b>
-                                ${escapeHtml(p.name)}
-                                ${p.creator?" 👑":""}
-                            </b>
-
-                            <span>
-                                Lv.${p.level}
-                                · ⭐ ${format(p.rating)}
-                            </span>
+                            <div class="small">
+                                рейтинговых очков
+                            </div>
 
                         </div>
 
                     </div>
 
                 </div>
+            `;
 
-            `).join("");
+        }else{
+
+            myRankBox.innerHTML=`
+
+                <div class="my-rank">
+
+                    <div style="
+                        font-size:11px;
+                        color:#7f91ad">
+                        ТВОЙ РЕЙТИНГ
+                    </div>
+
+                    <div style="
+                        margin-top:3px;
+                        font-size:22px;
+                        font-weight:900;
+                        color:#ffc85c">
+                        ⭐ ${format(myRating)}
+                    </div>
+
+                </div>
+            `;
+        }
 
     }catch(e){
 
-        toast(e.message);
+        toast(
+            e.message,
+            "error"
+        );
 
     }
 }
@@ -3868,16 +4532,21 @@ function format(number){
 
 function formatTime(seconds){
 
-    seconds=Math.max(0,seconds);
+    seconds=Math.max(
+        0,
+        Math.floor(Number(seconds)||0)
+    );
 
     const h=Math.floor(seconds/3600);
+
     const m=Math.floor(
         (seconds%3600)/60
     );
+
     const s=seconds%60;
 
     if(h){
-        return `${h}ч ${m}м`;
+        return `${h}ч ${m}м ${s}с`;
     }
 
     if(m){
@@ -3908,21 +4577,85 @@ function escapeAttr(value){
 }
 
 
-function toast(message){
+/* ============================================
+   TOAST SYSTEM
+============================================ */
+
+function detectToastType(message){
+
+    const text=
+        String(message||"").toLowerCase();
+
+    if(
+        text.includes("ошиб") ||
+        text.includes("нельзя") ||
+        text.includes("недостат") ||
+        text.includes("не хватает") ||
+        text.includes("cooldown") ||
+        text.includes("лимит")
+    ){
+        return "error";
+    }
+
+    if(
+        text.includes("введите") ||
+        text.includes("заполн") ||
+        text.includes("укажи") ||
+        text.includes("коррект")
+    ){
+        return "warning";
+    }
+
+    return "info";
+}
+
+
+function toast(message,type=null){
+
+    const container=
+        document.getElementById("toastContainer");
+
+    if(!container){
+        return;
+    }
+
+    const id=
+        ++toastId;
+
+    const finalType=
+        type||detectToastType(message);
 
     const el=
-        document.getElementById("toast");
+        document.createElement("div");
 
-    el.textContent=message;
+    el.className=
+        `toast ${finalType}`;
 
-    el.classList.add("show");
+    el.dataset.toastId=id;
 
-    clearTimeout(toastTimer);
+    el.innerHTML=`
 
-    toastTimer=
+        <div>
+            ${escapeHtml(message)}
+        </div>
+
+        <div class="toast-progress"></div>
+    `;
+
+    container.appendChild(el);
+
+    setTimeout(()=>{
+
+        el.classList.add("removing");
+
         setTimeout(()=>{
-            el.classList.remove("show");
-        },2600);
+
+            el.remove();
+
+        },200);
+
+    },3000);
+
 }
 
 
@@ -3977,6 +4710,23 @@ setInterval(()=>{
     if(state){
 
         renderEvents();
+
+        if(
+            state.creator &&
+            document
+                .getElementById("screen-profile")
+                ?.classList
+                .contains("active")
+        ){
+
+            const adminEvents=
+                document.getElementById("adminEvents");
+
+            if(adminEvents){
+                loadAdminEvents();
+            }
+
+        }
 
     }
 
