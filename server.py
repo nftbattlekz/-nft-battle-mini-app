@@ -136,6 +136,9 @@ def xp_for_level(level):
 def add_notification(con,user_id,title,message,kind='info'):
     con.execute('INSERT INTO notifications(user_id,title,message,type,is_read,created_at) VALUES(?,?,?,?,0,?)',(user_id,title,message,kind,now()))
 
+def add_notification_all(con,title,message,kind='info'):
+    con.execute('INSERT INTO notifications(user_id,title,message,type,is_read,created_at) SELECT id,?,?,?,0,? FROM users',(title,message,kind,now()))
+
 def add_xp(con,user_id,amount):
     u=con.execute('SELECT xp,level,rating FROM users WHERE id=?',(user_id,)).fetchone()
     if not u:return
@@ -329,14 +332,29 @@ def work_tap(u):
 @app.post('/api/work/complete')
 @require_user
 def work_complete(u):
-    data=request.get_json(silent=True) or {};sid=str(data.get('session_id',''));con=db();s=con.execute('SELECT * FROM work_sessions WHERE id=? AND user_id=? AND completed=0',(sid,u['id'])).fetchone()
-    if not s:con.close();return jsonify({'ok':False,'error':'Рабочая сессия не найдена'}),400
-    if s['expires_at']<now():con.execute('DELETE FROM work_sessions WHERE id=?',(sid,));con.commit();con.close();return jsonify({'ok':False,'error':'Время работы истекло'}),400
-    if s['taps']<s['taps_required']:con.close();return jsonify({'ok':False,'error':f'Заполни круг до 100% ({s["taps"]}/{s["taps_required"]})'}),400
-    job=JOBS[s['job_key']];mult=get_multiplier(con,'jobs');reward=int(job['reward']*mult);add_coins(con,u['id'],reward,f'Работа: {job["name"]}');add_xp(con,u['id'],job['xp']);set_cooldown(con,u['id'],'job_'+s['job_key']);con.execute('UPDATE work_sessions SET completed=1 WHERE id=?',(sid,));q=con.execute("SELECT progress FROM quests WHERE user_id=? AND quest_key='work3'",(u['id'],)).fetchone()
-    if q and q['progress']<3:
-        p=q['progress']+1;con.execute('UPDATE quests SET progress=?,completed=? WHERE user_id=? AND quest_key=\'work3\'',(p,1 if p>=3 else 0,u['id']))
-    con.commit();fresh=con.execute('SELECT coins,xp,level FROM users WHERE id=?',(u['id'],)).fetchone();con.close();return jsonify({'ok':True,'reward':reward,'multiplier':mult,'user':dict(fresh)})
+    data=request.get_json(silent=True) or {}; sid=str(data.get('session_id','')).strip()
+    if not sid:return jsonify({'ok':False,'error':'Рабочая сессия не найдена'}),400
+    con=db()
+    try:
+        s=con.execute('SELECT * FROM work_sessions WHERE id=? AND user_id=? AND completed=0',(sid,u['id'])).fetchone()
+        if not s:return jsonify({'ok':False,'error':'Рабочая сессия не найдена или награда уже забрана'}),400
+        if s['expires_at']<now():
+            con.execute('DELETE FROM work_sessions WHERE id=?',(sid,));con.commit();return jsonify({'ok':False,'error':'Время работы истекло'}),400
+        job=JOBS.get(s['job_key'])
+        if not job or job['world']!=current_world(u):
+            con.execute('DELETE FROM work_sessions WHERE id=?',(sid,));con.commit();return jsonify({'ok':False,'error':'Эта смена относится к другому миру. Начни новую смену в текущем мире.'}),400
+        if s['taps']<s['taps_required']:return jsonify({'ok':False,'error':f'Заполни круг до 100% ({s["taps"]}/{s["taps_required"]})'}),400
+        mult=get_multiplier(con,'jobs'); reward=max(1,int(job['reward']*mult))
+        add_coins(con,u['id'],reward,f'Работа: {job["name"]}'); add_xp(con,u['id'],job['xp']); set_cooldown(con,u['id'],'job_'+s['job_key'])
+        con.execute('UPDATE work_sessions SET completed=1 WHERE id=? AND completed=0',(sid,))
+        q=con.execute("SELECT progress FROM quests WHERE user_id=? AND quest_key='work3'",(u['id'],)).fetchone()
+        if q and q['progress']<3:
+            prog=q['progress']+1;con.execute("UPDATE quests SET progress=?,completed=? WHERE user_id=? AND quest_key='work3'",(prog,1 if prog>=3 else 0,u['id']))
+        fresh=con.execute('SELECT coins,xp,level,rating,world FROM users WHERE id=?',(u['id'],)).fetchone();con.commit()
+        return jsonify({'ok':True,'reward':reward,'multiplier':mult,'user':dict(fresh)})
+    except Exception as exc:
+        con.rollback();return jsonify({'ok':False,'error':f'Не удалось забрать награду: {exc}'}),500
+    finally:con.close()
 
 # Compatibility endpoint: frontend will be switched to start/tap/complete.
 @app.post('/api/work')
@@ -447,6 +465,21 @@ def buy_property(u):
     price=discounted_price(con,'property_discount',p['price'])
     if u['coins']<price:con.close();return jsonify({'ok':False,'error':'Недостаточно 💎'}),400
     add_coins(con,u['id'],-price,f'Покупка недвижимости: {p["name"]}');con.execute('INSERT INTO properties(user_id,property_key) VALUES(?,?)',(u['id'],k));con.execute('UPDATE users SET rating=rating+? WHERE id=?',(p['rating'],u['id']));con.commit();con.close();return jsonify({'ok':True})
+@app.post('/api/inventory/sell')
+@require_user
+def inventory_sell(u):
+    data=request.get_json(silent=True) or {};key=str(data.get('item_key','')).strip()
+    if key not in ITEMS:return jsonify({'ok':False,'error':'Предмет не найден'}),400
+    try:quantity=int(data.get('quantity',0))
+    except:quantity=0
+    con=db();row=con.execute('SELECT quantity FROM inventory WHERE user_id=? AND item_key=?',(u['id'],key)).fetchone();available=int(row['quantity']) if row else 0
+    if quantity<=0:quantity=available
+    if available<quantity:con.close();return jsonify({'ok':False,'error':'Недостаточное количество предмета'}),400
+    item=ITEMS[key];total=int(item['base_price']*quantity)
+    if not remove_item(con,u['id'],key,quantity):con.close();return jsonify({'ok':False,'error':'Не удалось списать предмет'}),400
+    add_coins(con,u['id'],total,f'Продажа государству: {item["name"]} x{quantity}');con.commit();fresh=con.execute('SELECT coins FROM users WHERE id=?',(u['id'],)).fetchone();con.close()
+    return jsonify({'ok':True,'item':item['name'],'icon':item['icon'],'quantity':quantity,'total':total,'coins':fresh['coins']})
+
 # INVENTORY / MARKET
 @app.get('/api/inventory')
 @require_user
@@ -628,7 +661,7 @@ def admin_event(actor):
     if et.endswith('_discount') and not(0<mult<=90):return jsonify({'ok':False,'error':'Скидка 1-90%'}),400
     if not et.endswith('_discount') and not(1<=mult<=10):return jsonify({'ok':False,'error':'Множитель x1-x10'}),400
     if not(1<=mins<=10080):return jsonify({'ok':False,'error':'Неверная длительность'}),400
-    con=db();cleanup_events(con);con.execute('UPDATE events SET active=0 WHERE active=1 AND event_type=?',(et,));end=now()+mins*60;con.execute('INSERT INTO events(creator_id,event_type,multiplier,ends_at,title,description,active,created_at) VALUES(?,?,?,?,?,?,1,?)',(actor['telegram_id'],et,mult,end,title,desc,now()));log_admin(con,actor['telegram_id'],'event_create','',f'type={et}; value={mult}; duration={mins}m');con.commit();con.close();return jsonify({'ok':True,'ends_at':end,'multiplier':mult})
+    con=db();cleanup_events(con);con.execute('UPDATE events SET active=0 WHERE active=1 AND event_type=?',(et,));end=now()+mins*60;con.execute('INSERT INTO events(creator_id,event_type,multiplier,ends_at,title,description,active,created_at) VALUES(?,?,?,?,?,?,1,?)',(actor['telegram_id'],et,mult,end,title,desc,now())); add_notification_all(con,'⚡ Новое событие NEXORA',f'{title} — {desc} · {('-'+str(mult)+'%') if et.endswith('_discount') else ('x'+str(mult))} · на {mins} мин.','event'); log_admin(con,actor['telegram_id'],'event_create','',f'type={et}; value={mult}; duration={mins}m');con.commit();con.close();return jsonify({'ok':True,'ends_at':end,'multiplier':mult,'title':title,'description':desc,'event_type':et,'duration_minutes':mins})
 @app.get('/api/admin/events')
 @require_admin
 def admin_events(actor):
