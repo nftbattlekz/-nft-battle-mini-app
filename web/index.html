@@ -2366,8 +2366,12 @@ function renderBusinesses(){
                         }
 
                         <p>
-                            Лимит:
+                            🌐 Лимит на весь сервер:
                             ${b.owned_count}/${b.limit}
+                        </p>
+
+                        <p class="small">
+                            🔓 Доступно с 3 уровня
                         </p>
 
                         <button
@@ -3966,7 +3970,7 @@ async function createEvent(){
 
     try{
 
-        await api("/api/admin/event",{
+        const data=await api("/api/admin/event",{
             method:"POST",
             body:JSON.stringify({
                 title,
@@ -3984,6 +3988,7 @@ async function createEvent(){
         );
 
         await load();
+        await loadAdminEvents();
 
     }catch(e){
 
@@ -5014,47 +5019,4 @@ document.querySelectorAll(".modal")
     });
 
 
-/* ============================================
-   EVENT TIMER
-============================================ */
-
-setInterval(()=>{
-
-    if(state){
-
-        renderEvents();
-
-        loadNotifications().catch(()=>{});
-
-        if(
-            state.creator &&
-            document
-                .getElementById("screen-profile")
-                ?.classList
-                .contains("active")
-        ){
-
-            const adminEvents=
-                document.getElementById("adminEvents");
-
-            if(adminEvents){
-                loadAdminEvents();
-            }
-
-        }
-
-    }
-
-},1000);
-
-
-/* ============================================
-   START
-============================================ */
-
-load();
-
-</script>
-
-</body>
-</html>
+/* ======
