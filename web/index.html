@@ -1555,13 +1555,25 @@ async function api(url,options={}){
         headers["X-Telegram-Init-Data"]=tg.initData;
     }
 
-    const response=await fetch(url,{
-        ...options,
-        headers:{
-            ...headers,
-            ...(options.headers||{})
-        }
-    });
+    const controller=new AbortController();
+    const timeout=setTimeout(()=>controller.abort(),10000);
+
+    let response;
+    try{
+        response=await fetch(url,{
+            ...options,
+            signal:controller.signal,
+            headers:{
+                ...headers,
+                ...(options.headers||{})
+            }
+        });
+    }catch(e){
+        if(e?.name==="AbortError") throw new Error("Сервер долго не отвечает. Обнови игру.");
+        throw new Error("Не удалось подключиться к серверу");
+    }finally{
+        clearTimeout(timeout);
+    }
 
     let data;
 
@@ -1606,8 +1618,11 @@ async function load(){
     try{
         state=await api("/api/bootstrap");
         renderAll();
-        await loadHomeRating();
-        await loadNotifications();
+        // Дополнительные блоки не должны удерживать экран загрузки.
+        await Promise.allSettled([
+            loadHomeRating(),
+            loadNotifications()
+        ]);
 
         if(document.getElementById("screen-rating")?.classList.contains("active")){
             await loadRating();
@@ -5019,4 +5034,47 @@ document.querySelectorAll(".modal")
     });
 
 
-/* ======
+/* ============================================
+   EVENT TIMER
+============================================ */
+
+setInterval(()=>{
+
+    if(state){
+
+        renderEvents();
+
+        loadNotifications().catch(()=>{});
+
+        if(
+            state.creator &&
+            document
+                .getElementById("screen-profile")
+                ?.classList
+                .contains("active")
+        ){
+
+            const adminEvents=
+                document.getElementById("adminEvents");
+
+            if(adminEvents){
+                loadAdminEvents();
+            }
+
+        }
+
+    }
+
+},1000);
+
+
+/* ============================================
+   START
+============================================ */
+
+load();
+
+</script>
+
+</body>
+</html>
