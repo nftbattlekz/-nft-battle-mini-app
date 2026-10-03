@@ -13,32 +13,41 @@ def db():
     con=sqlite3.connect(DB_PATH); con.row_factory=sqlite3.Row; return con
 
 def init_db():
-    con=db(); con.executescript('''
-    CREATE TABLE IF NOT EXISTS users(id INTEGER PRIMARY KEY AUTOINCREMENT,telegram_id TEXT UNIQUE NOT NULL,username TEXT DEFAULT '',first_name TEXT DEFAULT '',last_name TEXT DEFAULT '',photo_url TEXT DEFAULT '',coins INTEGER DEFAULT 1000,xp INTEGER DEFAULT 0,level INTEGER DEFAULT 1,rating INTEGER DEFAULT 0,bank INTEGER DEFAULT 0,created_at INTEGER DEFAULT 0,last_daily INTEGER DEFAULT 0,role TEXT DEFAULT 'player',world INTEGER DEFAULT 1);
-    CREATE TABLE IF NOT EXISTS inventory(id INTEGER PRIMARY KEY AUTOINCREMENT,user_id INTEGER NOT NULL,item_key TEXT NOT NULL,quantity INTEGER DEFAULT 0,UNIQUE(user_id,item_key));
-    CREATE TABLE IF NOT EXISTS daily_rewards(user_id INTEGER PRIMARY KEY,last_day TEXT DEFAULT '',streak INTEGER DEFAULT 0);
-    CREATE TABLE IF NOT EXISTS cooldowns(user_id INTEGER NOT NULL,action TEXT NOT NULL,last_used INTEGER DEFAULT 0,PRIMARY KEY(user_id,action));
-    CREATE TABLE IF NOT EXISTS businesses(id INTEGER PRIMARY KEY AUTOINCREMENT,user_id INTEGER NOT NULL,business_key TEXT NOT NULL,level INTEGER DEFAULT 1,last_collect INTEGER DEFAULT 0,UNIQUE(user_id,business_key));
-    CREATE TABLE IF NOT EXISTS properties(id INTEGER PRIMARY KEY AUTOINCREMENT,user_id INTEGER NOT NULL,property_key TEXT NOT NULL,UNIQUE(user_id,property_key));
-    CREATE TABLE IF NOT EXISTS pets(id INTEGER PRIMARY KEY AUTOINCREMENT,user_id INTEGER NOT NULL,pet_key TEXT NOT NULL,level INTEGER DEFAULT 1,UNIQUE(user_id,pet_key));
-    CREATE TABLE IF NOT EXISTS skills(user_id INTEGER PRIMARY KEY,mining INTEGER DEFAULT 1,farming INTEGER DEFAULT 1,fishing INTEGER DEFAULT 1,business INTEGER DEFAULT 1,work INTEGER DEFAULT 1);
-    CREATE TABLE IF NOT EXISTS market(id INTEGER PRIMARY KEY AUTOINCREMENT,seller_id INTEGER NOT NULL,item_key TEXT NOT NULL,quantity INTEGER NOT NULL,price_each INTEGER NOT NULL,created_at INTEGER DEFAULT 0,status TEXT DEFAULT 'active');
-    CREATE TABLE IF NOT EXISTS events(id INTEGER PRIMARY KEY AUTOINCREMENT,creator_id TEXT NOT NULL,event_type TEXT NOT NULL,multiplier REAL DEFAULT 1,ends_at INTEGER NOT NULL,title TEXT DEFAULT '',description TEXT DEFAULT '',active INTEGER DEFAULT 1,created_at INTEGER DEFAULT 0);
-    CREATE TABLE IF NOT EXISTS transactions(id INTEGER PRIMARY KEY AUTOINCREMENT,user_id INTEGER NOT NULL,amount INTEGER NOT NULL,reason TEXT DEFAULT '',created_at INTEGER DEFAULT 0);
-    CREATE TABLE IF NOT EXISTS quests(id INTEGER PRIMARY KEY AUTOINCREMENT,user_id INTEGER NOT NULL,quest_key TEXT NOT NULL,progress INTEGER DEFAULT 0,completed INTEGER DEFAULT 0,claimed INTEGER DEFAULT 0,UNIQUE(user_id,quest_key));
-    CREATE TABLE IF NOT EXISTS achievements(id INTEGER PRIMARY KEY AUTOINCREMENT,user_id INTEGER NOT NULL,achievement_key TEXT NOT NULL,UNIQUE(user_id,achievement_key));
-    CREATE TABLE IF NOT EXISTS prefixes(id INTEGER PRIMARY KEY AUTOINCREMENT,user_id INTEGER NOT NULL,prefix_key TEXT NOT NULL,UNIQUE(user_id,prefix_key));
-    CREATE TABLE IF NOT EXISTS settings(key TEXT PRIMARY KEY,value TEXT);
-    CREATE TABLE IF NOT EXISTS promo_codes(code TEXT PRIMARY KEY,coins INTEGER NOT NULL DEFAULT 0,xp INTEGER NOT NULL DEFAULT 0,active INTEGER DEFAULT 1);
-    CREATE TABLE IF NOT EXISTS promo_redemptions(user_id INTEGER NOT NULL,code TEXT NOT NULL,redeemed_at INTEGER DEFAULT 0,PRIMARY KEY(user_id,code));
-    CREATE TABLE IF NOT EXISTS business_market(id INTEGER PRIMARY KEY AUTOINCREMENT,seller_id INTEGER NOT NULL,business_id INTEGER NOT NULL,business_key TEXT NOT NULL,title TEXT NOT NULL,level INTEGER DEFAULT 1,price INTEGER NOT NULL,created_at INTEGER DEFAULT 0,status TEXT DEFAULT 'active');
-    CREATE TABLE IF NOT EXISTS wipe_history(id INTEGER PRIMARY KEY AUTOINCREMENT,creator_id TEXT NOT NULL,created_at INTEGER DEFAULT 0,affected_users INTEGER DEFAULT 0);
-    CREATE TABLE IF NOT EXISTS admin_logs(id INTEGER PRIMARY KEY AUTOINCREMENT,creator_id TEXT NOT NULL,action TEXT NOT NULL,target_telegram_id TEXT DEFAULT '',details TEXT DEFAULT '',created_at INTEGER DEFAULT 0);
-    CREATE TABLE IF NOT EXISTS item_catalog(item_key TEXT PRIMARY KEY,name TEXT NOT NULL,icon TEXT DEFAULT '',base_price INTEGER DEFAULT 0);
-    CREATE TABLE IF NOT EXISTS notifications(id INTEGER PRIMARY KEY AUTOINCREMENT,user_id INTEGER NOT NULL,title TEXT NOT NULL,message TEXT NOT NULL,type TEXT DEFAULT 'info',is_read INTEGER DEFAULT 0,created_at INTEGER DEFAULT 0);
-    CREATE TABLE IF NOT EXISTS work_sessions(id TEXT PRIMARY KEY,user_id INTEGER NOT NULL,job_key TEXT NOT NULL,taps_required INTEGER NOT NULL,taps INTEGER DEFAULT 0,started_at INTEGER DEFAULT 0,expires_at INTEGER NOT NULL,completed INTEGER DEFAULT 0);
-    '''); con.commit(); con.close()
-init_db()
+    con=db()
+    con.execute('PRAGMA busy_timeout=5000')
+    schema=[
+        "CREATE TABLE IF NOT EXISTS users(id INTEGER PRIMARY KEY AUTOINCREMENT,telegram_id TEXT UNIQUE NOT NULL,username TEXT DEFAULT '',first_name TEXT DEFAULT '',last_name TEXT DEFAULT '',photo_url TEXT DEFAULT '',coins INTEGER DEFAULT 1000,xp INTEGER DEFAULT 0,level INTEGER DEFAULT 1,rating INTEGER DEFAULT 0,bank INTEGER DEFAULT 0,created_at INTEGER DEFAULT 0,last_daily INTEGER DEFAULT 0,role TEXT DEFAULT 'player',world INTEGER DEFAULT 1);",
+        'CREATE TABLE IF NOT EXISTS inventory(id INTEGER PRIMARY KEY AUTOINCREMENT,user_id INTEGER NOT NULL,item_key TEXT NOT NULL,quantity INTEGER DEFAULT 0,UNIQUE(user_id,item_key));',
+        "CREATE TABLE IF NOT EXISTS daily_rewards(user_id INTEGER PRIMARY KEY,last_day TEXT DEFAULT '',streak INTEGER DEFAULT 0);",
+        'CREATE TABLE IF NOT EXISTS cooldowns(user_id INTEGER NOT NULL,action TEXT NOT NULL,last_used INTEGER DEFAULT 0,PRIMARY KEY(user_id,action));',
+        'CREATE TABLE IF NOT EXISTS businesses(id INTEGER PRIMARY KEY AUTOINCREMENT,user_id INTEGER NOT NULL,business_key TEXT NOT NULL,level INTEGER DEFAULT 1,last_collect INTEGER DEFAULT 0,UNIQUE(user_id,business_key));',
+        'CREATE TABLE IF NOT EXISTS properties(id INTEGER PRIMARY KEY AUTOINCREMENT,user_id INTEGER NOT NULL,property_key TEXT NOT NULL,UNIQUE(user_id,property_key));',
+        'CREATE TABLE IF NOT EXISTS skills(user_id INTEGER PRIMARY KEY,mining INTEGER DEFAULT 1,farming INTEGER DEFAULT 1,fishing INTEGER DEFAULT 1,business INTEGER DEFAULT 1,work INTEGER DEFAULT 1);',
+        "CREATE TABLE IF NOT EXISTS market(id INTEGER PRIMARY KEY AUTOINCREMENT,seller_id INTEGER NOT NULL,item_key TEXT NOT NULL,quantity INTEGER NOT NULL,price_each INTEGER NOT NULL,created_at INTEGER DEFAULT 0,status TEXT DEFAULT 'active');",
+        "CREATE TABLE IF NOT EXISTS events(id INTEGER PRIMARY KEY AUTOINCREMENT,creator_id TEXT NOT NULL,event_type TEXT NOT NULL,multiplier REAL DEFAULT 1,ends_at INTEGER NOT NULL,title TEXT DEFAULT '',description TEXT DEFAULT '',active INTEGER DEFAULT 1,created_at INTEGER DEFAULT 0);",
+        "CREATE TABLE IF NOT EXISTS transactions(id INTEGER PRIMARY KEY AUTOINCREMENT,user_id INTEGER NOT NULL,amount INTEGER NOT NULL,reason TEXT DEFAULT '',created_at INTEGER DEFAULT 0);",
+        'CREATE TABLE IF NOT EXISTS quests(id INTEGER PRIMARY KEY AUTOINCREMENT,user_id INTEGER NOT NULL,quest_key TEXT NOT NULL,progress INTEGER DEFAULT 0,completed INTEGER DEFAULT 0,claimed INTEGER DEFAULT 0,UNIQUE(user_id,quest_key));',
+        'CREATE TABLE IF NOT EXISTS achievements(id INTEGER PRIMARY KEY AUTOINCREMENT,user_id INTEGER NOT NULL,achievement_key TEXT NOT NULL,UNIQUE(user_id,achievement_key));',
+        'CREATE TABLE IF NOT EXISTS prefixes(id INTEGER PRIMARY KEY AUTOINCREMENT,user_id INTEGER NOT NULL,prefix_key TEXT NOT NULL,UNIQUE(user_id,prefix_key));',
+        'CREATE TABLE IF NOT EXISTS settings(key TEXT PRIMARY KEY,value TEXT);',
+        'CREATE TABLE IF NOT EXISTS promo_codes(code TEXT PRIMARY KEY,coins INTEGER NOT NULL DEFAULT 0,xp INTEGER NOT NULL DEFAULT 0,active INTEGER DEFAULT 1);',
+        'CREATE TABLE IF NOT EXISTS promo_redemptions(user_id INTEGER NOT NULL,code TEXT NOT NULL,redeemed_at INTEGER DEFAULT 0,PRIMARY KEY(user_id,code));',
+        "CREATE TABLE IF NOT EXISTS business_market(id INTEGER PRIMARY KEY AUTOINCREMENT,seller_id INTEGER NOT NULL,business_id INTEGER NOT NULL,business_key TEXT NOT NULL,title TEXT NOT NULL,level INTEGER DEFAULT 1,price INTEGER NOT NULL,created_at INTEGER DEFAULT 0,status TEXT DEFAULT 'active');",
+        'CREATE TABLE IF NOT EXISTS wipe_history(id INTEGER PRIMARY KEY AUTOINCREMENT,creator_id TEXT NOT NULL,created_at INTEGER DEFAULT 0,affected_users INTEGER DEFAULT 0);',
+        "CREATE TABLE IF NOT EXISTS admin_logs(id INTEGER PRIMARY KEY AUTOINCREMENT,creator_id TEXT NOT NULL,action TEXT NOT NULL,target_telegram_id TEXT DEFAULT '',details TEXT DEFAULT '',created_at INTEGER DEFAULT 0);",
+        "CREATE TABLE IF NOT EXISTS item_catalog(item_key TEXT PRIMARY KEY,name TEXT NOT NULL,icon TEXT DEFAULT '',base_price INTEGER DEFAULT 0);",
+        "CREATE TABLE IF NOT EXISTS notifications(id INTEGER PRIMARY KEY AUTOINCREMENT,user_id INTEGER NOT NULL,title TEXT NOT NULL,message TEXT NOT NULL,type TEXT DEFAULT 'info',is_read INTEGER DEFAULT 0,created_at INTEGER DEFAULT 0);",
+        'CREATE TABLE IF NOT EXISTS work_sessions(id TEXT PRIMARY KEY,user_id INTEGER NOT NULL,job_key TEXT NOT NULL,taps_required INTEGER NOT NULL,taps INTEGER DEFAULT 0,started_at INTEGER DEFAULT 0,expires_at INTEGER NOT NULL,completed INTEGER DEFAULT 0);',
+    ]
+    for statement in schema:
+        con.execute(statement)
+    con.commit()
+    con.close()
+try:
+    init_db()
+except Exception as exc:
+    print('NEXORA DATABASE INIT ERROR:', repr(exc), flush=True)
+    raise
 
 def migrate_database():
     con=db(); cols={r['name'] for r in con.execute('PRAGMA table_info(users)').fetchall()}
@@ -48,11 +57,19 @@ def migrate_database():
     con.execute("UPDATE users SET role='creator' WHERE telegram_id=?",(str(CREATOR_TELEGRAM_ID),))
     con.execute("UPDATE users SET role='player' WHERE role IS NULL OR role='' ")
     con.commit(); con.close()
-migrate_database()
+try:
+    migrate_database()
+except Exception as exc:
+    print('NEXORA DATABASE MIGRATION ERROR:', repr(exc), flush=True)
+    raise
 
 def seed_promo_codes():
     con=db(); con.executemany('INSERT OR IGNORE INTO promo_codes(code,coins,xp,active) VALUES(?,?,?,1)',[("START",1500,20),("BETA TEST",1500,20),("GO",1500,20)]); con.commit(); con.close()
-seed_promo_codes()
+try:
+    seed_promo_codes()
+except Exception as exc:
+    print('NEXORA PROMO SEED ERROR:', repr(exc), flush=True)
+    raise
 
 WORLDS={1:{'name':'Мир бизнеса','level':1,'description':'Стартовый мир NEXORA'},2:{'name':'Мир корпораций','level':100,'description':'Новый мир открывается на 100 уровне'},3:{'name':'Мир мегакорпораций','level':200,'description':'Третий мир открывается на 200 уровне'}}
 JOBS={
@@ -78,8 +95,6 @@ ITEMS={'iron':{'name':'Железо','icon':'⛓️','base_price':35},'coal':{'n
 BUSINESS_LIMITS={'farm':100,'mine':75,'factory':50,'tech':25,'space':10}; PROPERTY_LIMITS={'room':500,'apartment':250,'penthouse':50,'mansion':10}; BUSINESS_UPGRADE_MULTIPLIER=1.55
 BUSINESSES={'farm':{'name':'Ферма','price':5000,'income':300,'interval':3600},'mine':{'name':'Шахта','price':15000,'income':900,'interval':3600},'factory':{'name':'Завод','price':50000,'income':3200,'interval':3600},'tech':{'name':'IT-компания','price':150000,'income':10000,'interval':3600},'space':{'name':'Космическая корпорация','price':500000,'income':38000,'interval':3600}}
 PROPERTIES={'room':{'name':'Комната','price':2500,'rating':5},'apartment':{'name':'Квартира','price':25000,'rating':30},'penthouse':{'name':'Пентхаус','price':150000,'rating':100},'mansion':{'name':'Особняк','price':750000,'rating':300}}
-PLANETS={'moon':{'name':'Луна','level':5,'price':500},'mars':{'name':'Марс','level':15,'price':2500},'jupiter':{'name':'Юпитер','level':30,'price':10000},'neptune':{'name':'Нептун','level':50,'price':50000}}
-PETS={'cat':{'name':'Кибер-кот','price':5000,'bonus':.05},'wolf':{'name':'Кибер-волк','price':25000,'bonus':.10},'dragon':{'name':'Дракон NEXORA','price':150000,'bonus':.20}}
 QUESTS={'work3':{'name':'Рабочая смена','description':'Выполнить 3 работы','target':3,'reward':500},'mine10':{'name':'Шахтёр','description':'Добыть 10 ресурсов','target':10,'reward':1000},'market1':{'name':'Торговец','description':'Продать предмет на рынке','target':1,'reward':1500}}
 ROLE_LABELS={'creator':'Создатель','assistant':'Помощник создателя','player':'Игрок'}
 
@@ -247,6 +262,14 @@ def user_json(u,con):
     unread=con.execute('SELECT COUNT(*) c FROM notifications WHERE user_id=? AND is_read=0',(u['id'],)).fetchone()['c']
     return {'id':u['id'],'telegram_id':u['telegram_id'],'username':u['username'],'first_name':u['first_name'],'last_name':u['last_name'],'photo_url':u['photo_url'],'coins':u['coins'],'bank':u['bank'],'xp':u['xp'],'level':u['level'],'rating':u['rating'],'prefix':role_display(u),'role':role_name(u),'role_display':role_display(u),'creator':is_creator(u),'assistant':is_assistant(u),'world':current_world(u),'world_name':WORLDS[current_world(u)]['name'],'inventory':inventory,'unread_notifications':unread}
 
+@app.get('/health')
+def health():
+    try:
+        con=db(); con.execute('SELECT 1').fetchone(); con.close()
+        return jsonify({'ok':True,'service':'NEXORA'})
+    except Exception as exc:
+        return jsonify({'ok':False,'error':str(exc)}),500
+
 @app.get('/')
 def index():return send_from_directory('web','index.html')
 
@@ -354,7 +377,6 @@ def mining(u):
     r=con.execute('SELECT mining FROM skills WHERE user_id=?',(u['id'],)).fetchone();lvl=r['mining'] if r else 1;possible=['iron','coal','wood']
     if lvl>=3:possible.append('gold')
     if lvl>=6:possible.append('steel')
-    if lvl>=10:possible.append('energy_core')
     key=random.choice(possible);q=1+min(3,lvl//3);add_item(con,u['id'],key,q);add_xp(con,u['id'],35+lvl*2);set_cooldown(con,u['id'],'mining');con.execute('UPDATE skills SET mining=mining+1 WHERE user_id=? AND mining<20',(u['id'],));con.commit();con.close();return jsonify({'ok':True,'item':ITEMS[key]['name'],'icon':ITEMS[key]['icon'],'quantity':q})
 @app.post('/api/farm')
 @require_user
