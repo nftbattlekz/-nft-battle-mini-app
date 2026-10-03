@@ -1,22 +1,25 @@
 import os
 import json
 import time
-import hmac
-import hashlib
-import sqlite3
 import random
+import sqlite3
+import hashlib
+import hmac
+from functools import wraps
 from urllib.parse import parse_qsl
 
 from flask import Flask, request, jsonify, send_from_directory
 
 app = Flask(__name__, static_folder="web", static_url_path="")
 
-DB_PATH = os.environ.get("DB_PATH", "nexora.db")
-BOT_TOKEN = os.environ.get("BOT_TOKEN", "")
-CREATOR_ID = int(os.environ.get("CREATOR_TELEGRAM_ID", "8518976778"))
+DB_PATH = os.getenv("DB_PATH", "nexora.db")
+BOT_TOKEN = os.getenv("BOT_TOKEN", "")
+CREATOR_TELEGRAM_ID = os.getenv("CREATOR_TELEGRAM_ID", "8518976778")
 
-START_BALANCE = 500
-MAX_LEVEL = 100
+MAX_ENERGY = 100
+ENERGY_REGEN_SECONDS = 300
+
+app.config["JSON_AS_ASCII"] = False
 
 
 # =========================================================
@@ -24,251 +27,412 @@ MAX_LEVEL = 100
 # =========================================================
 
 def db():
-    conn = sqlite3.connect(DB_PATH, timeout=10)
-    conn.row_factory = sqlite3.Row
-    conn.execute("PRAGMA journal_mode=WAL")
-    conn.execute("PRAGMA synchronous=NORMAL")
-    return conn
+    con = sqlite3.connect(DB_PATH)
+    con.row_factory = sqlite3.Row
+    return con
 
 
 def init_db():
-    conn = db()
+    con = db()
+    cur = con.cursor()
 
-    conn.executescript("""
+    cur.executescript("""
     CREATE TABLE IF NOT EXISTS users (
-        id INTEGER PRIMARY KEY,
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        telegram_id TEXT UNIQUE NOT NULL,
+        username TEXT DEFAULT '',
         first_name TEXT DEFAULT '',
         last_name TEXT DEFAULT '',
-        username TEXT DEFAULT '',
         photo_url TEXT DEFAULT '',
-        balance INTEGER DEFAULT 500,
-        bank INTEGER DEFAULT 0,
+        coins INTEGER DEFAULT 1000,
         xp INTEGER DEFAULT 0,
         level INTEGER DEFAULT 1,
-        rating INTEGER DEFAULT 0,
-        reputation INTEGER DEFAULT 50,
         energy INTEGER DEFAULT 100,
-        storage INTEGER DEFAULT 500,
-        population INTEGER DEFAULT 0,
-        income_hour INTEGER DEFAULT 0,
-        expenses_hour INTEGER DEFAULT 0,
+        energy_updated INTEGER DEFAULT 0,
+        rating INTEGER DEFAULT 0,
+        bank INTEGER DEFAULT 0,
         created_at INTEGER DEFAULT 0,
-        last_work INTEGER DEFAULT 0,
-        last_mine INTEGER DEFAULT 0,
-        last_farm INTEGER DEFAULT 0,
-        last_fish INTEGER DEFAULT 0,
-        last_claim INTEGER DEFAULT 0,
-        last_login INTEGER DEFAULT 0
-    );
-
-    CREATE TABLE IF NOT EXISTS resources (
-        user_id INTEGER PRIMARY KEY,
-        iron INTEGER DEFAULT 0,
-        coal INTEGER DEFAULT 0,
-        wood INTEGER DEFAULT 0,
-        grain INTEGER DEFAULT 0,
-        stone INTEGER DEFAULT 0,
-        oil INTEGER DEFAULT 0,
-        steel INTEGER DEFAULT 0,
-        food INTEGER DEFAULT 0,
-        electronics INTEGER DEFAULT 0,
-        fuel INTEGER DEFAULT 0,
-        fish INTEGER DEFAULT 0,
-        FOREIGN KEY(user_id) REFERENCES users(id)
-    );
-
-    CREATE TABLE IF NOT EXISTS businesses (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        user_id INTEGER NOT NULL,
-        type TEXT NOT NULL,
-        level INTEGER DEFAULT 1,
-        workers INTEGER DEFAULT 1,
-        condition INTEGER DEFAULT 100,
-        created_at INTEGER DEFAULT 0
-    );
-
-    CREATE TABLE IF NOT EXISTS properties (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        user_id INTEGER NOT NULL,
-        type TEXT NOT NULL,
-        level INTEGER DEFAULT 1
-    );
-
-    CREATE TABLE IF NOT EXISTS pets (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        user_id INTEGER NOT NULL,
-        type TEXT NOT NULL,
-        level INTEGER DEFAULT 1
-    );
-
-    CREATE TABLE IF NOT EXISTS technologies (
-        user_id INTEGER PRIMARY KEY,
-        mining INTEGER DEFAULT 0,
-        agriculture INTEGER DEFAULT 0,
-        industry INTEGER DEFAULT 0,
-        energy INTEGER DEFAULT 0,
-        logistics INTEGER DEFAULT 0,
-        automation INTEGER DEFAULT 0,
-        space INTEGER DEFAULT 0
+        last_daily INTEGER DEFAULT 0
     );
 
     CREATE TABLE IF NOT EXISTS inventory (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         user_id INTEGER NOT NULL,
-        item TEXT NOT NULL,
-        amount INTEGER DEFAULT 1
+        item_key TEXT NOT NULL,
+        quantity INTEGER DEFAULT 0,
+        UNIQUE(user_id, item_key)
+    );
+
+    CREATE TABLE IF NOT EXISTS cooldowns (
+        user_id INTEGER NOT NULL,
+        action TEXT NOT NULL,
+        last_used INTEGER DEFAULT 0,
+        PRIMARY KEY(user_id, action)
+    );
+
+    CREATE TABLE IF NOT EXISTS businesses (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        user_id INTEGER NOT NULL,
+        business_key TEXT NOT NULL,
+        level INTEGER DEFAULT 1,
+        last_collect INTEGER DEFAULT 0,
+        UNIQUE(user_id, business_key)
+    );
+
+    CREATE TABLE IF NOT EXISTS properties (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        user_id INTEGER NOT NULL,
+        property_key TEXT NOT NULL,
+        UNIQUE(user_id, property_key)
+    );
+
+    CREATE TABLE IF NOT EXISTS pets (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        user_id INTEGER NOT NULL,
+        pet_key TEXT NOT NULL,
+        level INTEGER DEFAULT 1,
+        UNIQUE(user_id, pet_key)
+    );
+
+    CREATE TABLE IF NOT EXISTS skills (
+        user_id INTEGER PRIMARY KEY,
+        mining INTEGER DEFAULT 1,
+        farming INTEGER DEFAULT 1,
+        fishing INTEGER DEFAULT 1,
+        business INTEGER DEFAULT 1,
+        work INTEGER DEFAULT 1
     );
 
     CREATE TABLE IF NOT EXISTS market (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         seller_id INTEGER NOT NULL,
-        seller_name TEXT DEFAULT '',
-        item TEXT NOT NULL,
-        amount INTEGER NOT NULL,
-        price INTEGER NOT NULL,
+        item_key TEXT NOT NULL,
+        quantity INTEGER NOT NULL,
+        price_each INTEGER NOT NULL,
+        created_at INTEGER DEFAULT 0,
+        status TEXT DEFAULT 'active'
+    );
+
+    CREATE TABLE IF NOT EXISTS events (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        creator_id TEXT NOT NULL,
+        event_type TEXT NOT NULL,
+        multiplier REAL DEFAULT 1,
+        ends_at INTEGER NOT NULL,
+        title TEXT DEFAULT '',
+        description TEXT DEFAULT '',
+        active INTEGER DEFAULT 1,
         created_at INTEGER DEFAULT 0
     );
 
-    CREATE TABLE IF NOT EXISTS prefixes (
-        user_id INTEGER NOT NULL,
-        prefix TEXT NOT NULL,
-        PRIMARY KEY(user_id, prefix)
-    );
-
-    CREATE TABLE IF NOT EXISTS equipped_prefix (
-        user_id INTEGER PRIMARY KEY,
-        prefix TEXT NOT NULL
-    );
-
-    CREATE TABLE IF NOT EXISTS planets (
-        user_id INTEGER NOT NULL,
-        planet TEXT NOT NULL,
-        unlocked INTEGER DEFAULT 0,
-        PRIMARY KEY(user_id, planet)
-    );
-
-    CREATE TABLE IF NOT EXISTS contracts (
+    CREATE TABLE IF NOT EXISTS transactions (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         user_id INTEGER NOT NULL,
-        item TEXT NOT NULL,
-        required INTEGER NOT NULL,
-        reward INTEGER NOT NULL,
+        amount INTEGER NOT NULL,
+        reason TEXT DEFAULT '',
+        created_at INTEGER DEFAULT 0
+    );
+
+    CREATE TABLE IF NOT EXISTS quests (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        user_id INTEGER NOT NULL,
+        quest_key TEXT NOT NULL,
         progress INTEGER DEFAULT 0,
-        completed INTEGER DEFAULT 0
+        completed INTEGER DEFAULT 0,
+        claimed INTEGER DEFAULT 0,
+        UNIQUE(user_id, quest_key)
     );
 
     CREATE TABLE IF NOT EXISTS achievements (
-        user_id INTEGER NOT NULL,
-        achievement TEXT NOT NULL,
-        created_at INTEGER DEFAULT 0,
-        PRIMARY KEY(user_id, achievement)
-    );
-
-    CREATE TABLE IF NOT EXISTS corporations (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
-        owner_id INTEGER NOT NULL,
-        name TEXT NOT NULL,
-        level INTEGER DEFAULT 1,
-        capital INTEGER DEFAULT 0
-    );
-
-    CREATE TABLE IF NOT EXISTS corporation_members (
-        corporation_id INTEGER NOT NULL,
         user_id INTEGER NOT NULL,
-        PRIMARY KEY(corporation_id, user_id)
+        achievement_key TEXT NOT NULL,
+        UNIQUE(user_id, achievement_key)
     );
 
-    CREATE INDEX IF NOT EXISTS idx_market_item ON market(item);
-    CREATE INDEX IF NOT EXISTS idx_market_seller ON market(seller_id);
-    CREATE INDEX IF NOT EXISTS idx_business_user ON businesses(user_id);
-    CREATE INDEX IF NOT EXISTS idx_property_user ON properties(user_id);
-    CREATE INDEX IF NOT EXISTS idx_inventory_user ON inventory(user_id);
+    CREATE TABLE IF NOT EXISTS prefixes (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        user_id INTEGER NOT NULL,
+        prefix_key TEXT NOT NULL,
+        UNIQUE(user_id, prefix_key)
+    );
+
+    CREATE TABLE IF NOT EXISTS settings (
+        key TEXT PRIMARY KEY,
+        value TEXT
+    );
     """)
 
-    conn.commit()
-    conn.close()
+    con.commit()
+    con.close()
 
 
 init_db()
 
 
 # =========================================================
-# AUTH
+# GAME DATA
 # =========================================================
 
-def verify_telegram(init_data):
-    if not BOT_TOKEN:
-        return None
+JOBS = {
+    "courier": {
+        "name": "Курьер",
+        "level": 1,
+        "reward": 80,
+        "xp": 20,
+        "cooldown": 45
+    },
+    "loader": {
+        "name": "Грузчик",
+        "level": 2,
+        "reward": 140,
+        "xp": 30,
+        "cooldown": 60
+    },
+    "fisher": {
+        "name": "Рыбак",
+        "level": 4,
+        "reward": 230,
+        "xp": 45,
+        "cooldown": 90
+    },
+    "miner": {
+        "name": "Шахтёр",
+        "level": 6,
+        "reward": 360,
+        "xp": 65,
+        "cooldown": 110
+    },
+    "driver": {
+        "name": "Водитель",
+        "level": 9,
+        "reward": 520,
+        "xp": 85,
+        "cooldown": 130
+    },
+    "programmer": {
+        "name": "Программист",
+        "level": 13,
+        "reward": 750,
+        "xp": 110,
+        "cooldown": 160
+    },
+    "trader": {
+        "name": "Трейдер",
+        "level": 18,
+        "reward": 1050,
+        "xp": 145,
+        "cooldown": 190
+    },
+    "engineer": {
+        "name": "Инженер",
+        "level": 24,
+        "reward": 1450,
+        "xp": 185,
+        "cooldown": 220
+    },
+    "director": {
+        "name": "Директор",
+        "level": 32,
+        "reward": 2100,
+        "xp": 240,
+        "cooldown": 260
+    },
+    "magnate": {
+        "name": "Магнат",
+        "level": 45,
+        "reward": 3200,
+        "xp": 320,
+        "cooldown": 320
+    }
+}
 
-    try:
-        data = dict(parse_qsl(init_data, keep_blank_values=True))
-        received_hash = data.pop("hash", None)
 
-        if not received_hash:
-            return None
+ITEMS = {
+    "iron": {
+        "name": "Железо",
+        "icon": "⛓️",
+        "base_price": 35
+    },
+    "coal": {
+        "name": "Уголь",
+        "icon": "⬛",
+        "base_price": 25
+    },
+    "gold": {
+        "name": "Золото",
+        "icon": "🪙",
+        "base_price": 120
+    },
+    "wood": {
+        "name": "Древесина",
+        "icon": "🪵",
+        "base_price": 30
+    },
+    "wheat": {
+        "name": "Пшеница",
+        "icon": "🌾",
+        "base_price": 20
+    },
+    "apple": {
+        "name": "Яблоко",
+        "icon": "🍎",
+        "base_price": 25
+    },
+    "fish": {
+        "name": "Рыба",
+        "icon": "🐟",
+        "base_price": 70
+    },
+    "rare_fish": {
+        "name": "Редкая рыба",
+        "icon": "🐠",
+        "base_price": 250
+    },
+    "steel": {
+        "name": "Сталь",
+        "icon": "🔩",
+        "base_price": 180
+    },
+    "energy_core": {
+        "name": "Энергокристалл",
+        "icon": "🔷",
+        "base_price": 500
+    },
+    "microchip": {
+        "name": "Микрочип",
+        "icon": "💾",
+        "base_price": 750
+    },
+    "quantum": {
+        "name": "Квантовый модуль",
+        "icon": "🧬",
+        "base_price": 1800
+    }
+}
 
-        check_string = "\n".join(
-            f"{k}={v}" for k, v in sorted(data.items())
-        )
 
-        secret_key = hmac.new(
-            b"WebAppData",
-            BOT_TOKEN.encode(),
-            hashlib.sha256
-        ).digest()
-
-        calculated = hmac.new(
-            secret_key,
-            check_string.encode(),
-            hashlib.sha256
-        ).hexdigest()
-
-        if not hmac.compare_digest(calculated, received_hash):
-            return None
-
-        auth_date = int(data.get("auth_date", 0))
-
-        if time.time() - auth_date > 86400:
-            return None
-
-        return json.loads(data.get("user", "{}"))
-
-    except Exception:
-        return None
-
-
-def current_user():
-    init_data = request.headers.get("X-Telegram-Init-Data", "")
-
-    tg = verify_telegram(init_data)
-
-    if tg:
-        return tg
-
-    # Demo mode if BOT_TOKEN is not configured.
-    # Useful for testing the Mini App before connecting BotFather.
-    if not BOT_TOKEN:
-        return {
-            "id": CREATOR_ID,
-            "first_name": "Aleksandr",
-            "last_name": "",
-            "username": "nexora_creator",
-            "photo_url": ""
-        }
-
-    return None
+BUSINESSES = {
+    "farm": {
+        "name": "Ферма",
+        "price": 5000,
+        "income": 300,
+        "interval": 3600
+    },
+    "mine": {
+        "name": "Шахта",
+        "price": 15000,
+        "income": 900,
+        "interval": 3600
+    },
+    "factory": {
+        "name": "Завод",
+        "price": 50000,
+        "income": 3200,
+        "interval": 3600
+    },
+    "tech": {
+        "name": "IT-компания",
+        "price": 150000,
+        "income": 10000,
+        "interval": 3600
+    },
+    "space": {
+        "name": "Космическая корпорация",
+        "price": 500000,
+        "income": 38000,
+        "interval": 3600
+    }
+}
 
 
-def require_user():
-    user = current_user()
+PROPERTIES = {
+    "room": {
+        "name": "Комната",
+        "price": 2500,
+        "rating": 5
+    },
+    "apartment": {
+        "name": "Квартира",
+        "price": 25000,
+        "rating": 30
+    },
+    "penthouse": {
+        "name": "Пентхаус",
+        "price": 150000,
+        "rating": 100
+    },
+    "mansion": {
+        "name": "Особняк",
+        "price": 750000,
+        "rating": 300
+    }
+}
 
-    if not user:
-        return None, jsonify({
-            "ok": False,
-            "error": "Telegram authentication required"
-        }), 401
 
-    return user, None, None
+PLANETS = {
+    "moon": {
+        "name": "Луна",
+        "level": 5,
+        "price": 500
+    },
+    "mars": {
+        "name": "Марс",
+        "level": 15,
+        "price": 2500
+    },
+    "jupiter": {
+        "name": "Юпитер",
+        "level": 30,
+        "price": 10000
+    },
+    "neptune": {
+        "name": "Нептун",
+        "level": 50,
+        "price": 50000
+    }
+}
+
+
+PETS = {
+    "cat": {
+        "name": "Кибер-кот",
+        "price": 5000,
+        "bonus": 0.05
+    },
+    "wolf": {
+        "name": "Кибер-волк",
+        "price": 25000,
+        "bonus": 0.10
+    },
+    "dragon": {
+        "name": "Дракон NEXORA",
+        "price": 150000,
+        "bonus": 0.20
+    }
+}
+
+
+QUESTS = {
+    "work3": {
+        "name": "Рабочая смена",
+        "description": "Выполнить 3 работы",
+        "target": 3,
+        "reward": 500
+    },
+    "mine10": {
+        "name": "Шахтёр",
+        "description": "Добыть 10 ресурсов",
+        "target": 10,
+        "reward": 1000
+    },
+    "market1": {
+        "name": "Торговец",
+        "description": "Продать предмет на рынке",
+        "target": 1,
+        "reward": 1500
+    }
+}
 
 
 # =========================================================
@@ -279,374 +443,588 @@ def now():
     return int(time.time())
 
 
-def get_user(conn, uid):
-    return conn.execute(
-        "SELECT * FROM users WHERE id=?",
-        (uid,)
-    ).fetchone()
+def is_creator(user):
+    return str(user["telegram_id"]) == str(CREATOR_TELEGRAM_ID)
 
 
-def ensure_user(tg):
-    conn = db()
-    uid = int(tg["id"])
+def level_from_xp(xp):
+    level = 1
+    need = 100
 
-    row = get_user(conn, uid)
-
-    if not row:
-        conn.execute("""
-            INSERT INTO users
-            (id, first_name, last_name, username, photo_url,
-             balance, created_at, last_login)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-        """, (
-            uid,
-            tg.get("first_name", ""),
-            tg.get("last_name", ""),
-            tg.get("username", ""),
-            tg.get("photo_url", ""),
-            START_BALANCE,
-            now(),
-            now()
-        ))
-
-        conn.execute("""
-            INSERT INTO resources(user_id)
-            VALUES(?)
-        """, (uid,))
-
-        conn.execute("""
-            INSERT INTO technologies(user_id)
-            VALUES(?)
-        """, (uid,))
-
-        # Basic planets
-        for planet in ["Земля", "Луна", "Марс", "Юпитер"]:
-            conn.execute("""
-                INSERT OR IGNORE INTO planets(user_id, planet, unlocked)
-                VALUES(?, ?, ?)
-            """, (
-                uid,
-                planet,
-                1 if planet == "Земля" else 0
-            ))
-
-        # Creator prefix
-        if uid == CREATOR_ID:
-            conn.execute("""
-                INSERT OR IGNORE INTO prefixes(user_id, prefix)
-                VALUES(?, ?)
-            """, (uid, "Создатель"))
-
-            conn.execute("""
-                INSERT OR REPLACE INTO equipped_prefix(user_id, prefix)
-                VALUES(?, ?)
-            """, (uid, "Создатель"))
-
-        # Starter contract
-        conn.execute("""
-            INSERT INTO contracts(user_id, item, required, reward)
-            VALUES (?, ?, ?, ?)
-        """, (uid, "iron", 100, 1000))
-
-    else:
-        conn.execute("""
-            UPDATE users
-            SET first_name=?,
-                last_name=?,
-                username=?,
-                photo_url=?,
-                last_login=?
-            WHERE id=?
-        """, (
-            tg.get("first_name", ""),
-            tg.get("last_name", ""),
-            tg.get("username", ""),
-            tg.get("photo_url", ""),
-            now(),
-            uid
-        ))
-
-        if uid == CREATOR_ID:
-            conn.execute("""
-                INSERT OR IGNORE INTO prefixes(user_id, prefix)
-                VALUES(?, ?)
-            """, (uid, "Создатель"))
-
-            conn.execute("""
-                INSERT OR REPLACE INTO equipped_prefix(user_id, prefix)
-                VALUES(?, ?)
-            """, (uid, "Создатель"))
-
-    conn.commit()
-    conn.close()
-
-
-def add_xp(conn, uid, amount):
-    row = get_user(conn, uid)
-
-    if not row:
-        return
-
-    xp = row["xp"] + amount
-    level = row["level"]
-
-    while level < MAX_LEVEL and xp >= level * 1000:
-        xp -= level * 1000
+    while xp >= need and level < 100:
+        xp -= need
         level += 1
+        need = int(100 * (1.18 ** (level - 1)))
 
-    conn.execute("""
-        UPDATE users
-        SET xp=?, level=?
-        WHERE id=?
-    """, (xp, level, uid))
+    return level
 
 
-def add_balance(conn, uid, amount):
-    conn.execute("""
-        UPDATE users
-        SET balance = MAX(0, balance + ?)
-        WHERE id=?
-    """, (amount, uid))
-
-
-def resource(conn, uid, name):
-    row = conn.execute(
-        "SELECT * FROM resources WHERE user_id=?",
-        (uid,)
+def add_xp(con, user_id, amount):
+    user = con.execute(
+        "SELECT xp, level, rating FROM users WHERE id=?",
+        (user_id,)
     ).fetchone()
 
-    return row[name] if row and name in row.keys() else 0
-
-
-def add_resource(conn, uid, name, amount):
-    allowed = {
-        "iron", "coal", "wood", "grain", "stone",
-        "oil", "steel", "food", "electronics",
-        "fuel", "fish"
-    }
-
-    if name not in allowed:
+    if not user:
         return
 
-    conn.execute(
-        f"UPDATE resources SET {name}=MAX(0,{name}+?) WHERE user_id=?",
-        (amount, uid)
+    new_xp = user["xp"] + amount
+    new_level = level_from_xp(new_xp)
+
+    rating_add = max(1, amount // 5)
+
+    con.execute("""
+        UPDATE users
+        SET xp=?, level=?, rating=rating+?
+        WHERE id=?
+    """, (new_xp, new_level, rating_add, user_id))
+
+
+def add_coins(con, user_id, amount, reason=""):
+    con.execute(
+        "UPDATE users SET coins=coins+? WHERE id=?",
+        (amount, user_id)
     )
 
+    con.execute("""
+        INSERT INTO transactions(user_id, amount, reason, created_at)
+        VALUES (?, ?, ?, ?)
+    """, (user_id, amount, reason, now()))
 
-def remove_resource(conn, uid, name, amount):
-    if resource(conn, uid, name) < amount:
+
+def get_multiplier(con, event_type):
+    active = con.execute("""
+        SELECT multiplier
+        FROM events
+        WHERE active=1
+        AND ends_at>?
+        AND (event_type=? OR event_type='all')
+        ORDER BY multiplier DESC
+        LIMIT 1
+    """, (now(), event_type)).fetchone()
+
+    if active:
+        return float(active["multiplier"])
+
+    return 1.0
+
+
+def restore_energy(con, user):
+    current = user["energy"]
+    updated = user["energy_updated"] or now()
+
+    elapsed = now() - updated
+
+    if elapsed < ENERGY_REGEN_SECONDS:
+        return current
+
+    gained = elapsed // ENERGY_REGEN_SECONDS
+    new_energy = min(MAX_ENERGY, current + gained)
+
+    if new_energy != current:
+        con.execute("""
+            UPDATE users
+            SET energy=?, energy_updated=?
+            WHERE id=?
+        """, (new_energy, now(), user["id"]))
+
+    return new_energy
+
+
+def use_energy(con, user_id, amount=10):
+    user = con.execute(
+        "SELECT * FROM users WHERE id=?",
+        (user_id,)
+    ).fetchone()
+
+    energy = restore_energy(con, user)
+
+    if energy < amount:
         return False
 
-    conn.execute(
-        f"UPDATE resources SET {name}={name}-? WHERE user_id=?",
-        (amount, uid)
-    )
+    con.execute("""
+        UPDATE users
+        SET energy=?, energy_updated=?
+        WHERE id=?
+    """, (energy - amount, now(), user_id))
 
     return True
 
 
-def safe_user_payload(conn, uid):
-    u = get_user(conn, uid)
+def cooldown_remaining(con, user_id, action, cooldown):
+    row = con.execute("""
+        SELECT last_used
+        FROM cooldowns
+        WHERE user_id=? AND action=?
+    """, (user_id, action)).fetchone()
 
-    res = conn.execute(
-        "SELECT * FROM resources WHERE user_id=?",
-        (uid,)
+    if not row:
+        return 0
+
+    remaining = cooldown - (now() - row["last_used"])
+    return max(0, remaining)
+
+
+def set_cooldown(con, user_id, action):
+    con.execute("""
+        INSERT INTO cooldowns(user_id, action, last_used)
+        VALUES (?, ?, ?)
+        ON CONFLICT(user_id, action)
+        DO UPDATE SET last_used=excluded.last_used
+    """, (user_id, action, now()))
+
+
+def add_item(con, user_id, item_key, quantity=1):
+    if item_key not in ITEMS:
+        return
+
+    con.execute("""
+        INSERT INTO inventory(user_id, item_key, quantity)
+        VALUES (?, ?, ?)
+        ON CONFLICT(user_id, item_key)
+        DO UPDATE SET quantity=quantity+excluded.quantity
+    """, (user_id, item_key, quantity))
+
+
+def remove_item(con, user_id, item_key, quantity):
+    row = con.execute("""
+        SELECT quantity FROM inventory
+        WHERE user_id=? AND item_key=?
+    """, (user_id, item_key)).fetchone()
+
+    if not row or row["quantity"] < quantity:
+        return False
+
+    con.execute("""
+        UPDATE inventory
+        SET quantity=quantity-?
+        WHERE user_id=? AND item_key=?
+    """, (quantity, user_id, item_key))
+
+    return True
+
+
+def ensure_user(telegram_user):
+    con = db()
+
+    tg_id = str(telegram_user["id"])
+
+    user = con.execute(
+        "SELECT * FROM users WHERE telegram_id=?",
+        (tg_id,)
     ).fetchone()
 
-    tech = conn.execute(
-        "SELECT * FROM technologies WHERE user_id=?",
-        (uid,)
+    if not user:
+        con.execute("""
+            INSERT INTO users(
+                telegram_id,
+                username,
+                first_name,
+                last_name,
+                photo_url,
+                coins,
+                xp,
+                level,
+                energy,
+                energy_updated,
+                created_at
+            )
+            VALUES (?, ?, ?, ?, ?, 1000, 0, 1, 100, ?, ?)
+        """, (
+            tg_id,
+            telegram_user.get("username", ""),
+            telegram_user.get("first_name", ""),
+            telegram_user.get("last_name", ""),
+            telegram_user.get("photo_url", ""),
+            now(),
+            now()
+        ))
+
+        con.commit()
+
+        user = con.execute(
+            "SELECT * FROM users WHERE telegram_id=?",
+            (tg_id,)
+        ).fetchone()
+
+    else:
+        con.execute("""
+            UPDATE users
+            SET username=?,
+                first_name=?,
+                last_name=?,
+                photo_url=?
+            WHERE telegram_id=?
+        """, (
+            telegram_user.get("username", ""),
+            telegram_user.get("first_name", ""),
+            telegram_user.get("last_name", ""),
+            telegram_user.get("photo_url", ""),
+            tg_id
+        ))
+
+        con.commit()
+
+    # Creator always gets special prefix.
+    if tg_id == str(CREATOR_TELEGRAM_ID):
+        con.execute("""
+            INSERT OR IGNORE INTO prefixes(user_id, prefix_key)
+            VALUES (?, 'creator')
+        """, (user["id"],))
+        con.commit()
+
+    # Skills.
+    con.execute("""
+        INSERT OR IGNORE INTO skills(user_id)
+        VALUES (?)
+    """, (user["id"],))
+
+    # Quests.
+    for key in QUESTS:
+        con.execute("""
+            INSERT OR IGNORE INTO quests(user_id, quest_key)
+            VALUES (?, ?)
+        """, (user["id"], key))
+
+    con.commit()
+    con.close()
+
+    return get_user_by_tg(tg_id)
+
+
+def get_user_by_tg(tg_id):
+    con = db()
+    user = con.execute(
+        "SELECT * FROM users WHERE telegram_id=?",
+        (str(tg_id),)
     ).fetchone()
+    con.close()
+    return user
 
-    prefix = conn.execute(
-        "SELECT prefix FROM equipped_prefix WHERE user_id=?",
-        (uid,)
-    ).fetchone()
 
-    businesses = conn.execute("""
-        SELECT COUNT(*) AS c
-        FROM businesses
-        WHERE user_id=?
-    """, (uid,)).fetchone()["c"]
+def telegram_auth():
+    header = request.headers.get("X-Telegram-Init-Data", "")
 
-    properties = conn.execute("""
-        SELECT COUNT(*) AS c
-        FROM properties
-        WHERE user_id=?
-    """, (uid,)).fetchone()["c"]
+    # Local/demo mode if BOT_TOKEN is not configured.
+    if not BOT_TOKEN:
+        return {
+            "id": "8518976778",
+            "username": "creator",
+            "first_name": "Creator",
+            "last_name": "NEXORA",
+            "photo_url": ""
+        }
 
-    pets = conn.execute("""
-        SELECT COUNT(*) AS c
-        FROM pets
-        WHERE user_id=?
-    """, (uid,)).fetchone()["c"]
+    if not header:
+        return None
+
+    try:
+        data = dict(parse_qsl(header, keep_blank_values=True))
+
+        received_hash = data.pop("hash", None)
+
+        if not received_hash:
+            return None
+
+        auth_date = int(data.get("auth_date", "0"))
+
+        if now() - auth_date > 86400:
+            return None
+
+        data_check_string = "\n".join(
+            f"{key}={data[key]}"
+            for key in sorted(data)
+        )
+
+        secret_key = hmac.new(
+            b"WebAppData",
+            BOT_TOKEN.encode(),
+            hashlib.sha256
+        ).digest()
+
+        calculated_hash = hmac.new(
+            secret_key,
+            data_check_string.encode(),
+            hashlib.sha256
+        ).hexdigest()
+
+        if not hmac.compare_digest(calculated_hash, received_hash):
+            return None
+
+        user_data = json.loads(data.get("user", "{}"))
+
+        return user_data
+
+    except Exception:
+        return None
+
+
+def current_user():
+    tg = telegram_auth()
+
+    if not tg:
+        return None
+
+    ensure_user(tg)
+    return get_user_by_tg(str(tg["id"]))
+
+
+def require_user(fn):
+    @wraps(fn)
+    def wrapper(*args, **kwargs):
+        user = current_user()
+
+        if not user:
+            return jsonify({
+                "ok": False,
+                "error": "Telegram авторизация не прошла"
+            }), 401
+
+        return fn(user, *args, **kwargs)
+
+    return wrapper
+
+
+def require_creator(fn):
+    @wraps(fn)
+    def wrapper(*args, **kwargs):
+        user = current_user()
+
+        if not user:
+            return jsonify({
+                "ok": False,
+                "error": "Авторизация не прошла"
+            }), 401
+
+        if not is_creator(user):
+            return jsonify({
+                "ok": False,
+                "error": "Доступ только для создателя"
+            }), 403
+
+        return fn(user, *args, **kwargs)
+
+    return wrapper
+
+
+# =========================================================
+# SERIALIZATION
+# =========================================================
+
+def user_json(user, con):
+    energy = restore_energy(con, user)
+
+    prefix = "Игрок"
+
+    if is_creator(user):
+        prefix = "Создатель"
+
+    inv = con.execute("""
+        SELECT item_key, quantity
+        FROM inventory
+        WHERE user_id=? AND quantity>0
+        ORDER BY quantity DESC
+    """, (user["id"],)).fetchall()
+
+    inventory = []
+
+    for row in inv:
+        item = ITEMS.get(row["item_key"])
+
+        if item:
+            inventory.append({
+                "key": row["item_key"],
+                "name": item["name"],
+                "icon": item["icon"],
+                "quantity": row["quantity"],
+                "price": item["base_price"]
+            })
 
     return {
-        "id": u["id"],
-        "first_name": u["first_name"],
-        "last_name": u["last_name"],
-        "username": u["username"],
-        "photo_url": u["photo_url"],
-        "balance": u["balance"],
-        "bank": u["bank"],
-        "xp": u["xp"],
-        "level": u["level"],
-        "rating": u["rating"],
-        "reputation": u["reputation"],
-        "energy": u["energy"],
-        "storage": u["storage"],
-        "population": u["population"],
-        "income_hour": u["income_hour"],
-        "expenses_hour": u["expenses_hour"],
-        "prefix": prefix["prefix"] if prefix else "",
-        "businesses": businesses,
-        "properties": properties,
-        "pets": pets,
-        "resources": dict(res) if res else {},
-        "technologies": dict(tech) if tech else {}
+        "id": user["id"],
+        "telegram_id": user["telegram_id"],
+        "username": user["username"],
+        "first_name": user["first_name"],
+        "last_name": user["last_name"],
+        "photo_url": user["photo_url"],
+        "coins": user["coins"],
+        "bank": user["bank"],
+        "xp": user["xp"],
+        "level": user["level"],
+        "energy": energy,
+        "max_energy": MAX_ENERGY,
+        "rating": user["rating"],
+        "prefix": prefix,
+        "creator": is_creator(user),
+        "inventory": inventory
     }
 
 
-def calculate_income(conn, uid):
-    business_income = 0
-    business_expenses = 0
-
-    rows = conn.execute("""
-        SELECT type, level, workers, condition
-        FROM businesses
-        WHERE user_id=?
-    """, (uid,)).fetchall()
-
-    income_table = {
-        "mine": 250,
-        "farm": 180,
-        "factory": 500,
-        "electronics": 850,
-        "oil": 700,
-        "power": 400,
-        "logistics": 350
-    }
-
-    for row in rows:
-        base = income_table.get(row["type"], 100)
-        business_income += base * row["level"] * max(1, row["condition"]) // 100
-        business_expenses += row["workers"] * 40 * row["level"]
-
-    property_income = conn.execute("""
-        SELECT COALESCE(SUM(
-            CASE type
-                WHEN 'room' THEN 50
-                WHEN 'house' THEN 150
-                WHEN 'office' THEN 500
-                WHEN 'building' THEN 1800
-                WHEN 'skyscraper' THEN 7000
-                ELSE 0
-            END * level
-        ),0) AS income
-        FROM properties
-        WHERE user_id=?
-    """, (uid,)).fetchone()["income"]
-
-    income = business_income + property_income
-    expenses = business_expenses
-
-    conn.execute("""
-        UPDATE users
-        SET income_hour=?, expenses_hour=?
-        WHERE id=?
-    """, (income, expenses))
-
-    return income, expenses
-
-
 # =========================================================
-# MAIN
+# MAIN DATA
 # =========================================================
 
-@app.route("/")
+@app.get("/")
 def index():
     return send_from_directory("web", "index.html")
 
 
-@app.route("/<path:path>")
-def static_files(path):
-    return send_from_directory("web", path)
+@app.get("/api/bootstrap")
+@require_user
+def bootstrap(user):
+    con = db()
 
+    data = user_json(user, con)
 
-# =========================================================
-# AUTH / PROFILE
-# =========================================================
-
-@app.route("/api/me")
-def api_me():
-    tg = current_user()
-
-    if not tg:
-        return jsonify({
-            "ok": False,
-            "error": "Telegram authentication required"
-        }), 401
-
-    ensure_user(tg)
-
-    conn = db()
-    payload = safe_user_payload(conn, int(tg["id"]))
-    conn.close()
-
-    return jsonify({
-        "ok": True,
-        "user": payload
-    })
-
-
-# =========================================================
-# DASHBOARD
-# =========================================================
-
-@app.route("/api/dashboard")
-def dashboard():
-    tg = current_user()
-
-    if not tg:
-        return jsonify({"ok": False}), 401
-
-    ensure_user(tg)
-
-    uid = int(tg["id"])
-    conn = db()
-
-    calculate_income(conn, uid)
-
-    user = safe_user_payload(conn, uid)
-
-    events = [
-        {
-            "title": "🌍 Мировой рынок",
-            "text": "Спрос на промышленную продукцию повышен."
-        },
-        {
-            "title": "⚡ Энергетический цикл",
-            "text": "Энергетические предприятия работают стабильно."
-        }
-    ]
-
-    contracts = conn.execute("""
-        SELECT *
-        FROM contracts
-        WHERE user_id=? AND completed=0
+    active_events = con.execute("""
+        SELECT id, event_type, multiplier, ends_at, title, description
+        FROM events
+        WHERE active=1 AND ends_at>?
         ORDER BY id DESC
-        LIMIT 5
-    """, (uid,)).fetchall()
+    """, (now(),)).fetchall()
 
-    conn.commit()
-    conn.close()
+    events = [dict(x) for x in active_events]
+
+    market = con.execute("""
+        SELECT
+            m.*,
+            u.username,
+            u.first_name
+        FROM market m
+        JOIN users u ON u.id=m.seller_id
+        WHERE m.status='active'
+        ORDER BY m.id DESC
+        LIMIT 50
+    """).fetchall()
+
+    market_data = []
+
+    for row in market:
+        item = ITEMS.get(row["item_key"])
+
+        if item:
+            market_data.append({
+                "id": row["id"],
+                "item_key": row["item_key"],
+                "name": item["name"],
+                "icon": item["icon"],
+                "quantity": row["quantity"],
+                "price_each": row["price_each"],
+                "total": row["quantity"] * row["price_each"],
+                "seller": row["username"] or row["first_name"] or "Игрок",
+                "mine": row["seller_id"] == user["id"]
+            })
+
+    businesses = []
+
+    owned = con.execute("""
+        SELECT business_key, level, last_collect
+        FROM businesses
+        WHERE user_id=?
+    """, (user["id"],)).fetchall()
+
+    owned_dict = {x["business_key"]: dict(x) for x in owned}
+
+    for key, value in BUSINESSES.items():
+        own = owned_dict.get(key)
+
+        businesses.append({
+            "key": key,
+            **value,
+            "owned": bool(own),
+            "level_owned": own["level"] if own else 0,
+            "last_collect": own["last_collect"] if own else 0
+        })
+
+    properties = []
+
+    owned_props = con.execute("""
+        SELECT property_key
+        FROM properties
+        WHERE user_id=?
+    """, (user["id"],)).fetchall()
+
+    owned_prop_keys = {x["property_key"] for x in owned_props}
+
+    for key, value in PROPERTIES.items():
+        properties.append({
+            "key": key,
+            **value,
+            "owned": key in owned_prop_keys
+        })
+
+    pets = []
+
+    owned_pets = con.execute("""
+        SELECT pet_key, level
+        FROM pets
+        WHERE user_id=?
+    """, (user["id"],)).fetchall()
+
+    owned_pet_dict = {
+        x["pet_key"]: x["level"]
+        for x in owned_pets
+    }
+
+    for key, value in PETS.items():
+        pets.append({
+            "key": key,
+            **value,
+            "owned": key in owned_pet_dict,
+            "level_owned": owned_pet_dict.get(key, 0)
+        })
+
+    quests = []
+
+    quest_rows = con.execute("""
+        SELECT quest_key, progress, completed, claimed
+        FROM quests
+        WHERE user_id=?
+    """, (user["id"],)).fetchall()
+
+    for row in quest_rows:
+        q = QUESTS.get(row["quest_key"])
+
+        if q:
+            quests.append({
+                "key": row["quest_key"],
+                **q,
+                "progress": row["progress"],
+                "completed": bool(row["completed"]),
+                "claimed": bool(row["claimed"])
+            })
+
+    skills_row = con.execute("""
+        SELECT *
+        FROM skills
+        WHERE user_id=?
+    """, (user["id"],)).fetchone()
+
+    skills = dict(skills_row) if skills_row else {}
+
+    con.commit()
+    con.close()
 
     return jsonify({
         "ok": True,
-        "user": user,
+        "user": data,
+        "jobs": [
+            {"key": k, **v}
+            for k, v in JOBS.items()
+        ],
+        "items": ITEMS,
+        "businesses": businesses,
+        "properties": properties,
+        "pets": pets,
+        "planets": [
+            {"key": k, **v}
+            for k, v in PLANETS.items()
+        ],
+        "quests": quests,
+        "skills": skills,
+        "market": market_data,
         "events": events,
-        "contracts": [dict(x) for x in contracts]
+        "creator": is_creator(user)
     })
 
 
@@ -654,58 +1032,93 @@ def dashboard():
 # WORK
 # =========================================================
 
-@app.route("/api/work", methods=["POST"])
-def work():
-    tg, err, status = require_user()
+@app.post("/api/work")
+@require_user
+def work(user):
+    data = request.get_json(silent=True) or {}
+    job_key = data.get("job")
 
-    if err:
-        return err, status
+    job = JOBS.get(job_key)
 
-    ensure_user(tg)
-    uid = int(tg["id"])
+    if not job:
+        return jsonify({"ok": False, "error": "Работа не найдена"}), 400
 
-    conn = db()
-    u = get_user(conn, uid)
-
-    cooldown = 60
-
-    if now() - u["last_work"] < cooldown:
-        remaining = cooldown - (now() - u["last_work"])
-        conn.close()
-
+    if user["level"] < job["level"]:
         return jsonify({
             "ok": False,
-            "error": f"Работа будет доступна через {remaining} сек."
+            "error": f"Нужен уровень {job['level']}"
         }), 400
 
-    jobs = [
-        ("💼 Курьер", 180, 80),
-        ("🔧 Механик", 260, 120),
-        ("👨‍💻 Разработчик", 420, 180),
-        ("📈 Менеджер", 550, 250)
-    ]
+    con = db()
 
-    job = jobs[random.randrange(len(jobs))]
+    remaining = cooldown_remaining(
+        con,
+        user["id"],
+        "job_" + job_key,
+        job["cooldown"]
+    )
 
-    add_balance(conn, uid, job[1])
-    add_xp(conn, uid, job[2])
+    if remaining > 0:
+        con.close()
+        return jsonify({
+            "ok": False,
+            "error": f"Подожди {remaining} сек."
+        }), 400
 
-    conn.execute("""
-        UPDATE users
-        SET last_work=?, rating=rating+?
-        WHERE id=?
-    """, (now(), job[1] // 10, uid))
+    if not use_energy(con, user["id"], 10):
+        con.close()
+        return jsonify({
+            "ok": False,
+            "error": "Недостаточно энергии"
+        }), 400
 
-    conn.commit()
-    result = safe_user_payload(conn, uid)
-    conn.close()
+    multiplier = get_multiplier(con, "jobs")
+
+    reward = int(job["reward"] * multiplier)
+
+    add_coins(
+        con,
+        user["id"],
+        reward,
+        f"Работа: {job['name']}"
+    )
+
+    add_xp(con, user["id"], job["xp"])
+    set_cooldown(con, user["id"], "job_" + job_key)
+
+    quest = con.execute("""
+        SELECT progress FROM quests
+        WHERE user_id=? AND quest_key='work3'
+    """, (user["id"],)).fetchone()
+
+    if quest and quest["progress"] < 3:
+        new_progress = quest["progress"] + 1
+
+        con.execute("""
+            UPDATE quests
+            SET progress=?,
+                completed=CASE WHEN ?>=3 THEN 1 ELSE 0 END
+            WHERE user_id=? AND quest_key='work3'
+        """, (new_progress, new_progress, user["id"]))
+
+    con.commit()
+
+    updated = con.execute(
+        "SELECT * FROM users WHERE id=?",
+        (user["id"],)
+    ).fetchone()
+
+    con.close()
 
     return jsonify({
         "ok": True,
-        "job": job[0],
-        "reward": job[1],
-        "xp": job[2],
-        "user": result
+        "reward": reward,
+        "multiplier": multiplier,
+        "user": {
+            "coins": updated["coins"],
+            "xp": updated["xp"],
+            "level": updated["level"]
+        }
     })
 
 
@@ -713,66 +1126,73 @@ def work():
 # MINING
 # =========================================================
 
-@app.route("/api/mining", methods=["POST"])
-def mining():
-    tg, err, status = require_user()
+@app.post("/api/mining")
+@require_user
+def mining(user):
+    con = db()
 
-    if err:
-        return err, status
+    if not use_energy(con, user["id"], 15):
+        con.close()
+        return jsonify({
+            "ok": False,
+            "error": "Недостаточно энергии"
+        }), 400
 
-    ensure_user(tg)
-    uid = int(tg["id"])
+    remaining = cooldown_remaining(
+        con,
+        user["id"],
+        "mining",
+        30
+    )
 
-    conn = db()
-    u = get_user(conn, uid)
-
-    cooldown = 30
-
-    if now() - u["last_mine"] < cooldown:
-        remaining = cooldown - (now() - u["last_mine"])
-        conn.close()
-
+    if remaining:
+        con.close()
         return jsonify({
             "ok": False,
             "error": f"Шахта перезаряжается: {remaining} сек."
         }), 400
 
-    tech = conn.execute("""
-        SELECT mining
-        FROM technologies
-        WHERE user_id=?
-    """, (uid,)).fetchone()
+    skill = con.execute("""
+        SELECT mining FROM skills WHERE user_id=?
+    """, (user["id"],)).fetchone()
 
-    level = tech["mining"] if tech else 0
+    skill_level = skill["mining"] if skill else 1
 
-    iron = 15 + level * 5
-    coal = 10 + level * 3
-    stone = 20 + level * 5
+    possible = ["iron", "coal", "wood"]
 
-    add_resource(conn, uid, "iron", iron)
-    add_resource(conn, uid, "coal", coal)
-    add_resource(conn, uid, "stone", stone)
-    add_xp(conn, uid, 80)
+    if skill_level >= 3:
+        possible.append("gold")
 
-    conn.execute("""
-        UPDATE users
-        SET last_mine=?, rating=rating+10
-        WHERE id=?
-    """, (now(), uid))
+    if skill_level >= 6:
+        possible.append("steel")
 
-    conn.commit()
+    if skill_level >= 10:
+        possible.append("energy_core")
 
-    result = safe_user_payload(conn, uid)
-    conn.close()
+    item_key = random.choice(possible)
+
+    quantity = 1 + min(3, skill_level // 3)
+
+    add_item(con, user["id"], item_key, quantity)
+    add_xp(con, user["id"], 35 + skill_level * 2)
+    set_cooldown(con, user["id"], "mining")
+
+    con.execute("""
+        UPDATE skills
+        SET mining=mining+1
+        WHERE user_id=? AND mining<20
+    """, (user["id"],))
+
+    con.commit()
+    con.close()
+
+    item = ITEMS[item_key]
 
     return jsonify({
         "ok": True,
-        "rewards": {
-            "iron": iron,
-            "coal": coal,
-            "stone": stone
-        },
-        "user": result
+        "item": item["name"],
+        "icon": item["icon"],
+        "quantity": quantity
     })
 
 
@@ -780,63 +1200,57 @@ def mining():
 # FARM
 # =========================================================
 
-@app.route("/api/farm", methods=["POST"])
-def farm():
-    tg, err, status = require_user()
+@app.post("/api/farm")
+@require_user
+def farm(user):
+    con = db()
 
-    if err:
-        return err, status
+    if not use_energy(con, user["id"], 12):
+        con.close()
+        return jsonify({
+            "ok": False,
+            "error": "Недостаточно энергии"
+        }), 400
 
-    ensure_user(tg)
-    uid = int(tg["id"])
+    remaining = cooldown_remaining(
+        con,
+        user["id"],
+        "farm",
+        40
+    )
 
-    conn = db()
-    u = get_user(conn, uid)
-
-    cooldown = 45
-
-    if now() - u["last_farm"] < cooldown:
-        remaining = cooldown - (now() - u["last_farm"])
-        conn.close()
-
+    if remaining:
+        con.close()
         return jsonify({
             "ok": False,
             "error": f"Ферма готовится: {remaining} сек."
         }), 400
 
-    tech = conn.execute("""
-        SELECT agriculture
-        FROM technologies
-        WHERE user_id=?
-    """, (uid,)).fetchone()
+    skill = con.execute("""
+        SELECT farming FROM skills WHERE user_id=?
+    """, (user["id"],)).fetchone()
 
-    level = tech["agriculture"] if tech else 0
+    farming_level = skill["farming"] if skill else 1
 
-    grain = 30 + level * 8
-    food = 15 + level * 4
+    add_item(con, user["id"], "wheat", 2 + farming_level // 3)
+    add_item(con, user["id"], "apple", 1 + farming_level // 5)
 
-    add_resource(conn, uid, "grain", grain)
-    add_resource(conn, uid, "food", food)
-    add_xp(conn, uid, 70)
+    add_xp(con, user["id"], 30)
 
-    conn.execute("""
-        UPDATE users
-        SET last_farm=?, rating=rating+8
-        WHERE id=?
-    """, (now(), uid))
+    con.execute("""
+        UPDATE skills
+        SET farming=farming+1
+        WHERE user_id=? AND farming<20
+    """, (user["id"],))
 
-    conn.commit()
+    set_cooldown(con, user["id"], "farm")
 
-    result = safe_user_payload(conn, uid)
-    conn.close()
+    con.commit()
+    con.close()
 
     return jsonify({
         "ok": True,
-        "rewards": {
-            "grain": grain,
-            "food": food
-        },
-        "user": result
+        "message": "Урожай собран"
     })
 
 
@@ -844,58 +1258,66 @@ def farm():
 # FISHING
 # =========================================================
 
-@app.route("/api/fishing", methods=["POST"])
-def fishing():
-    tg, err, status = require_user()
+@app.post("/api/fishing")
+@require_user
+def fishing(user):
+    con = db()
 
-    if err:
-        return err, status
-
-    ensure_user(tg)
-    uid = int(tg["id"])
-
-    conn = db()
-    u = get_user(conn, uid)
-
-    cooldown = 40
-
-    if now() - u["last_fish"] < cooldown:
-        remaining = cooldown - (now() - u["last_fish"])
-        conn.close()
-
+    if not use_energy(con, user["id"], 10):
+        con.close()
         return jsonify({
             "ok": False,
-            "error": f"Рыбалка доступна через {remaining} сек."
+            "error": "Недостаточно энергии"
         }), 400
 
-    fish_types = [
-        ("Окунь", 8),
-        ("Карп", 12),
-        ("Щука", 18),
-        ("Судак", 25)
-    ]
+    remaining = cooldown_remaining(
+        con,
+        user["id"],
+        "fishing",
+        35
+    )
 
-    fish, amount = random.choice(fish_types)
+    if remaining:
+        con.close()
+        return jsonify({
+            "ok": False,
+            "error": f"Рыбалка недоступна ещё {remaining} сек."
+        }), 400
 
-    add_resource(conn, uid, "fish", amount)
-    add_xp(conn, uid, 60)
+    skill = con.execute("""
+        SELECT fishing FROM skills WHERE user_id=?
+    """, (user["id"],)).fetchone()
 
-    conn.execute("""
-        UPDATE users
-        SET last_fish=?, rating=rating+5
-        WHERE id=?
-    """, (now(), uid))
+    fishing_level = skill["fishing"] if skill else 1
 
-    conn.commit()
+    if fishing_level >= 7 and random.random() < 0.2:
+        item_key = "rare_fish"
+    else:
+        item_key = "fish"
 
-    result = safe_user_payload(conn, uid)
-    conn.close()
+    quantity = 1 + fishing_level // 5
+
+    add_item(con, user["id"], item_key, quantity)
+    add_xp(con, user["id"], 40)
+
+    con.execute("""
+        UPDATE skills
+        SET fishing=fishing+1
+        WHERE user_id=? AND fishing<20
+    """, (user["id"],))
+
+    set_cooldown(con, user["id"], "fishing")
+
+    con.commit()
+    con.close()
+
+    item = ITEMS[item_key]
 
     return jsonify({
         "ok": True,
-        "fish": fish,
-        "amount": amount,
-        "user": result
+        "item": item["name"],
+        "icon": item["icon"],
+        "quantity": quantity
     })
 
 
@@ -903,192 +1325,142 @@ def fishing():
 # BUSINESSES
 # =========================================================
 
-BUSINESSES = {
-    "mine": {
-        "name": "⛏️ Железная шахта",
-        "price": 2500
-    },
-    "farm": {
-        "name": "🌾 Ферма",
-        "price": 1800
-    },
-    "factory": {
-        "name": "🏭 Завод",
-        "price": 10000
-    },
-    "electronics": {
-        "name": "💻 Электронный завод",
-        "price": 30000
-    },
-    "oil": {
-        "name": "🛢️ Нефтяная компания",
-        "price": 50000
-    },
-    "power": {
-        "name": "⚡ Электростанция",
-        "price": 20000
-    },
-    "logistics": {
-        "name": "🚚 Логистический центр",
-        "price": 15000
-    }
-}
-
-
-@app.route("/api/businesses")
-def businesses():
-    tg = current_user()
-
-    if not tg:
-        return jsonify({"ok": False}), 401
-
-    ensure_user(tg)
-    uid = int(tg["id"])
-
-    conn = db()
-
-    rows = conn.execute("""
-        SELECT *
-        FROM businesses
-        WHERE user_id=?
-        ORDER BY id DESC
-    """, (uid,)).fetchall()
-
-    calculate_income(conn, uid)
-    conn.commit()
-    conn.close()
-
-    return jsonify({
-        "ok": True,
-        "catalog": BUSINESSES,
-        "owned": [dict(x) for x in rows]
-    })
-
-
-@app.route("/api/businesses/buy", methods=["POST"])
-def buy_business():
-    tg, err, status = require_user()
-
-    if err:
-        return err, status
-
-    ensure_user(tg)
-
+@app.post("/api/businesses/buy")
+@require_user
+def buy_business(user):
     data = request.get_json(silent=True) or {}
-    business_type = data.get("type")
+    key = data.get("key")
 
-    if business_type not in BUSINESSES:
+    business = BUSINESSES.get(key)
+
+    if not business:
         return jsonify({
             "ok": False,
-            "error": "Неизвестное предприятие"
+            "error": "Предприятие не найдено"
         }), 400
 
-    uid = int(tg["id"])
-    price = BUSINESSES[business_type]["price"]
+    con = db()
 
-    conn = db()
-    u = get_user(conn, uid)
+    exists = con.execute("""
+        SELECT id FROM businesses
+        WHERE user_id=? AND business_key=?
+    """, (user["id"], key)).fetchone()
 
-    if u["balance"] < price:
-        conn.close()
+    if exists:
+        con.close()
+        return jsonify({
+            "ok": False,
+            "error": "Предприятие уже куплено"
+        }), 400
 
+    if user["coins"] < business["price"]:
+        con.close()
         return jsonify({
             "ok": False,
             "error": "Недостаточно 💎"
         }), 400
 
-    conn.execute("""
-        UPDATE users
-        SET balance=balance-?
-        WHERE id=?
-    """, (price, uid))
+    add_coins(
+        con,
+        user["id"],
+        -business["price"],
+        f"Покупка предприятия: {business['name']}"
+    )
 
-    conn.execute("""
-        INSERT INTO businesses
-        (user_id, type, level, workers, condition, created_at)
-        VALUES (?, ?, 1, 1, 100, ?)
-    """, (uid, business_type, now()))
+    con.execute("""
+        INSERT INTO businesses(
+            user_id,
+            business_key,
+            level,
+            last_collect
+        )
+        VALUES (?, ?, 1, ?)
+    """, (user["id"], key, now()))
 
-    add_xp(conn, uid, price // 20)
+    add_xp(con, user["id"], 150)
 
-    calculate_income(conn, uid)
-
-    conn.commit()
-    result = safe_user_payload(conn, uid)
-    conn.close()
+    con.commit()
+    con.close()
 
     return jsonify({
         "ok": True,
-        "user": result
+        "message": "Предприятие приобретено"
     })
 
 
-@app.route("/api/businesses/upgrade", methods=["POST"])
-def upgrade_business():
-    tg, err, status = require_user()
-
-    if err:
-        return err, status
-
+@app.post("/api/businesses/collect")
+@require_user
+def collect_business(user):
     data = request.get_json(silent=True) or {}
-    business_id = int(data.get("id", 0))
+    key = data.get("key")
 
-    ensure_user(tg)
-    uid = int(tg["id"])
-
-    conn = db()
-
-    business = conn.execute("""
-        SELECT *
-        FROM businesses
-        WHERE id=? AND user_id=?
-    """, (business_id, uid)).fetchone()
+    business = BUSINESSES.get(key)
 
     if not business:
-        conn.close()
-
         return jsonify({
             "ok": False,
             "error": "Предприятие не найдено"
-        }), 404
+        }), 400
 
-    price = 1000 * business["level"] ** 2
+    con = db()
 
-    u = get_user(conn, uid)
+    owned = con.execute("""
+        SELECT level, last_collect
+        FROM businesses
+        WHERE user_id=? AND business_key=?
+    """, (user["id"], key)).fetchone()
 
-    if u["balance"] < price:
-        conn.close()
+    if not owned:
+        con.close()
+        return jsonify({
+            "ok": False,
+            "error": "Сначала купи предприятие"
+        }), 400
+
+    elapsed = now() - owned["last_collect"]
+
+    if elapsed < business["interval"]:
+        remaining = business["interval"] - elapsed
+        con.close()
 
         return jsonify({
             "ok": False,
-            "error": f"Нужно {price:,} 💎"
+            "error": f"Доход будет готов через {remaining // 60} мин."
         }), 400
 
-    conn.execute("""
-        UPDATE users
-        SET balance=balance-?
-        WHERE id=?
-    """, (price, uid))
+    cycles = min(24, elapsed // business["interval"])
 
-    conn.execute("""
+    multiplier = get_multiplier(con, "businesses")
+
+    income = int(
+        business["income"]
+        * owned["level"]
+        * cycles
+        * multiplier
+    )
+
+    add_coins(
+        con,
+        user["id"],
+        income,
+        f"Доход: {business['name']}"
+    )
+
+    con.execute("""
         UPDATE businesses
-        SET level=level+1,
-            condition=100
-        WHERE id=?
-    """, (business_id,))
+        SET last_collect=?
+        WHERE user_id=? AND business_key=?
+    """, (now(), user["id"], key))
 
-    add_xp(conn, uid, 150)
+    add_xp(con, user["id"], 100 * cycles)
 
-    calculate_income(conn, uid)
-
-    conn.commit()
-    result = safe_user_payload(conn, uid)
-    conn.close()
+    con.commit()
+    con.close()
 
     return jsonify({
         "ok": True,
-        "price": price,
-        "user": result
+        "income": income,
+        "multiplier": multiplier
     })
 
 
@@ -1096,356 +1468,64 @@ def upgrade_business():
 # PROPERTIES
 # =========================================================
 
-PROPERTIES = {
-    "room": ("🏚️ Комната", 5000),
-    "house": ("🏠 Дом", 15000),
-    "office": ("🏢 Офис", 60000),
-    "building": ("🏙️ Бизнес-центр", 250000),
-    "skyscraper": ("🌆 Небоскрёб", 1500000)
-}
-
-
-@app.route("/api/properties")
-def properties():
-    tg = current_user()
-
-    if not tg:
-        return jsonify({"ok": False}), 401
-
-    ensure_user(tg)
-    uid = int(tg["id"])
-
-    conn = db()
-
-    rows = conn.execute("""
-        SELECT *
-        FROM properties
-        WHERE user_id=?
-        ORDER BY id DESC
-    """, (uid,)).fetchall()
-
-    conn.close()
-
-    return jsonify({
-        "ok": True,
-        "catalog": {
-            k: {
-                "name": v[0],
-                "price": v[1]
-            }
-            for k, v in PROPERTIES.items()
-        },
-        "owned": [dict(x) for x in rows]
-    })
-
-
-@app.route("/api/properties/buy", methods=["POST"])
-def buy_property():
-    tg, err, status = require_user()
-
-    if err:
-        return err, status
-
+@app.post("/api/properties/buy")
+@require_user
+def buy_property(user):
     data = request.get_json(silent=True) or {}
-    property_type = data.get("type")
+    key = data.get("key")
 
-    if property_type not in PROPERTIES:
+    prop = PROPERTIES.get(key)
+
+    if not prop:
         return jsonify({
             "ok": False,
-            "error": "Неизвестная недвижимость"
+            "error": "Недвижимость не найдена"
         }), 400
 
-    ensure_user(tg)
-    uid = int(tg["id"])
+    con = db()
 
-    price = PROPERTIES[property_type][1]
+    exists = con.execute("""
+        SELECT id FROM properties
+        WHERE user_id=? AND property_key=?
+    """, (user["id"], key)).fetchone()
 
-    conn = db()
-    u = get_user(conn, uid)
+    if exists:
+        con.close()
+        return jsonify({
+            "ok": False,
+            "error": "У тебя уже есть эта недвижимость"
+        }), 400
 
-    if u["balance"] < price:
-        conn.close()
-
+    if user["coins"] < prop["price"]:
+        con.close()
         return jsonify({
             "ok": False,
             "error": "Недостаточно 💎"
         }), 400
 
-    conn.execute("""
-        UPDATE users
-        SET balance=balance-?
-        WHERE id=?
-    """, (price, uid))
-
-    conn.execute("""
-        INSERT INTO properties(user_id, type, level)
-        VALUES (?, ?, 1)
-    """, (uid, property_type))
-
-    add_xp(conn, uid, price // 30)
-    calculate_income(conn, uid)
-
-    conn.commit()
-    result = safe_user_payload(conn, uid)
-    conn.close()
-
-    return jsonify({
-        "ok": True,
-        "user": result
-    })
-
-
-# =========================================================
-# BANK
-# =========================================================
-
-@app.route("/api/bank", methods=["POST"])
-def bank():
-    tg, err, status = require_user()
-
-    if err:
-        return err, status
-
-    data = request.get_json(silent=True) or {}
-    action = data.get("action")
-    amount = max(0, int(data.get("amount", 0)))
-
-    ensure_user(tg)
-    uid = int(tg["id"])
-
-    conn = db()
-    u = get_user(conn, uid)
-
-    if amount <= 0:
-        conn.close()
-        return jsonify({
-            "ok": False,
-            "error": "Некорректная сумма"
-        }), 400
-
-    if action == "deposit":
-        if u["balance"] < amount:
-            conn.close()
-
-            return jsonify({
-                "ok": False,
-                "error": "Недостаточно средств"
-            }), 400
-
-        conn.execute("""
-            UPDATE users
-            SET balance=balance-?,
-                bank=bank+?
-            WHERE id=?
-        """, (amount, amount, uid))
-
-    elif action == "withdraw":
-        if u["bank"] < amount:
-            conn.close()
-
-            return jsonify({
-                "ok": False,
-                "error": "Недостаточно средств в банке"
-            }), 400
-
-        conn.execute("""
-            UPDATE users
-            SET balance=balance+?,
-                bank=bank-?
-            WHERE id=?
-        """, (amount, amount, uid))
-
-    else:
-        conn.close()
-
-        return jsonify({
-            "ok": False,
-            "error": "Неизвестная операция"
-        }), 400
-
-    conn.commit()
-
-    result = safe_user_payload(conn, uid)
-    conn.close()
-
-    return jsonify({
-        "ok": True,
-        "user": result
-    })
-
-
-# =========================================================
-# INVENTORY
-# =========================================================
-
-@app.route("/api/inventory")
-def inventory():
-    tg = current_user()
-
-    if not tg:
-        return jsonify({"ok": False}), 401
-
-    ensure_user(tg)
-    uid = int(tg["id"])
-
-    conn = db()
-
-    res = conn.execute("""
-        SELECT *
-        FROM resources
-        WHERE user_id=?
-    """, (uid,)).fetchone()
-
-    inv = conn.execute("""
-        SELECT item, amount
-        FROM inventory
-        WHERE user_id=?
-        ORDER BY id DESC
-    """, (uid,)).fetchall()
-
-    conn.close()
-
-    return jsonify({
-        "ok": True,
-        "resources": dict(res) if res else {},
-        "items": [dict(x) for x in inv]
-    })
-
-
-# =========================================================
-# TECHNOLOGIES
-# =========================================================
-
-TECHS = {
-    "mining": {
-        "name": "⛏️ Горное дело",
-        "base": 1000
-    },
-    "agriculture": {
-        "name": "🌾 Агрономия",
-        "base": 1000
-    },
-    "industry": {
-        "name": "🏭 Промышленность",
-        "base": 2500
-    },
-    "energy": {
-        "name": "⚡ Энергетика",
-        "base": 3000
-    },
-    "logistics": {
-        "name": "🚚 Логистика",
-        "base": 3000
-    },
-    "automation": {
-        "name": "🤖 Автоматизация",
-        "base": 5000
-    },
-    "space": {
-        "name": "🚀 Космос",
-        "base": 15000
-    }
-}
-
-
-@app.route("/api/technologies")
-def technologies():
-    tg = current_user()
-
-    if not tg:
-        return jsonify({"ok": False}), 401
-
-    ensure_user(tg)
-    uid = int(tg["id"])
-
-    conn = db()
-
-    row = conn.execute("""
-        SELECT *
-        FROM technologies
-        WHERE user_id=?
-    """, (uid,)).fetchone()
-
-    conn.close()
-
-    return jsonify({
-        "ok": True,
-        "catalog": TECHS,
-        "technologies": dict(row)
-    })
-
-
-@app.route("/api/technologies/upgrade", methods=["POST"])
-def upgrade_technology():
-    tg, err, status = require_user()
-
-    if err:
-        return err, status
-
-    data = request.get_json(silent=True) or {}
-    tech = data.get("technology")
-
-    if tech not in TECHS:
-        return jsonify({
-            "ok": False,
-            "error": "Неизвестная технология"
-        }), 400
-
-    ensure_user(tg)
-    uid = int(tg["id"])
-
-    conn = db()
-
-    row = conn.execute("""
-        SELECT *
-        FROM technologies
-        WHERE user_id=?
-    """, (uid,)).fetchone()
-
-    current = row[tech]
-
-    if current >= 10:
-        conn.close()
-
-        return jsonify({
-            "ok": False,
-            "error": "Максимальный уровень"
-        }), 400
-
-    price = TECHS[tech]["base"] * (current + 1) ** 2
-
-    u = get_user(conn, uid)
-
-    if u["balance"] < price:
-        conn.close()
-
-        return jsonify({
-            "ok": False,
-            "error": f"Нужно {price:,} 💎"
-        }), 400
-
-    conn.execute("""
-        UPDATE users
-        SET balance=balance-?
-        WHERE id=?
-    """, (price, uid))
-
-    conn.execute(
-        f"UPDATE technologies SET {tech}={tech}+1 WHERE user_id=?",
-        (uid,)
+    add_coins(
+        con,
+        user["id"],
+        -prop["price"],
+        f"Покупка недвижимости: {prop['name']}"
     )
 
-    add_xp(conn, uid, price // 20)
+    con.execute("""
+        INSERT INTO properties(user_id, property_key)
+        VALUES (?, ?)
+    """, (user["id"], key))
 
-    conn.commit()
+    con.execute("""
+        UPDATE users
+        SET rating=rating+?
+        WHERE id=?
+    """, (prop["rating"], user["id"]))
 
-    result = safe_user_payload(conn, uid)
-    conn.close()
+    con.commit()
+    con.close()
 
     return jsonify({
-        "ok": True,
-        "price": price,
-        "user": result
+        "ok": True
     })
 
 
@@ -1453,98 +1533,149 @@ def upgrade_technology():
 # PETS
 # =========================================================
 
-PETS = {
-    "wolf": ("🐺 Волк", 10000),
-    "robot": ("🤖 Робот", 50000),
-    "dragon": ("🐉 Дракон", 250000)
-}
-
-
-@app.route("/api/pets")
-def pets():
-    tg = current_user()
-
-    if not tg:
-        return jsonify({"ok": False}), 401
-
-    ensure_user(tg)
-    uid = int(tg["id"])
-
-    conn = db()
-
-    owned = conn.execute("""
-        SELECT *
-        FROM pets
-        WHERE user_id=?
-    """, (uid,)).fetchall()
-
-    conn.close()
-
-    return jsonify({
-        "ok": True,
-        "catalog": {
-            k: {
-                "name": v[0],
-                "price": v[1]
-            }
-            for k, v in PETS.items()
-        },
-        "owned": [dict(x) for x in owned]
-    })
-
-
-@app.route("/api/pets/buy", methods=["POST"])
-def buy_pet():
-    tg, err, status = require_user()
-
-    if err:
-        return err, status
-
+@app.post("/api/pets/buy")
+@require_user
+def buy_pet(user):
     data = request.get_json(silent=True) or {}
-    pet_type = data.get("type")
+    key = data.get("key")
 
-    if pet_type not in PETS:
+    pet = PETS.get(key)
+
+    if not pet:
         return jsonify({
             "ok": False,
-            "error": "Неизвестный питомец"
+            "error": "Питомец не найден"
         }), 400
 
-    ensure_user(tg)
-    uid = int(tg["id"])
-    price = PETS[pet_type][1]
+    con = db()
 
-    conn = db()
-    u = get_user(conn, uid)
+    exists = con.execute("""
+        SELECT id FROM pets
+        WHERE user_id=? AND pet_key=?
+    """, (user["id"], key)).fetchone()
 
-    if u["balance"] < price:
-        conn.close()
+    if exists:
+        con.close()
+        return jsonify({
+            "ok": False,
+            "error": "Этот питомец уже есть"
+        }), 400
 
+    if user["coins"] < pet["price"]:
+        con.close()
         return jsonify({
             "ok": False,
             "error": "Недостаточно 💎"
         }), 400
 
-    conn.execute("""
-        UPDATE users
-        SET balance=balance-?
-        WHERE id=?
-    """, (price, uid))
+    add_coins(
+        con,
+        user["id"],
+        -pet["price"],
+        f"Питомец: {pet['name']}"
+    )
 
-    conn.execute("""
-        INSERT INTO pets(user_id, type, level)
-        VALUES (?, ?, 1)
-    """, (uid, pet_type))
+    con.execute("""
+        INSERT INTO pets(user_id, pet_key)
+        VALUES (?, ?)
+    """, (user["id"], key))
 
-    add_xp(conn, uid, price // 25)
+    add_xp(con, user["id"], 100)
 
-    conn.commit()
+    con.commit()
+    con.close()
 
-    result = safe_user_payload(conn, uid)
-    conn.close()
+    return jsonify({
+        "ok": True
+    })
+
+
+# =========================================================
+# PLANETS
+# =========================================================
+
+@app.post("/api/planets/travel")
+@require_user
+def travel(user):
+    data = request.get_json(silent=True) or {}
+    key = data.get("key")
+
+    planet = PLANETS.get(key)
+
+    if not planet:
+        return jsonify({
+            "ok": False,
+            "error": "Планета не найдена"
+        }), 400
+
+    if user["level"] < planet["level"]:
+        return jsonify({
+            "ok": False,
+            "error": f"Нужен уровень {planet['level']}"
+        }), 400
+
+    con = db()
+
+    if user["coins"] < planet["price"]:
+        con.close()
+        return jsonify({
+            "ok": False,
+            "error": "Недостаточно 💎"
+        }), 400
+
+    add_coins(
+        con,
+        user["id"],
+        -planet["price"],
+        f"Путешествие: {planet['name']}"
+    )
+
+    add_xp(con, user["id"], 250)
+
+    con.commit()
+    con.close()
 
     return jsonify({
         "ok": True,
-        "user": result
+        "planet": planet["name"]
+    })
+
+
+# =========================================================
+# INVENTORY
+# =========================================================
+
+@app.get("/api/inventory")
+@require_user
+def inventory(user):
+    con = db()
+
+    rows = con.execute("""
+        SELECT item_key, quantity
+        FROM inventory
+        WHERE user_id=? AND quantity>0
+        ORDER BY item_key
+    """, (user["id"],)).fetchall()
+
+    result = []
+
+    for row in rows:
+        item = ITEMS.get(row["item_key"])
+
+        if item:
+            result.append({
+                "key": row["item_key"],
+                "name": item["name"],
+                "icon": item["icon"],
+                "quantity": row["quantity"],
+                "price": item["base_price"]
+            })
+
+    con.close()
+
+    return jsonify({
+        "ok": True,
+        "inventory": result
     })
 
 
@@ -1552,904 +1683,646 @@ def buy_pet():
 # MARKET
 # =========================================================
 
-@app.route("/api/market")
-def market():
-    tg = current_user()
-
-    if not tg:
-        return jsonify({"ok": False}), 401
-
-    ensure_user(tg)
-
-    conn = db()
-
-    rows = conn.execute("""
-        SELECT *
-        FROM market
-        ORDER BY id DESC
-        LIMIT 100
-    """).fetchall()
-
-    conn.close()
-
-    return jsonify({
-        "ok": True,
-        "items": [dict(x) for x in rows]
-    })
-
-
-@app.route("/api/market/create", methods=["POST"])
-def market_create():
-    tg, err, status = require_user()
-
-    if err:
-        return err, status
-
+@app.post("/api/market/create")
+@require_user
+def market_create(user):
     data = request.get_json(silent=True) or {}
 
-    item = str(data.get("item", "")).strip()
-    amount = int(data.get("amount", 0))
-    price = int(data.get("price", 0))
+    item_key = data.get("item_key")
+    quantity = int(data.get("quantity", 0))
+    price_each = int(data.get("price_each", 0))
 
-    allowed = {
-        "iron", "coal", "wood", "grain",
-        "stone", "oil", "steel", "food",
-        "electronics", "fuel", "fish"
-    }
-
-    if item not in allowed or amount <= 0 or price <= 0:
+    if item_key not in ITEMS:
         return jsonify({
             "ok": False,
-            "error": "Некорректное объявление"
+            "error": "Предмет не найден"
         }), 400
 
-    ensure_user(tg)
-    uid = int(tg["id"])
-
-    conn = db()
-
-    if resource(conn, uid, item) < amount:
-        conn.close()
-
+    if quantity <= 0 or price_each <= 0:
         return jsonify({
             "ok": False,
-            "error": "Недостаточно ресурса"
+            "error": "Неверное количество или цена"
         }), 400
 
-    remove_resource(conn, uid, item, amount)
+    if price_each > 100000000:
+        return jsonify({
+            "ok": False,
+            "error": "Слишком высокая цена"
+        }), 400
 
-    u = get_user(conn, uid)
+    con = db()
 
-    conn.execute("""
-        INSERT INTO market
-        (seller_id, seller_name, item, amount, price, created_at)
-        VALUES (?, ?, ?, ?, ?, ?)
+    if not remove_item(
+        con,
+        user["id"],
+        item_key,
+        quantity
+    ):
+        con.close()
+        return jsonify({
+            "ok": False,
+            "error": "У тебя нет такого количества предмета"
+        }), 400
+
+    con.execute("""
+        INSERT INTO market(
+            seller_id,
+            item_key,
+            quantity,
+            price_each,
+            created_at
+        )
+        VALUES (?, ?, ?, ?, ?)
     """, (
-        uid,
-        u["first_name"],
-        item,
-        amount,
-        price,
+        user["id"],
+        item_key,
+        quantity,
+        price_each,
         now()
     ))
 
-    conn.commit()
-    conn.close()
+    quest = con.execute("""
+        SELECT progress
+        FROM quests
+        WHERE user_id=? AND quest_key='market1'
+    """, (user["id"],)).fetchone()
+
+    if quest and quest["progress"] < 1:
+        con.execute("""
+            UPDATE quests
+            SET progress=1,
+                completed=1
+            WHERE user_id=? AND quest_key='market1'
+        """, (user["id"],))
+
+    con.commit()
+    con.close()
+
+    return jsonify({
+        "ok": True,
+        "message": "Лот выставлен"
+    })
+
+
+@app.post("/api/market/buy")
+@require_user
+def market_buy(user):
+    data = request.get_json(silent=True) or {}
+    listing_id = int(data.get("id", 0))
+
+    con = db()
+
+    listing = con.execute("""
+        SELECT *
+        FROM market
+        WHERE id=? AND status='active'
+    """, (listing_id,)).fetchone()
+
+    if not listing:
+        con.close()
+        return jsonify({
+            "ok": False,
+            "error": "Лот уже продан или удалён"
+        }), 404
+
+    if listing["seller_id"] == user["id"]:
+        con.close()
+        return jsonify({
+            "ok": False,
+            "error": "Нельзя купить собственный лот"
+        }), 400
+
+    total = listing["quantity"] * listing["price_each"]
+
+    if user["coins"] < total:
+        con.close()
+        return jsonify({
+            "ok": False,
+            "error": "Недостаточно 💎"
+        }), 400
+
+    seller = con.execute("""
+        SELECT id FROM users WHERE id=?
+    """, (listing["seller_id"],)).fetchone()
+
+    if not seller:
+        con.close()
+        return jsonify({
+            "ok": False,
+            "error": "Продавец не найден"
+        }), 400
+
+    add_coins(
+        con,
+        user["id"],
+        -total,
+        "Покупка на рынке"
+    )
+
+    add_coins(
+        con,
+        listing["seller_id"],
+        total,
+        "Продажа на рынке"
+    )
+
+    add_item(
+        con,
+        user["id"],
+        listing["item_key"],
+        listing["quantity"]
+    )
+
+    con.execute("""
+        UPDATE market
+        SET status='sold'
+        WHERE id=?
+    """, (listing_id,))
+
+    add_xp(con, user["id"], 50)
+    add_xp(con, listing["seller_id"], 50)
+
+    con.commit()
+    con.close()
+
+    return jsonify({
+        "ok": True,
+        "total": total
+    })
+
+
+@app.post("/api/market/cancel")
+@require_user
+def market_cancel(user):
+    data = request.get_json(silent=True) or {}
+    listing_id = int(data.get("id", 0))
+
+    con = db()
+
+    listing = con.execute("""
+        SELECT *
+        FROM market
+        WHERE id=? AND status='active' AND seller_id=?
+    """, (listing_id, user["id"])).fetchone()
+
+    if not listing:
+        con.close()
+        return jsonify({
+            "ok": False,
+            "error": "Лот не найден"
+        }), 404
+
+    add_item(
+        con,
+        user["id"],
+        listing["item_key"],
+        listing["quantity"]
+    )
+
+    con.execute("""
+        UPDATE market
+        SET status='cancelled'
+        WHERE id=?
+    """, (listing_id,))
+
+    con.commit()
+    con.close()
 
     return jsonify({
         "ok": True
     })
 
 
-@app.route("/api/market/buy", methods=["POST"])
-def market_buy():
-    tg, err, status = require_user()
+# =========================================================
+# QUESTS
+# =========================================================
 
-    if err:
-        return err, status
-
+@app.post("/api/quests/claim")
+@require_user
+def quest_claim(user):
     data = request.get_json(silent=True) or {}
-    listing_id = int(data.get("id", 0))
+    key = data.get("key")
 
-    ensure_user(tg)
-    uid = int(tg["id"])
+    quest = QUESTS.get(key)
 
-    conn = db()
+    if not quest:
+        return jsonify({
+            "ok": False,
+            "error": "Задание не найдено"
+        }), 400
 
-    listing = conn.execute("""
+    con = db()
+
+    row = con.execute("""
         SELECT *
-        FROM market
-        WHERE id=?
-    """, (listing_id,)).fetchone()
+        FROM quests
+        WHERE user_id=? AND quest_key=?
+    """, (user["id"], key)).fetchone()
 
-    if not listing:
-        conn.close()
-
+    if not row or not row["completed"]:
+        con.close()
         return jsonify({
             "ok": False,
-            "error": "Объявление уже продано"
-        }), 404
-
-    if listing["seller_id"] == uid:
-        conn.close()
-
-        return jsonify({
-            "ok": False,
-            "error": "Нельзя купить своё объявление"
+            "error": "Задание ещё не выполнено"
         }), 400
 
-    buyer = get_user(conn, uid)
-
-    if buyer["balance"] < listing["price"]:
-        conn.close()
-
+    if row["claimed"]:
+        con.close()
         return jsonify({
             "ok": False,
-            "error": "Недостаточно 💎"
+            "error": "Награда уже получена"
         }), 400
 
-    conn.execute("""
-        UPDATE users
-        SET balance=balance-?
-        WHERE id=?
-    """, (listing["price"], uid))
-
-    conn.execute("""
-        UPDATE users
-        SET balance=balance+?
-        WHERE id=?
-    """, (listing["price"], listing["seller_id"]))
-
-    add_resource(
-        conn,
-        uid,
-        listing["item"],
-        listing["amount"]
+    add_coins(
+        con,
+        user["id"],
+        quest["reward"],
+        f"Награда: {quest['name']}"
     )
 
-    conn.execute("""
-        DELETE FROM market
-        WHERE id=?
-    """, (listing_id,))
+    con.execute("""
+        UPDATE quests
+        SET claimed=1
+        WHERE user_id=? AND quest_key=?
+    """, (user["id"], key))
 
-    add_xp(conn, uid, 50)
-
-    conn.commit()
-
-    result = safe_user_payload(conn, uid)
-    conn.close()
+    con.commit()
+    con.close()
 
     return jsonify({
         "ok": True,
-        "user": result
+        "reward": quest["reward"]
     })
 
 
-@app.route("/api/market/cancel", methods=["POST"])
-def market_cancel():
-    tg, err, status = require_user()
-
-    if err:
-        return err, status
-
-    data = request.get_json(silent=True) or {}
-    listing_id = int(data.get("id", 0))
-
-    ensure_user(tg)
-    uid = int(tg["id"])
-
-    conn = db()
-
-    listing = conn.execute("""
-        SELECT *
-        FROM market
-        WHERE id=? AND seller_id=?
-    """, (listing_id, uid)).fetchone()
-
-    if not listing:
-        conn.close()
-
-        return jsonify({
-            "ok": False,
-            "error": "Объявление не найдено"
-        }), 404
-
-    add_resource(
-        conn,
-        uid,
-        listing["item"],
-        listing["amount"]
-    )
-
-    conn.execute("""
-        DELETE FROM market
-        WHERE id=?
-    """, (listing_id,))
-
-    conn.commit()
-    conn.close()
-
-    return jsonify({"ok": True})
-
-
 # =========================================================
-# PLANETS
+# BANK
 # =========================================================
 
-PLANETS = {
-    "Земля": {
-        "price": 0,
-        "level": 1
-    },
-    "Луна": {
-        "price": 50000,
-        "level": 10
-    },
-    "Марс": {
-        "price": 500000,
-        "level": 25
-    },
-    "Юпитер": {
-        "price": 5000000,
-        "level": 50
-    }
-}
-
-
-@app.route("/api/planets")
-def planets():
-    tg = current_user()
-
-    if not tg:
-        return jsonify({"ok": False}), 401
-
-    ensure_user(tg)
-    uid = int(tg["id"])
-
-    conn = db()
-
-    owned = conn.execute("""
-        SELECT *
-        FROM planets
-        WHERE user_id=?
-    """, (uid,)).fetchall()
-
-    user = get_user(conn, uid)
-
-    result = []
-
-    for name, info in PLANETS.items():
-        row = next(
-            (x for x in owned if x["planet"] == name),
-            None
-        )
-
-        result.append({
-            "planet": name,
-            "price": info["price"],
-            "required_level": info["level"],
-            "unlocked": bool(row and row["unlocked"]),
-            "user_level": user["level"]
-        })
-
-    conn.close()
-
-    return jsonify({
-        "ok": True,
-        "planets": result
-    })
-
-
-@app.route("/api/planets/travel", methods=["POST"])
-def planet_travel():
-    tg, err, status = require_user()
-
-    if err:
-        return err, status
-
+@app.post("/api/bank")
+@require_user
+def bank(user):
     data = request.get_json(silent=True) or {}
-    planet = data.get("planet")
 
-    if planet not in PLANETS:
+    action = data.get("action")
+    amount = int(data.get("amount", 0))
+
+    if amount <= 0:
         return jsonify({
             "ok": False,
-            "error": "Планета не найдена"
+            "error": "Введите сумму"
         }), 400
 
-    ensure_user(tg)
-    uid = int(tg["id"])
+    con = db()
 
-    conn = db()
+    fresh = con.execute(
+        "SELECT * FROM users WHERE id=?",
+        (user["id"],)
+    ).fetchone()
 
-    u = get_user(conn, uid)
-
-    if u["level"] < PLANETS[planet]["level"]:
-        conn.close()
-
-        return jsonify({
-            "ok": False,
-            "error": f"Нужен уровень {PLANETS[planet]['level']}"
-        }), 400
-
-    row = conn.execute("""
-        SELECT *
-        FROM planets
-        WHERE user_id=? AND planet=?
-    """, (uid, planet)).fetchone()
-
-    price = PLANETS[planet]["price"]
-
-    if not row or not row["unlocked"]:
-        if u["balance"] < price:
-            conn.close()
-
+    if action == "deposit":
+        if fresh["coins"] < amount:
+            con.close()
             return jsonify({
                 "ok": False,
                 "error": "Недостаточно 💎"
             }), 400
 
-        conn.execute("""
+        con.execute("""
             UPDATE users
-            SET balance=balance-?
+            SET coins=coins-?,
+                bank=bank+?
             WHERE id=?
-        """, (price, uid))
+        """, (amount, amount, user["id"]))
 
-        conn.execute("""
-            INSERT OR REPLACE INTO planets
-            (user_id, planet, unlocked)
-            VALUES (?, ?, 1)
-        """, (uid, planet))
+    elif action == "withdraw":
+        if fresh["bank"] < amount:
+            con.close()
+            return jsonify({
+                "ok": False,
+                "error": "Недостаточно средств в банке"
+            }), 400
 
-    add_xp(conn, uid, 250)
+        con.execute("""
+            UPDATE users
+            SET bank=bank-?,
+                coins=coins+?
+            WHERE id=?
+        """, (amount, amount, user["id"]))
 
-    conn.commit()
-    result = safe_user_payload(conn, uid)
-    conn.close()
-
-    return jsonify({
-        "ok": True,
-        "planet": planet,
-        "user": result
-    })
-
-
-# =========================================================
-# CONTRACTS
-# =========================================================
-
-@app.route("/api/contracts")
-def contracts():
-    tg = current_user()
-
-    if not tg:
-        return jsonify({"ok": False}), 401
-
-    ensure_user(tg)
-    uid = int(tg["id"])
-
-    conn = db()
-
-    rows = conn.execute("""
-        SELECT *
-        FROM contracts
-        WHERE user_id=?
-        ORDER BY id DESC
-    """, (uid,)).fetchall()
-
-    conn.close()
-
-    return jsonify({
-        "ok": True,
-        "contracts": [dict(x) for x in rows]
-    })
-
-
-@app.route("/api/contracts/complete", methods=["POST"])
-def contract_complete():
-    tg, err, status = require_user()
-
-    if err:
-        return err, status
-
-    data = request.get_json(silent=True) or {}
-    contract_id = int(data.get("id", 0))
-
-    ensure_user(tg)
-    uid = int(tg["id"])
-
-    conn = db()
-
-    contract = conn.execute("""
-        SELECT *
-        FROM contracts
-        WHERE id=? AND user_id=?
-    """, (contract_id, uid)).fetchone()
-
-    if not contract or contract["completed"]:
-        conn.close()
-
-        return jsonify({
-            "ok": False,
-            "error": "Контракт недоступен"
-        }), 400
-
-    current = resource(conn, uid, contract["item"])
-
-    if current < contract["required"]:
-        conn.close()
-
-        return jsonify({
-            "ok": False,
-            "error": f"Нужно ещё {contract['required'] - current}"
-        }), 400
-
-    remove_resource(
-        conn,
-        uid,
-        contract["item"],
-        contract["required"]
-    )
-
-    add_balance(conn, uid, contract["reward"])
-    add_xp(conn, uid, contract["reward"] // 10)
-
-    conn.execute("""
-        UPDATE contracts
-        SET completed=1,
-            progress=?
-        WHERE id=?
-    """, (
-        contract["required"],
-        contract_id
-    ))
-
-    conn.commit()
-
-    result = safe_user_payload(conn, uid)
-    conn.close()
-
-    return jsonify({
-        "ok": True,
-        "reward": contract["reward"],
-        "user": result
-    })
-
-
-# =========================================================
-# PREFIXES
-# =========================================================
-
-PREFIXES = {
-    "Новичок": 0,
-    "Работяга": 1000,
-    "Шахтёр": 5000,
-    "Предприниматель": 15000,
-    "Промышленник": 50000,
-    "Магнат": 150000,
-    "Миллиардер": 1000000,
-    "Император": 5000000
-}
-
-
-@app.route("/api/prefixes")
-def prefixes():
-    tg = current_user()
-
-    if not tg:
-        return jsonify({"ok": False}), 401
-
-    ensure_user(tg)
-    uid = int(tg["id"])
-
-    conn = db()
-
-    owned = conn.execute("""
-        SELECT prefix
-        FROM prefixes
-        WHERE user_id=?
-    """, (uid,)).fetchall()
-
-    equipped = conn.execute("""
-        SELECT prefix
-        FROM equipped_prefix
-        WHERE user_id=?
-    """, (uid,)).fetchone()
-
-    conn.close()
-
-    return jsonify({
-        "ok": True,
-        "catalog": PREFIXES,
-        "owned": [x["prefix"] for x in owned],
-        "equipped": equipped["prefix"] if equipped else ""
-    })
-
-
-@app.route("/api/prefixes/buy", methods=["POST"])
-def buy_prefix():
-    tg, err, status = require_user()
-
-    if err:
-        return err, status
-
-    data = request.get_json(silent=True) or {}
-    prefix = data.get("prefix")
-
-    if prefix not in PREFIXES:
-        return jsonify({
-            "ok": False,
-            "error": "Префикс не найден"
-        }), 400
-
-    if prefix == "Новичок":
-        price = 0
     else:
-        price = PREFIXES[prefix]
-
-    ensure_user(tg)
-    uid = int(tg["id"])
-
-    conn = db()
-
-    exists = conn.execute("""
-        SELECT 1
-        FROM prefixes
-        WHERE user_id=? AND prefix=?
-    """, (uid, prefix)).fetchone()
-
-    if exists:
-        conn.close()
-
+        con.close()
         return jsonify({
             "ok": False,
-            "error": "Префикс уже куплен"
+            "error": "Неизвестное действие"
         }), 400
 
-    u = get_user(conn, uid)
+    con.commit()
+    con.close()
 
-    if u["balance"] < price:
-        conn.close()
-
-        return jsonify({
-            "ok": False,
-            "error": "Недостаточно 💎"
-        }), 400
-
-    conn.execute("""
-        UPDATE users
-        SET balance=balance-?
-        WHERE id=?
-    """, (price, uid))
-
-    conn.execute("""
-        INSERT INTO prefixes(user_id, prefix)
-        VALUES (?, ?)
-    """, (uid, prefix))
-
-    conn.commit()
-    conn.close()
-
-    return jsonify({"ok": True})
-
-
-@app.route("/api/prefixes/equip", methods=["POST"])
-def equip_prefix():
-    tg, err, status = require_user()
-
-    if err:
-        return err, status
-
-    data = request.get_json(silent=True) or {}
-    prefix = data.get("prefix")
-
-    ensure_user(tg)
-    uid = int(tg["id"])
-
-    conn = db()
-
-    exists = conn.execute("""
-        SELECT 1
-        FROM prefixes
-        WHERE user_id=? AND prefix=?
-    """, (uid, prefix)).fetchone()
-
-    if not exists:
-        conn.close()
-
-        return jsonify({
-            "ok": False,
-            "error": "Префикс не принадлежит игроку"
-        }), 400
-
-    conn.execute("""
-        INSERT OR REPLACE INTO equipped_prefix(user_id, prefix)
-        VALUES (?, ?)
-    """, (uid, prefix))
-
-    conn.commit()
-    conn.close()
-
-    return jsonify({"ok": True})
+    return jsonify({
+        "ok": True
+    })
 
 
 # =========================================================
-# RATING
+# LEADERBOARD
 # =========================================================
 
-@app.route("/api/leaderboard")
-def leaderboard():
-    tg = current_user()
+@app.get("/api/leaderboard")
+@require_user
+def leaderboard(user):
+    con = db()
 
-    if not tg:
-        return jsonify({"ok": False}), 401
-
-    ensure_user(tg)
-
-    conn = db()
-
-    rows = conn.execute("""
+    rows = con.execute("""
         SELECT
-            id,
-            first_name,
+            telegram_id,
             username,
+            first_name,
             photo_url,
             level,
-            balance,
             rating,
-            population
+            coins
         FROM users
-        ORDER BY
-            rating DESC,
-            balance DESC
-        LIMIT 100
+        ORDER BY rating DESC, level DESC
+        LIMIT 50
     """).fetchall()
 
-    conn.close()
+    result = []
+
+    for i, row in enumerate(rows, 1):
+        result.append({
+            "place": i,
+            "telegram_id": row["telegram_id"],
+            "username": row["username"],
+            "name": row["first_name"] or row["username"] or "Игрок",
+            "photo_url": row["photo_url"],
+            "level": row["level"],
+            "rating": row["rating"],
+            "coins": row["coins"],
+            "creator": str(row["telegram_id"]) == str(CREATOR_TELEGRAM_ID)
+        })
+
+    con.close()
 
     return jsonify({
         "ok": True,
-        "players": [dict(x) for x in rows]
+        "players": result
     })
 
 
 # =========================================================
-# CORPORATIONS
+# CREATOR PANEL
 # =========================================================
 
-@app.route("/api/corporation")
-def corporation():
-    tg = current_user()
+@app.get("/api/admin/players")
+@require_creator
+def admin_players(user):
+    con = db()
 
-    if not tg:
-        return jsonify({"ok": False}), 401
+    rows = con.execute("""
+        SELECT
+            id,
+            telegram_id,
+            username,
+            first_name,
+            last_name,
+            coins,
+            bank,
+            level,
+            xp,
+            rating
+        FROM users
+        ORDER BY id DESC
+        LIMIT 200
+    """).fetchall()
 
-    ensure_user(tg)
-    uid = int(tg["id"])
+    players = [dict(x) for x in rows]
 
-    conn = db()
-
-    corp = conn.execute("""
-        SELECT c.*
-        FROM corporations c
-        JOIN corporation_members cm
-          ON cm.corporation_id=c.id
-        WHERE cm.user_id=?
-        LIMIT 1
-    """, (uid,)).fetchone()
-
-    members = []
-
-    if corp:
-        members = conn.execute("""
-            SELECT u.id, u.first_name, u.username, u.level, u.balance
-            FROM users u
-            JOIN corporation_members cm
-              ON cm.user_id=u.id
-            WHERE cm.corporation_id=?
-            ORDER BY u.level DESC
-        """, (corp["id"],)).fetchall()
-
-    conn.close()
+    con.close()
 
     return jsonify({
         "ok": True,
-        "corporation": dict(corp) if corp else None,
-        "members": [dict(x) for x in members]
+        "players": players
     })
 
 
-@app.route("/api/corporation/create", methods=["POST"])
-def corporation_create():
-    tg, err, status = require_user()
-
-    if err:
-        return err, status
-
+@app.post("/api/admin/money")
+@require_creator
+def admin_money(user):
     data = request.get_json(silent=True) or {}
-    name = str(data.get("name", "")).strip()
 
-    if len(name) < 3 or len(name) > 32:
+    target_tg_id = str(data.get("telegram_id", ""))
+    amount = int(data.get("amount", 0))
+    action = data.get("action")
+    reason = data.get("reason", "Создатель NEXORA")
+
+    if not target_tg_id or amount <= 0:
         return jsonify({
             "ok": False,
-            "error": "Название: от 3 до 32 символов"
+            "error": "Неверные данные"
         }), 400
 
-    ensure_user(tg)
-    uid = int(tg["id"])
+    con = db()
 
-    conn = db()
+    target = con.execute("""
+        SELECT *
+        FROM users
+        WHERE telegram_id=?
+    """, (target_tg_id,)).fetchone()
 
-    existing = conn.execute("""
-        SELECT c.id
-        FROM corporations c
-        JOIN corporation_members cm
-          ON cm.corporation_id=c.id
-        WHERE cm.user_id=?
-    """, (uid,)).fetchone()
-
-    if existing:
-        conn.close()
-
+    if not target:
+        con.close()
         return jsonify({
             "ok": False,
-            "error": "Вы уже состоите в корпорации"
-        }), 400
+            "error": "Игрок не найден"
+        }), 404
 
-    u = get_user(conn, uid)
+    if action == "give":
+        add_coins(
+            con,
+            target["id"],
+            amount,
+            reason
+        )
 
-    price = 100000
+    elif action == "take":
+        actual = min(amount, target["coins"])
 
-    if u["balance"] < price:
-        conn.close()
+        add_coins(
+            con,
+            target["id"],
+            -actual,
+            reason
+        )
 
+        amount = actual
+
+    else:
+        con.close()
         return jsonify({
             "ok": False,
-            "error": "Нужно 100 000 💎"
+            "error": "Неизвестное действие"
         }), 400
 
-    conn.execute("""
-        UPDATE users
-        SET balance=balance-?
+    con.commit()
+
+    new_user = con.execute("""
+        SELECT coins
+        FROM users
         WHERE id=?
-    """, (price, uid))
+    """, (target["id"],)).fetchone()
 
-    cursor = conn.execute("""
-        INSERT INTO corporations
-        (owner_id, name, level, capital)
-        VALUES (?, ?, 1, ?)
-    """, (uid, name, price))
-
-    corp_id = cursor.lastrowid
-
-    conn.execute("""
-        INSERT INTO corporation_members
-        (corporation_id, user_id)
-        VALUES (?, ?)
-    """, (corp_id, uid))
-
-    conn.commit()
-    conn.close()
-
-    return jsonify({"ok": True})
-
-
-# =========================================================
-# ACHIEVEMENTS
-# =========================================================
-
-@app.route("/api/achievements")
-def achievements():
-    tg = current_user()
-
-    if not tg:
-        return jsonify({"ok": False}), 401
-
-    ensure_user(tg)
-    uid = int(tg["id"])
-
-    conn = db()
-
-    u = get_user(conn, uid)
-
-    achievements_list = [
-        {
-            "id": "level10",
-            "name": "⭐ Развитие",
-            "description": "Достичь 10 уровня",
-            "done": u["level"] >= 10
-        },
-        {
-            "id": "money100k",
-            "name": "💎 Капитал",
-            "description": "Накопить 100 000 💎",
-            "done": u["balance"] >= 100000
-        },
-        {
-            "id": "business5",
-            "name": "🏭 Промышленник",
-            "description": "Владеть 5 предприятиями",
-            "done": u["id"] is not None and
-                    conn.execute(
-                        "SELECT COUNT(*) c FROM businesses WHERE user_id=?",
-                        (uid,)
-                    ).fetchone()["c"] >= 5
-        },
-        {
-            "id": "population10k",
-            "name": "👥 Город",
-            "description": "Население 10 000",
-            "done": u["population"] >= 10000
-        }
-    ]
-
-    conn.close()
+    con.close()
 
     return jsonify({
         "ok": True,
-        "achievements": achievements_list
+        "coins": new_user["coins"],
+        "amount": amount
     })
 
 
-# =========================================================
-# ADMIN / CREATOR
-# =========================================================
+@app.post("/api/admin/event")
+@require_creator
+def admin_event(user):
+    data = request.get_json(silent=True) or {}
 
-@app.route("/api/creator")
-def creator():
-    tg = current_user()
+    event_type = data.get("event_type", "all")
+    multiplier = float(data.get("multiplier", 2))
+    duration_minutes = int(data.get("duration_minutes", 60))
+    title = data.get("title", "Событие NEXORA")
+    description = data.get(
+        "description",
+        "Временный бонус для экономики NEXORA"
+    )
 
-    if not tg:
-        return jsonify({"ok": False}), 401
-
-    uid = int(tg["id"])
-
-    if uid != CREATOR_ID:
+    if event_type not in ["jobs", "businesses", "all"]:
         return jsonify({
             "ok": False,
-            "error": "Доступ запрещён"
-        }), 403
+            "error": "Тип события должен быть jobs, businesses или all"
+        }), 400
 
-    conn = db()
+    if multiplier < 1 or multiplier > 10:
+        return jsonify({
+            "ok": False,
+            "error": "Множитель должен быть от x1 до x10"
+        }), 400
 
-    users = conn.execute(
-        "SELECT COUNT(*) c FROM users"
-    ).fetchone()["c"]
+    if duration_minutes < 1 or duration_minutes > 10080:
+        return jsonify({
+            "ok": False,
+            "error": "Неверная длительность"
+        }), 400
 
-    market = conn.execute(
-        "SELECT COUNT(*) c FROM market"
-    ).fetchone()["c"]
+    con = db()
 
-    businesses = conn.execute(
-        "SELECT COUNT(*) c FROM businesses"
-    ).fetchone()["c"]
+    con.execute("""
+        UPDATE events
+        SET active=0
+        WHERE active=1 AND event_type=?
+    """, (event_type,))
 
-    conn.close()
+    ends_at = now() + duration_minutes * 60
+
+    con.execute("""
+        INSERT INTO events(
+            creator_id,
+            event_type,
+            multiplier,
+            ends_at,
+            title,
+            description,
+            active,
+            created_at
+        )
+        VALUES (?, ?, ?, ?, ?, ?, 1, ?)
+    """, (
+        user["telegram_id"],
+        event_type,
+        multiplier,
+        ends_at,
+        title,
+        description,
+        now()
+    ))
+
+    con.commit()
+    con.close()
 
     return jsonify({
         "ok": True,
-        "statistics": {
-            "players": users,
-            "market_listings": market,
-            "businesses": businesses
-        }
+        "ends_at": ends_at,
+        "multiplier": multiplier
     })
 
 
-# =========================================================
-# HEALTH
-# =========================================================
+@app.get("/api/admin/events")
+@require_creator
+def admin_events(user):
+    con = db()
 
-@app.route("/health")
-def health():
+    rows = con.execute("""
+        SELECT *
+        FROM events
+        ORDER BY id DESC
+        LIMIT 50
+    """).fetchall()
+
+    result = [dict(x) for x in rows]
+
+    con.close()
+
     return jsonify({
-        "status": "ok",
-        "game": "NEXORA"
+        "ok": True,
+        "events": result
     })
+
+
+@app.post("/api/admin/event/stop")
+@require_creator
+def admin_event_stop(user):
+    data = request.get_json(silent=True) or {}
+    event_id = int(data.get("id", 0))
+
+    con = db()
+
+    con.execute("""
+        UPDATE events
+        SET active=0
+        WHERE id=?
+    """, (event_id,))
+
+    con.commit()
+    con.close()
+
+    return jsonify({
+        "ok": True
+    })
+
+
+# =========================================================
+# ERROR HANDLERS
+# =========================================================
+
+@app.errorhandler(404)
+def not_found(e):
+    return jsonify({
+        "ok": False,
+        "error": "Маршрут не найден"
+    }), 404
+
+
+@app.errorhandler(500)
+def server_error(e):
+    return jsonify({
+        "ok": False,
+        "error": "Внутренняя ошибка сервера"
+    }), 500
 
 
 if __name__ == "__main__":
     app.run(
         host="0.0.0.0",
-        port=int(os.environ.get("PORT", 5000)),
+        port=int(os.getenv("PORT", 5000)),
         debug=False
     )
