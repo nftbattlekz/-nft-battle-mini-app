@@ -1,20 +1,14 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-
 <meta charset="UTF-8">
-
-<meta
-    name="viewport"
-    content="width=device-width,
-    initial-scale=1,
-    maximum-scale=1,
-    user-scalable=no"
->
+<meta name="viewport"
+      content="width=device-width,
+      initial-scale=1.0,
+      maximum-scale=1.0,
+      user-scalable=no">
 
 <title>NEXORA</title>
-
-<script src="https://telegram.org/js/telegram-web-app.js"></script>
 
 <style>
 
@@ -26,490 +20,328 @@
 body{
     margin:0;
     background:
-        radial-gradient(
-            circle at 50% -10%,
-            #351019 0,
-            #0d090b 35%,
-            #060607 70%
-        );
+        radial-gradient(circle at 50% -10%,#173d69 0,#08111f 35%,#040812 75%);
     color:#fff;
-    font-family:
-        -apple-system,
-        BlinkMacSystemFont,
-        "Segoe UI",
-        sans-serif;
+    font-family:Arial,Helvetica,sans-serif;
     min-height:100vh;
 }
 
 button{
     border:0;
     color:white;
-    font:inherit;
+    font-weight:700;
     cursor:pointer;
 }
 
 .app{
-    width:100%;
-    max-width:900px;
+    max-width:520px;
     margin:auto;
-    padding:16px 14px 100px;
+    min-height:100vh;
+    padding-bottom:90px;
 }
 
-.top{
+/* HEADER */
+
+.header{
+    padding:18px 16px 8px;
+}
+
+.brand{
     display:flex;
     justify-content:space-between;
     align-items:center;
-    margin-bottom:18px;
 }
 
 .logo{
     font-size:25px;
     font-weight:900;
-    letter-spacing:4px;
-}
-
-.logo small{
-    display:block;
-    color:#777;
-    font-size:9px;
-    letter-spacing:3px;
-    margin-top:2px;
-}
-
-.balance{
-    background:#151417;
-    border:1px solid #302b2e;
-    border-radius:14px;
-    padding:9px 13px;
-    font-weight:800;
-    box-shadow:0 8px 30px #0007;
-}
-
-.page{
-    display:none;
-}
-
-.page.active{
-    display:block;
-    animation:page .25s ease;
-}
-
-@keyframes page{
-    from{
-        opacity:0;
-        transform:translateY(8px);
-    }
-    to{
-        opacity:1;
-        transform:none;
-    }
-}
-
-.hero{
-    background:
-        linear-gradient(
-            145deg,
-            #171114,
-            #0c0b0d
-        );
-    border:1px solid #2d2528;
-    border-radius:24px;
-    padding:22px;
-    margin-bottom:18px;
-    box-shadow:0 15px 50px #0008;
-}
-
-.hero-title{
-    font-size:28px;
-    font-weight:900;
-    margin-bottom:7px;
-}
-
-.hero-text{
-    color:#929096;
-    font-size:13px;
+    letter-spacing:2px;
 }
 
 .creator{
-    margin-top:16px;
-    padding:13px;
-    border-radius:16px;
+    color:#ffd84a;
+    font-size:11px;
+    border:1px solid #8e701d;
+    background:#211c08;
+    padding:6px 9px;
+    border-radius:9px;
+}
+
+/* BALANCE */
+
+.balance{
+    margin-top:15px;
+    padding:18px;
+    border-radius:20px;
     background:
-        linear-gradient(
-            135deg,
-            #271d0d,
-            #11100c
-        );
-    border:1px solid #6d5520;
+        linear-gradient(135deg,
+        rgba(25,74,126,.9),
+        rgba(10,23,43,.95));
+    border:1px solid rgba(77,168,255,.25);
+    box-shadow:0 10px 40px rgba(0,0,0,.35);
 }
 
-.creator b{
-    color:#f1c75b;
-}
-
-.section-title{
-    font-size:19px;
-    font-weight:900;
-    margin:22px 2px 12px;
-}
-
-.cases{
-    display:grid;
-    grid-template-columns:1fr;
-    gap:12px;
-}
-
-.case{
-    position:relative;
-    overflow:hidden;
-    padding:19px;
-    min-height:150px;
-    border-radius:21px;
-    border:1px solid #2d292b;
-    background:#111013;
-    box-shadow:0 10px 35px #0008;
-}
-
-.case:before{
-    content:"";
-    position:absolute;
-    width:180px;
-    height:180px;
-    border-radius:50%;
-    right:-60px;
-    top:-80px;
-    opacity:.18;
-    background:currentColor;
-    filter:blur(20px);
-}
-
-.case.blue{color:#42a5ff}
-.case.pink{color:#ff4fa3}
-.case.purple{color:#9a5cff}
-.case.red{color:#ff334f}
-.case.violet{color:#b55cff}
-.case.cyan{color:#27e4ff}
-.case.orange{color:#ff8d32}
-.case.gold{color:#ffd34d}
-.case.mythic{color:#e76cff}
-.case.nexora{color:#ff263f}
-
-.case-name{
-    font-size:21px;
-    font-weight:1000;
-    letter-spacing:2px;
-    color:white;
-}
-
-.case-sub{
-    color:#777;
+.balance-title{
+    color:#8da6c2;
     font-size:12px;
-    margin-top:5px;
 }
 
-.free{
-    display:inline-block;
-    margin-top:13px;
-    color:#6dffb0;
-    background:#10241a;
-    border:1px solid #204d35;
-    padding:5px 9px;
-    border-radius:8px;
-    font-size:10px;
-    font-weight:900;
-}
-
-.open{
-    position:absolute;
-    right:14px;
-    bottom:14px;
-    padding:10px 15px;
-    border-radius:12px;
-    background:#f02840;
-    font-weight:900;
-    box-shadow:0 7px 20px #f0284044;
-}
-
-.open:active{
-    transform:scale(.95);
-}
-
-.profile-card{
-    background:#111013;
-    border:1px solid #2b282a;
-    border-radius:22px;
-    padding:20px;
-}
-
-.avatar{
-    width:72px;
-    height:72px;
-    border-radius:50%;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    background:#21191c;
-    border:3px solid #393238;
-    font-size:30px;
-    margin-bottom:14px;
-}
-
-.avatar.creator-avatar{
-    border-color:#e6bd49;
-    box-shadow:0 0 25px #e6bd4933;
-}
-
-.name{
-    font-size:23px;
-    font-weight:900;
-}
-
-.prefix{
-    color:#9b979b;
+.balance-value{
     margin-top:4px;
-}
-
-.creator-badge{
-    display:inline-block;
-    margin-top:9px;
-    background:#3b2c0d;
-    border:1px solid #755b1e;
-    color:#f4cc5b;
-    padding:5px 9px;
-    border-radius:8px;
-    font-size:10px;
+    font-size:31px;
     font-weight:900;
 }
 
-.stats{
-    display:grid;
-    grid-template-columns:1fr 1fr;
+.balance-row{
+    display:flex;
     gap:10px;
-    margin-top:20px;
+    margin-top:12px;
 }
 
-.stat{
-    background:#0b0a0c;
-    border:1px solid #272428;
-    padding:14px;
-    border-radius:15px;
-}
-
-.stat span{
-    display:block;
-    color:#777;
+.balance-mini{
+    flex:1;
+    padding:10px;
+    background:#071322;
+    border-radius:12px;
+    color:#a7bdd4;
     font-size:11px;
 }
 
-.stat b{
+.balance-mini b{
     display:block;
-    margin-top:5px;
-    font-size:18px;
+    color:#fff;
+    font-size:14px;
+    margin-top:3px;
 }
 
-.inventory{
-    display:grid;
-    grid-template-columns:1fr 1fr;
-    gap:10px;
+/* PROFILE */
+
+.profile{
+    margin:12px 16px;
+    padding:16px;
+    border-radius:19px;
+    background:rgba(10,21,37,.9);
+    border:1px solid #1d3956;
 }
 
-.nft{
-    background:#111013;
-    border:1px solid #2b282a;
-    border-radius:18px;
-    padding:14px;
+.profile-top{
+    display:flex;
+    align-items:center;
+    gap:13px;
 }
 
-.nft-art{
-    height:110px;
-    border-radius:14px;
+.avatar{
+    width:52px;
+    height:52px;
     display:flex;
     align-items:center;
     justify-content:center;
-    font-size:42px;
-    background:
-        radial-gradient(
-            circle,
-            #362025,
-            #0d0c0e
-        );
-    margin-bottom:10px;
-}
-
-.nft-name{
+    border-radius:16px;
+    background:linear-gradient(135deg,#1978db,#6d32d8);
+    font-size:25px;
     font-weight:900;
-    font-size:13px;
 }
 
-.rarity{
-    font-size:10px;
+.profile-name{
+    font-size:17px;
+    font-weight:800;
+}
+
+.level{
+    color:#7da8d0;
+    font-size:11px;
     margin-top:4px;
-    color:#aaa;
 }
 
-.value{
-    margin-top:8px;
+.xp{
+    margin-top:14px;
+    height:7px;
+    background:#07101c;
+    border-radius:20px;
+    overflow:hidden;
+}
+
+.xp-bar{
+    height:100%;
+    background:linear-gradient(90deg,#36a9ff,#6e6cff);
+    width:40%;
+}
+
+/* SECTION */
+
+.section{
+    padding:5px 16px;
+}
+
+.section-title{
+    margin:15px 0 10px;
+    font-size:17px;
     font-weight:900;
 }
 
-.sell{
+/* GRID */
+
+.grid{
+    display:grid;
+    grid-template-columns:repeat(2,1fr);
+    gap:10px;
+}
+
+.card{
+    padding:15px;
+    min-height:120px;
+    border-radius:18px;
+    background:
+        linear-gradient(145deg,
+        rgba(18,35,57,.98),
+        rgba(7,15,28,.98));
+    border:1px solid #1b3652;
+    box-shadow:0 8px 22px rgba(0,0,0,.2);
+    transition:.15s;
+}
+
+.card:active{
+    transform:scale(.97);
+}
+
+.card-icon{
+    font-size:29px;
+}
+
+.card-title{
+    margin-top:8px;
+    font-size:14px;
+    font-weight:900;
+}
+
+.card-text{
+    margin-top:4px;
+    color:#7893ae;
+    font-size:10px;
+    line-height:1.4;
+}
+
+.card-action{
     margin-top:10px;
     width:100%;
     padding:9px;
     border-radius:10px;
-    background:#252126;
-    color:#ddd;
+    background:#1768ae;
+    font-size:11px;
+}
+
+.card-action.green{
+    background:#168b65;
+}
+
+.card-action.gold{
+    background:#80600c;
+}
+
+/* MAIN ACTION */
+
+.main-action{
+    width:100%;
+    margin-top:10px;
+    padding:13px;
+    border-radius:13px;
+    background:linear-gradient(90deg,#1675c7,#5637bd);
+}
+
+/* MARKET */
+
+.market-item{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:13px;
+    margin-bottom:8px;
+    border-radius:13px;
+    background:#091522;
+    border:1px solid #183149;
+}
+
+.market-left{
+    display:flex;
+    gap:10px;
+    align-items:center;
+}
+
+.market-icon{
+    font-size:23px;
+}
+
+.market-name{
+    font-size:13px;
     font-weight:800;
 }
 
-.prefix-list{
-    display:flex;
-    flex-direction:column;
-    gap:9px;
-}
-
-.prefix-item{
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    background:#111013;
-    border:1px solid #2b282a;
-    border-radius:15px;
-    padding:14px;
-}
-
-.prefix-info b{
-    display:block;
-    font-size:15px;
-}
-
-.prefix-price{
-    color:#aaa;
-    font-size:11px;
-    margin-top:4px;
-}
-
-.prefix-btn{
-    padding:9px 12px;
-    border-radius:10px;
-    background:#ed2841;
-    font-weight:900;
-    font-size:11px;
-}
-
-.prefix-btn.owned{
-    background:#242126;
-}
-
-.rating{
-    display:flex;
-    flex-direction:column;
-    gap:8px;
-}
-
-.player{
-    display:flex;
-    align-items:center;
-    gap:10px;
-    padding:13px;
-    background:#111013;
-    border:1px solid #292629;
-    border-radius:15px;
-}
-
-.player.creator-row{
-    border-color:#85661f;
-    background:#17130b;
-}
-
-.rank{
-    width:28px;
-    font-weight:900;
-    color:#777;
-    text-align:center;
-}
-
-.player-avatar{
-    width:38px;
-    height:38px;
-    border-radius:50%;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    background:#292126;
-}
-
-.player-info{
-    flex:1;
-    min-width:0;
-}
-
-.player-name{
-    font-weight:900;
-    white-space:nowrap;
-    overflow:hidden;
-    text-overflow:ellipsis;
-}
-
-.player-prefix{
-    color:#888;
+.market-amount{
+    color:#718ca6;
     font-size:10px;
-    margin-top:3px;
 }
 
-.score{
+.price{
+    font-size:13px;
     font-weight:900;
-    color:#f4f1f2;
-    font-size:12px;
+    color:#5fc4ff;
 }
+
+.buy{
+    margin-left:8px;
+    padding:8px 10px;
+    border-radius:9px;
+    background:#1769ad;
+    font-size:10px;
+}
+
+/* BOTTOM */
 
 .bottom{
     position:fixed;
-    left:50%;
-    transform:translateX(-50%);
-    bottom:9px;
-    width:calc(100% - 18px);
-    max-width:880px;
-    background:#111013ee;
+    bottom:0;
+    left:0;
+    right:0;
+    max-width:520px;
+    margin:auto;
+    height:72px;
+    display:flex;
+    justify-content:space-around;
+    align-items:center;
+    background:rgba(4,10,18,.96);
+    border-top:1px solid #19314a;
     backdrop-filter:blur(18px);
-    border:1px solid #302c30;
-    border-radius:20px;
-    padding:7px;
-    display:grid;
-    grid-template-columns:repeat(5,1fr);
-    z-index:20;
+    z-index:50;
 }
 
 .nav{
-    background:transparent;
-    color:#777;
-    padding:8px 2px;
-    border-radius:13px;
+    background:none;
+    color:#637e99;
     font-size:10px;
-    font-weight:800;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:4px;
+}
+
+.nav span{
+    font-size:21px;
 }
 
 .nav.active{
-    color:#fff;
-    background:#282126;
+    color:#55bfff;
 }
 
-.nav-icon{
-    display:block;
-    font-size:19px;
-    margin-bottom:2px;
-}
+/* MODAL */
 
 .modal{
+    display:none;
     position:fixed;
     inset:0;
-    background:#000c;
-    backdrop-filter:blur(10px);
+    background:rgba(0,0,0,.75);
     z-index:100;
-    display:none;
-    align-items:center;
-    justify-content:center;
-    padding:20px;
+    padding:18px;
+    align-items:flex-end;
 }
 
 .modal.show{
@@ -518,94 +350,63 @@ button{
 
 .modal-box{
     width:100%;
-    max-width:430px;
-    background:#111013;
-    border:1px solid #363035;
-    border-radius:25px;
-    padding:22px;
-    text-align:center;
-    animation:modal .25s ease;
-}
-
-@keyframes modal{
-    from{
-        transform:scale(.85);
-        opacity:0;
-    }
-    to{
-        transform:scale(1);
-        opacity:1;
-    }
-}
-
-.reel{
-    height:160px;
-    border-radius:20px;
+    max-height:88vh;
+    overflow:auto;
     background:
-        radial-gradient(
-            circle,
-            #32181d,
-            #0b0a0c
-        );
+        linear-gradient(160deg,#10243a,#060e19);
+    border:1px solid #274766;
+    border-radius:23px 23px 0 0;
+    padding:20px;
+}
+
+.modal-head{
     display:flex;
+    justify-content:space-between;
     align-items:center;
-    justify-content:center;
-    font-size:65px;
-    margin:15px 0;
+    margin-bottom:15px;
 }
 
-.result-name{
-    font-size:22px;
-    font-weight:1000;
-}
-
-.result-rarity{
-    color:#aaa;
-    margin-top:5px;
-}
-
-.result-value{
-    color:#f2ca55;
+.modal-title{
+    font-size:20px;
     font-weight:900;
-    margin-top:8px;
 }
 
 .close{
+    width:34px;
+    height:34px;
+    border-radius:50%;
+    background:#16283b;
+}
+
+/* INPUT */
+
+input{
     width:100%;
     padding:13px;
-    border-radius:13px;
-    background:#ed2841;
-    font-weight:900;
-    margin-top:18px;
+    margin:6px 0;
+    background:#07111d;
+    color:#fff;
+    border:1px solid #24425e;
+    border-radius:11px;
+    outline:none;
 }
 
-.empty{
-    text-align:center;
-    padding:40px 10px;
-    color:#666;
-}
-
-.loading{
-    text-align:center;
-    color:#777;
-    padding:25px;
-}
+/* TOAST */
 
 .toast{
     position:fixed;
     left:50%;
-    bottom:85px;
-    transform:translateX(-50%) translateY(20px);
-    background:#242025;
-    border:1px solid #403a40;
-    padding:11px 15px;
-    border-radius:12px;
+    top:20px;
+    transform:translateX(-50%) translateY(-20px);
     opacity:0;
     pointer-events:none;
-    transition:.25s;
+    background:#132b42;
+    border:1px solid #2b5678;
+    padding:12px 16px;
+    border-radius:13px;
     z-index:200;
     font-size:12px;
-    font-weight:800;
+    transition:.25s;
 }
 
 .toast.show{
@@ -613,775 +414,585 @@ button{
     transform:translateX(-50%) translateY(0);
 }
 
-@media(min-width:650px){
+.hidden{
+    display:none!important;
+}
 
-    .cases{
-        grid-template-columns:1fr 1fr;
-    }
-
-    .inventory{
-        grid-template-columns:
-            repeat(3,1fr);
-    }
-
+.empty{
+    padding:25px;
+    text-align:center;
+    color:#607b94;
 }
 
 </style>
-
 </head>
 
 <body>
 
 <div class="app">
 
-    <div class="top">
+<header class="header">
 
-        <div class="logo">
-            NEXORA
-            <small>NFT COLLECTION</small>
+    <div class="brand">
+        <div class="logo">NEXORA</div>
+        <div id="creatorBadge" class="creator hidden">
+            👑 СОЗДАТЕЛЬ
+        </div>
+    </div>
+
+    <div class="balance">
+
+        <div class="balance-title">
+            ТВОЯ ЭКОНОМИКА
         </div>
 
-        <div class="balance">
+        <div class="balance-value">
             💎 <span id="balance">0</span>
+        </div>
+
+        <div class="balance-row">
+
+            <div class="balance-mini">
+                В БАНКЕ
+                <b>💎 <span id="bank">0</span></b>
+            </div>
+
+            <div class="balance-mini">
+                РЕЙТИНГ
+                <b>⭐ <span id="rating">0</span></b>
+            </div>
+
         </div>
 
     </div>
 
+</header>
 
-    <!-- PROFILE -->
 
-    <section
-        id="profile"
-        class="page active"
-    >
+<section class="profile">
 
-        <div class="hero">
+    <div class="profile-top">
 
-            <div class="hero-title">
-                Добро пожаловать в NEXORA
-            </div>
-
-            <div class="hero-text">
-                Открывай бесплатные кейсы,
-                собирай NFT и поднимайся
-                в рейтинге.
-            </div>
-
-            <div
-                id="creatorBox"
-                class="creator"
-                style="display:none"
-            >
-                👑 <b>CREATOR</b>
-                <br>
-                <span style="color:#999;font-size:11px">
-                    Создатель проекта NEXORA
-                </span>
-            </div>
-
+        <div class="avatar" id="avatar">
+            N
         </div>
 
-
-        <div class="profile-card">
-
-            <div
-                id="avatar"
-                class="avatar"
-            >
-                👤
+        <div>
+            <div class="profile-name" id="name">
+                Игрок
             </div>
 
-            <div
-                id="username"
-                class="name"
-            >
-                Player
-            </div>
-
-            <div
-                id="userPrefix"
-                class="prefix"
-            >
-                Без префикса
-            </div>
-
-            <div
-                id="creatorBadge"
-                class="creator-badge"
-                style="display:none"
-            >
-                👑 CREATOR
-            </div>
-
-            <div class="stats">
-
-                <div class="stat">
-                    <span>Баланс</span>
-                    <b>
-                        💎 <span id="profileCoins">0</span>
-                    </b>
-                </div>
-
-                <div class="stat">
-                    <span>Открыто кейсов</span>
-                    <b id="opened">0</b>
-                </div>
-
-                <div class="stat">
-                    <span>Стоимость коллекции</span>
-                    <b>
-                        💎 <span id="collection">0</span>
-                    </b>
-                </div>
-
-                <div class="stat">
-                    <span>Всего NFT</span>
-                    <b id="nftCount">0</b>
-                </div>
-
-            </div>
-
-        </div>
-
-    </section>
-
-
-    <!-- CASES -->
-
-    <section
-        id="cases"
-        class="page"
-    >
-
-        <div class="section-title">
-            🎁 Кейсы
-        </div>
-
-        <div
-            id="casesList"
-            class="cases"
-        >
-            <div class="loading">
-                Загрузка...
+            <div class="level">
+                Уровень <span id="level">1</span>
+                · NEXORA
             </div>
         </div>
 
-    </section>
+    </div>
+
+    <div class="xp">
+        <div class="xp-bar" id="xpBar"></div>
+    </div>
+
+</section>
 
 
-    <!-- INVENTORY -->
+<section class="section">
 
-    <section
-        id="inventoryPage"
-        class="page"
-    >
+    <div class="section-title">
+        ⚡ Быстрый доступ
+    </div>
 
-        <div class="section-title">
-            🎒 Моя коллекция
-        </div>
+    <div class="grid">
 
-        <div
-            id="inventory"
-            class="inventory"
-        >
-            <div class="loading">
-                Загрузка...
+        <div class="card" onclick="openModal('economy')">
+            <div class="card-icon">💰</div>
+            <div class="card-title">Экономика</div>
+            <div class="card-text">
+                Баланс, банк и управление капиталом
             </div>
         </div>
 
-    </section>
-
-
-    <!-- PREFIXES -->
-
-    <section
-        id="prefixesPage"
-        class="page"
-    >
-
-        <div class="section-title">
-            🏷️ Префиксы
-        </div>
-
-        <div
-            class="hero"
-            style="padding:17px"
-        >
-            Собирай 💎 с NFT и открывай
-            всё более редкие префиксы.
-        </div>
-
-        <div
-            id="prefixes"
-            class="prefix-list"
-        >
-            <div class="loading">
-                Загрузка...
+        <div class="card" onclick="openModal('business')">
+            <div class="card-icon">🏭</div>
+            <div class="card-title">Бизнес</div>
+            <div class="card-text">
+                Строй свою империю
             </div>
         </div>
 
-    </section>
-
-
-    <!-- RATING -->
-
-    <section
-        id="ratingPage"
-        class="page"
-    >
-
-        <div class="section-title">
-            🏆 Рейтинг
+        <div class="card" onclick="mine()">
+            <div class="card-icon">⛏️</div>
+            <div class="card-title">Шахта</div>
+            <div class="card-text">
+                Добывай ресурсы
+            </div>
+            <button class="card-action">
+                ДОБЫВАТЬ
+            </button>
         </div>
 
-        <div
-            class="hero"
-            style="padding:17px"
-        >
-            Рейтинг считается автоматически:
-            💎 баланс + стоимость коллекции.
+        <div class="card" onclick="harvest()">
+            <div class="card-icon">🌾</div>
+            <div class="card-title">Ферма</div>
+            <div class="card-text">
+                Выращивай урожай
+            </div>
+            <button class="card-action green">
+                СОБРАТЬ
+            </button>
         </div>
 
-        <div
-            id="rating"
-            class="rating"
-        >
-            <div class="loading">
-                Загрузка...
+    </div>
+
+</section>
+
+
+<section class="section">
+
+    <div class="section-title">
+        🌌 Мир NEXORA
+    </div>
+
+    <div class="grid">
+
+        <div class="card" onclick="openModal('planets')">
+            <div class="card-icon">🪐</div>
+            <div class="card-title">Планеты</div>
+            <div class="card-text">
+                Исследуй новые миры
             </div>
         </div>
 
-    </section>
+        <div class="card" onclick="openModal('work')">
+            <div class="card-icon">💼</div>
+            <div class="card-title">Работа</div>
+            <div class="card-text">
+                Получай зарплату и опыт
+            </div>
+        </div>
+
+        <div class="card" onclick="fish()">
+            <div class="card-icon">🎣</div>
+            <div class="card-title">Рыбалка</div>
+            <div class="card-text">
+                Лови рыбу и зарабатывай
+            </div>
+            <button class="card-action">
+                ЗАБРОСИТЬ
+            </button>
+        </div>
+
+        <div class="card" onclick="openModal('pets')">
+            <div class="card-icon">🐉</div>
+            <div class="card-title">Питомцы</div>
+            <div class="card-text">
+                Собирай редких питомцев
+            </div>
+        </div>
+
+    </div>
+
+</section>
+
+
+<section class="section">
+
+    <div class="section-title">
+        🏙️ Империя
+    </div>
+
+    <div class="grid">
+
+        <div class="card" onclick="openModal('properties')">
+            <div class="card-icon">🏢</div>
+            <div class="card-title">Недвижимость</div>
+            <div class="card-text">
+                Покупай объекты и получай доход
+            </div>
+        </div>
+
+        <div class="card" onclick="openInventory()">
+            <div class="card-icon">🎒</div>
+            <div class="card-title">Инвентарь</div>
+            <div class="card-text">
+                Все твои ресурсы
+            </div>
+        </div>
+
+        <div class="card" onclick="openModal('market')">
+            <div class="card-icon">🛒</div>
+            <div class="card-title">Маркет</div>
+            <div class="card-text">
+                Покупай и продавай
+            </div>
+        </div>
+
+        <div class="card" onclick="openRating()">
+            <div class="card-icon">🏆</div>
+            <div class="card-title">Рейтинг</div>
+            <div class="card-text">
+                Сравнивай свою империю
+            </div>
+        </div>
+
+    </div>
+
+</section>
+
+
+<section class="section">
+
+    <div class="section-title">
+        🎁 Ежедневная награда
+    </div>
+
+    <div class="card">
+
+        <div class="card-icon">
+            💎
+        </div>
+
+        <div class="card-title">
+            Бонус NEXORA
+        </div>
+
+        <div class="card-text">
+            Забирай ежедневные 💎 и развивай свою империю.
+        </div>
+
+        <button
+            class="main-action"
+            onclick="dailyReward()">
+            ЗАБРАТЬ НАГРАДУ
+        </button>
+
+    </div>
+
+</section>
 
 </div>
 
 
 <!-- NAVIGATION -->
 
-<div class="bottom">
+<nav class="bottom">
 
-    <button
-        class="nav active"
-        onclick="showPage('profile',this)"
-    >
-        <span class="nav-icon">👤</span>
-        Профиль
+    <button class="nav active" onclick="location.reload()">
+        <span>🏠</span>
+        Главная
     </button>
 
-    <button
-        class="nav"
-        onclick="showPage('cases',this)"
-    >
-        <span class="nav-icon">🎁</span>
-        Кейсы
+    <button class="nav" onclick="openInventory()">
+        <span>🎒</span>
+        Инвентарь
     </button>
 
-    <button
-        class="nav"
-        onclick="showPage('inventoryPage',this)"
-    >
-        <span class="nav-icon">🎒</span>
-        NFT
+    <button class="nav" onclick="openModal('market')">
+        <span>🛒</span>
+        Маркет
     </button>
 
-    <button
-        class="nav"
-        onclick="showPage('prefixesPage',this)"
-    >
-        <span class="nav-icon">🏷️</span>
-        Префиксы
-    </button>
-
-    <button
-        class="nav"
-        onclick="showPage('ratingPage',this)"
-    >
-        <span class="nav-icon">🏆</span>
+    <button class="nav" onclick="openRating()">
+        <span>🏆</span>
         Рейтинг
     </button>
 
-</div>
+</nav>
 
 
-<!-- OPEN MODAL -->
+<!-- MODAL -->
 
-<div
-    id="modal"
-    class="modal"
->
+<div class="modal" id="modal">
 
     <div class="modal-box">
 
-        <div
-            id="modalTitle"
-            style="font-weight:900"
-        >
-            Открываем...
+        <div class="modal-head">
+
+            <div class="modal-title" id="modalTitle">
+                NEXORA
+            </div>
+
+            <button class="close" onclick="closeModal()">
+                ✕
+            </button>
+
         </div>
 
-        <div
-            id="reel"
-            class="reel"
-        >
-            🎁
-        </div>
-
-        <div
-            id="resultName"
-            class="result-name"
-        >
-            -
-        </div>
-
-        <div
-            id="resultRarity"
-            class="result-rarity"
-        >
-            -
-        </div>
-
-        <div
-            id="resultValue"
-            class="result-value"
-        >
-            -
-        </div>
-
-        <button
-            class="close"
-            onclick="closeModal()"
-        >
-            Забрать NFT
-        </button>
+        <div id="modalContent"></div>
 
     </div>
 
 </div>
 
 
-<div
-    id="toast"
-    class="toast"
-></div>
+<div class="toast" id="toast"></div>
 
 
 <script>
 
-const tg = window.Telegram.WebApp;
+/* ======================================================
+   TELEGRAM
+====================================================== */
 
-try{
+const tg = window.Telegram?.WebApp;
+
+if(tg){
     tg.ready();
     tg.expand();
-}catch(e){}
-
-
-let user = null;
-
-
-function formatNumber(number){
-
-    return Number(number || 0)
-        .toLocaleString("ru-RU");
-
 }
 
 
-function toast(message){
+/* ======================================================
+   API
+====================================================== */
+
+async function api(url, options={}){
+
+    const headers = options.headers || {};
+
+    let user = tg?.initDataUnsafe?.user;
+
+    if(user){
+
+        headers["X-Telegram-ID"] =
+            user.id;
+
+        headers["X-Telegram-Username"] =
+            user.username || "";
+
+        headers["X-Telegram-Name"] =
+            user.first_name || "Игрок";
+    }
+
+    options.headers = headers;
+
+    const response =
+        await fetch(url, options);
+
+    return response.json();
+}
+
+
+/* ======================================================
+   TOAST
+====================================================== */
+
+function toast(text){
 
     const el =
         document.getElementById("toast");
 
-    el.textContent = message;
+    el.innerText = text;
+
     el.classList.add("show");
 
-    setTimeout(() => {
+    setTimeout(()=>{
         el.classList.remove("show");
-    }, 2200);
+    },2500);
 }
 
 
-async function api(
-    url,
-    options = {}
-){
+/* ======================================================
+   LOAD PLAYER
+====================================================== */
 
-    const headers = {
-        "Content-Type":
-            "application/json"
-    };
-
-    try{
-
-        const initData =
-            tg.initData || "";
-
-        if(initData){
-            headers[
-                "X-Telegram-Init-Data"
-            ] = initData;
-        }
-
-    }catch(e){}
-
-    const response =
-        await fetch(
-            url,
-            {
-                ...options,
-                headers:{
-                    ...headers,
-                    ...(options.headers || {})
-                }
-            }
-        );
+async function load(){
 
     const data =
-        await response.json();
+        await api("/api/me");
 
-    if(!response.ok){
-        throw new Error(
-            data.error ||
-            "Ошибка сервера"
-        );
+    const user =
+        data.user;
+
+    document.getElementById("balance")
+        .innerText =
+        Number(user.balance).toLocaleString();
+
+    document.getElementById("bank")
+        .innerText =
+        Number(user.bank).toLocaleString();
+
+    document.getElementById("rating")
+        .innerText =
+        Number(user.rating).toLocaleString();
+
+    document.getElementById("level")
+        .innerText =
+        user.level;
+
+    document.getElementById("name")
+        .innerText =
+        user.first_name || "Игрок";
+
+    document.getElementById("avatar")
+        .innerText =
+        (user.first_name || "N")[0]
+        .toUpperCase();
+
+    if(data.creator){
+
+        document
+            .getElementById("creatorBadge")
+            .classList.remove("hidden");
+
     }
 
-    return data;
-}
+    let needed =
+        user.level * 1000;
 
-
-function showPage(
-    id,
-    button
-){
+    let percent =
+        Math.min(
+            100,
+            Math.round(
+                user.xp / needed * 100
+            )
+        );
 
     document
-        .querySelectorAll(".page")
-        .forEach(
-            page =>
-                page.classList.remove(
-                    "active"
-                )
-        );
-
-    document
-        .getElementById(id)
-        .classList.add("active");
-
-    document
-        .querySelectorAll(".nav")
-        .forEach(
-            nav =>
-                nav.classList.remove(
-                    "active"
-                )
-        );
-
-    if(button){
-        button.classList.add("active");
-    }
-
-    if(id === "cases"){
-        loadCases();
-    }
-
-    if(id === "inventoryPage"){
-        loadInventory();
-    }
-
-    if(id === "prefixesPage"){
-        loadPrefixes();
-    }
-
-    if(id === "ratingPage"){
-        loadRating();
-    }
+        .getElementById("xpBar")
+        .style.width =
+        percent + "%";
 }
 
 
-async function loadMe(){
+/* ======================================================
+   MODAL
+====================================================== */
 
-    try{
-
-        const data =
-            await api("/api/me");
-
-        user = data.user;
-
-        updateUser();
-
-        loadInventory();
-
-    }catch(error){
-
-        toast(error.message);
-
-    }
-
-}
-
-
-function updateUser(){
-
-    if(!user) return;
-
-    document.getElementById(
-        "balance"
-    ).textContent =
-        formatNumber(user.coins);
-
-    document.getElementById(
-        "profileCoins"
-    ).textContent =
-        formatNumber(user.coins);
-
-    document.getElementById(
-        "collection"
-    ).textContent =
-        formatNumber(
-            user.collection_value
-        );
-
-    document.getElementById(
-        "opened"
-    ).textContent =
-        formatNumber(
-            user.total_opened
-        );
-
-    document.getElementById(
-        "username"
-    ).textContent =
-        user.first_name ||
-        user.username ||
-        "Player";
-
-    document.getElementById(
-        "userPrefix"
-    ).textContent =
-        user.prefix ||
-        "Без префикса";
-
-    if(user.creator){
-
-        document.getElementById(
-            "creatorBox"
-        ).style.display =
-            "block";
-
-        document.getElementById(
-            "creatorBadge"
-        ).style.display =
-            "inline-block";
-
-        document.getElementById(
-            "avatar"
-        ).classList.add(
-            "creator-avatar"
-        );
-
-        document.getElementById(
-            "avatar"
-        ).textContent =
-            "👑";
-
-    }
-
-}
-
-
-async function loadCases(){
-
-    const container =
-        document.getElementById(
-            "casesList"
-        );
-
-    try{
-
-        const data =
-            await api("/api/cases");
-
-        container.innerHTML = "";
-
-        data.cases.forEach(
-            caseData => {
-
-                const div =
-                    document.createElement(
-                        "div"
-                    );
-
-                div.className =
-                    "case " +
-                    caseData.accent;
-
-                div.innerHTML = `
-
-                    <div class="case-name">
-                        ${caseData.name}
-                    </div>
-
-                    <div class="case-sub">
-                        ${caseData.subtitle}
-                    </div>
-
-                    <div class="free">
-                        FREE
-                    </div>
-
-                    <button
-                        class="open"
-                        onclick="openCase(${caseData.id})"
-                    >
-                        ОТКРЫТЬ
-                    </button>
-
-                `;
-
-                container.appendChild(div);
-
-            }
-        );
-
-    }catch(error){
-
-        container.innerHTML =
-            `<div class="empty">
-                ${error.message}
-            </div>`;
-
-    }
-
-}
-
-
-async function openCase(caseId){
+function openModal(type){
 
     const modal =
-        document.getElementById(
-            "modal"
-        );
-
-    const reel =
-        document.getElementById(
-            "reel"
-        );
+        document.getElementById("modal");
 
     modal.classList.add("show");
 
-    document.getElementById(
-        "modalTitle"
-    ).textContent =
-        "Открываем кейс...";
+    const title =
+        document.getElementById("modalTitle");
 
-    document.getElementById(
-        "resultName"
-    ).textContent =
-        "Поиск NFT";
+    const content =
+        document.getElementById("modalContent");
 
-    document.getElementById(
-        "resultRarity"
-    ).textContent =
-        "";
+    if(type === "economy"){
 
-    document.getElementById(
-        "resultValue"
-    ).textContent =
-        "";
+        title.innerText =
+            "💰 Экономика";
 
-    reel.textContent = "🎁";
+        content.innerHTML = `
 
-    let ticks = 0;
+            <div class="card">
 
-    const animation =
-        setInterval(() => {
+                <div class="card-title">
+                    🏦 Банк
+                </div>
 
-            const icons = [
-                "💎",
-                "⚡",
-                "🔥",
-                "👁️",
-                "🌀",
-                "🌌"
-            ];
+                <div class="card-text">
+                    Храни 💎 в банке и управляй своим капиталом.
+                </div>
 
-            reel.textContent =
-                icons[
-                    Math.floor(
-                        Math.random()
-                        * icons.length
-                    )
-                ];
+                <input
+                    id="bankAmount"
+                    type="number"
+                    placeholder="Количество 💎">
 
-            ticks++;
+                <button
+                    class="main-action"
+                    onclick="deposit()">
+                    ПОЛОЖИТЬ В БАНК
+                </button>
 
-            if(ticks > 14){
-                clearInterval(animation);
-            }
+                <button
+                    class="card-action"
+                    onclick="withdraw()">
+                    СНЯТЬ ИЗ БАНКА
+                </button>
 
-        }, 80);
-
-
-    try{
-
-        const data =
-            await api(
-                "/api/cases/open",
-                {
-                    method:"POST",
-                    body:JSON.stringify({
-                        case_id:caseId
-                    })
-                }
-            );
-
-        setTimeout(() => {
-
-            const nft =
-                data.reward;
-
-            reel.textContent =
-                "💎";
-
-            document.getElementById(
-                "modalTitle"
-            ).textContent =
-                "NFT получен!";
-
-            document.getElementById(
-                "resultName"
-            ).textContent =
-                nft.name;
-
-            document.getElementById(
-                "resultRarity"
-            ).textContent =
-                nft.rarity;
-
-            document.getElementById(
-                "resultValue"
-            ).textContent =
-                "💎 " +
-                formatNumber(
-                    nft.value
-                );
-
-            user = data.user;
-
-            updateUser();
-
-        }, 1200);
-
-    }catch(error){
-
-        clearInterval(animation);
-
-        closeModal();
-
-        toast(error.message);
-
+            </div>
+        `;
     }
 
+
+    if(type === "business"){
+
+        title.innerText =
+            "🏭 Бизнес";
+
+        content.innerHTML = `
+
+            <div class="card">
+
+                <div class="card-icon">
+                    🏪
+                </div>
+
+                <div class="card-title">
+                    Малый магазин
+                </div>
+
+                <div class="card-text">
+                    Твой первый бизнес автоматически приносит доход.
+                </div>
+
+                <button
+                    class="main-action"
+                    onclick="collectBusiness()">
+                    ЗАБРАТЬ ДОХОД
+                </button>
+
+                <button
+                    class="card-action gold"
+                    onclick="upgradeBusiness()">
+                    УЛУЧШИТЬ БИЗНЕС
+                </button>
+
+            </div>
+        `;
+    }
+
+
+    if(type === "work"){
+
+        title.innerText =
+            "💼 Работа";
+
+        loadJobs();
+    }
+
+
+    if(type === "planets"){
+
+        title.innerText =
+            "🪐 Планеты";
+
+        loadPlanets();
+    }
+
+
+    if(type === "pets"){
+
+        title.innerText =
+            "🐉 Питомцы";
+
+        loadPets();
+    }
+
+
+    if(type === "properties"){
+
+        title.innerText =
+            "🏢 Недвижимость";
+
+        loadProperties();
+    }
+
+
+    if(type === "market"){
+
+        title.innerText =
+            "🛒 Маркет";
+
+        loadMarket();
+    }
 }
 
 
@@ -1390,435 +1001,943 @@ function closeModal(){
     document
         .getElementById("modal")
         .classList.remove("show");
-
-    loadInventory();
-
 }
 
 
-async function loadInventory(){
+/* ======================================================
+   BANK
+====================================================== */
 
-    const container =
-        document.getElementById(
-            "inventory"
+async function deposit(){
+
+    const amount =
+        Number(
+            document.getElementById(
+                "bankAmount"
+            ).value
         );
 
-    try{
+    const result =
+        await api(
+            "/api/bank/deposit",
+            {
+                method:"POST",
+                headers:{
+                    "Content-Type":
+                        "application/json"
+                },
+                body:JSON.stringify({
+                    amount
+                })
+            }
+        );
 
-        const data =
-            await api(
-                "/api/inventory"
-            );
+    toast(
+        result.ok
+        ? "💎 Деньги отправлены в банк"
+        : result.message
+    );
 
-        container.innerHTML = "";
+    if(result.ok){
+        load();
+        closeModal();
+    }
+}
 
-        document.getElementById(
-            "nftCount"
-        ).textContent =
-            formatNumber(
-                data.inventory.length
-            );
 
-        if(!data.inventory.length){
+async function withdraw(){
 
-            container.innerHTML =
-                `<div class="empty"
-                      style="grid-column:1/-1">
-                    Коллекция пока пустая.<br>
-                    Открой первый кейс.
-                </div>`;
+    const amount =
+        Number(
+            document.getElementById(
+                "bankAmount"
+            ).value
+        );
 
-            return;
+    const result =
+        await api(
+            "/api/bank/withdraw",
+            {
+                method:"POST",
+                headers:{
+                    "Content-Type":
+                        "application/json"
+                },
+                body:JSON.stringify({
+                    amount
+                })
+            }
+        );
 
-        }
+    toast(
+        result.ok
+        ? "💎 Деньги сняты"
+        : result.message
+    );
 
-        data.inventory.forEach(
-            nft => {
+    if(result.ok){
+        load();
+        closeModal();
+    }
+}
 
-                const div =
-                    document.createElement(
-                        "div"
-                    );
 
-                div.className = "nft";
+/* ======================================================
+   BUSINESS
+====================================================== */
 
-                div.innerHTML = `
+async function collectBusiness(){
 
-                    <div class="nft-art">
-                        💎
-                    </div>
+    const result =
+        await api(
+            "/api/business/collect",
+            {
+                method:"POST"
+            }
+        );
 
-                    <div class="nft-name">
-                        ${nft.name}
-                    </div>
+    toast(
+        result.ok
+        ? "💎 Получено: " +
+          result.amount
+        : result.message
+    );
 
-                    <div class="rarity">
-                        ${nft.rarity}
-                    </div>
+    if(result.ok){
+        load();
+        closeModal();
+    }
+}
 
-                    <div class="value">
-                        💎 ${formatNumber(nft.value)}
+
+async function upgradeBusiness(){
+
+    const result =
+        await api(
+            "/api/business/upgrade",
+            {
+                method:"POST"
+            }
+        );
+
+    toast(
+        result.ok
+        ? "🏭 Бизнес улучшен!"
+        : result.message
+    );
+
+    if(result.ok){
+        load();
+        closeModal();
+    }
+}
+
+
+/* ======================================================
+   MINE
+====================================================== */
+
+async function mine(){
+
+    const result =
+        await api(
+            "/api/mine",
+            {
+                method:"POST"
+            }
+        );
+
+    toast(
+        result.ok
+        ? "⛏️ +" +
+          result.amount +
+          " " +
+          result.item
+        : result.message
+    );
+
+    if(result.ok)
+        load();
+}
+
+
+/* ======================================================
+   FARM
+====================================================== */
+
+async function harvest(){
+
+    const result =
+        await api(
+            "/api/farm/harvest",
+            {
+                method:"POST"
+            }
+        );
+
+    toast(
+        result.ok
+        ? "🌾 Урожай принёс 💎 " +
+          result.amount
+        : result.message
+    );
+
+    if(result.ok)
+        load();
+}
+
+
+/* ======================================================
+   FISH
+====================================================== */
+
+async function fish(){
+
+    const result =
+        await api(
+            "/api/fishing",
+            {
+                method:"POST"
+            }
+        );
+
+    toast(
+        result.ok
+        ? "🎣 Ты заработал 💎 " +
+          result.amount
+        : result.message
+    );
+
+    if(result.ok)
+        load();
+}
+
+
+/* ======================================================
+   JOBS
+====================================================== */
+
+async function loadJobs(){
+
+    const jobs =
+        await api("/api/jobs");
+
+    let html = "";
+
+    Object.entries(jobs)
+        .forEach(([name,salary])=>{
+
+            html += `
+
+                <div class="market-item">
+
+                    <div class="market-left">
+
+                        <div class="market-icon">
+                            💼
+                        </div>
+
+                        <div>
+
+                            <div class="market-name">
+                                ${name}
+                            </div>
+
+                            <div class="market-amount">
+                                Зарплата:
+                                💎 ${salary}
+                            </div>
+
+                        </div>
+
                     </div>
 
                     <button
-                        class="sell"
-                        onclick="sellNFT(${nft.instance_id})"
-                    >
-                        Продать
+                        class="buy"
+                        onclick="chooseJob('${name}')">
+                        ВЫБРАТЬ
                     </button>
 
-                `;
+                </div>
+            `;
+        });
 
-                container.appendChild(
-                    div
-                );
+    html += `
 
+        <button
+            class="main-action"
+            onclick="work()">
+            💼 РАБОТАТЬ
+        </button>
+    `;
+
+    document
+        .getElementById("modalContent")
+        .innerHTML = html;
+}
+
+
+async function chooseJob(job){
+
+    const result =
+        await api(
+            "/api/job/set",
+            {
+                method:"POST",
+                headers:{
+                    "Content-Type":
+                        "application/json"
+                },
+                body:JSON.stringify({
+                    job
+                })
             }
         );
 
-    }catch(error){
-
-        container.innerHTML =
-            `<div class="empty">
-                ${error.message}
-            </div>`;
-
-    }
-
+    toast(
+        result.ok
+        ? "💼 Работа выбрана"
+        : result.message
+    );
 }
 
 
-async function sellNFT(
-    instanceId
-){
+async function work(){
 
-    try{
-
-        const data =
-            await api(
-                "/api/sell",
-                {
-                    method:"POST",
-                    body:JSON.stringify({
-                        instance_id:
-                            instanceId
-                    })
-                }
-            );
-
-        user = data.user;
-
-        updateUser();
-
-        toast(
-            "NFT продан за 💎 " +
-            formatNumber(
-                data.sold.value
-            )
+    const result =
+        await api(
+            "/api/job/work",
+            {
+                method:"POST"
+            }
         );
 
-        loadInventory();
+    toast(
+        result.ok
+        ? "💼 Зарплата: 💎 " +
+          result.amount
+        : result.message
+    );
 
-    }catch(error){
-
-        toast(error.message);
-
-    }
-
+    if(result.ok)
+        load();
 }
 
 
-async function loadPrefixes(){
+/* ======================================================
+   PLANETS
+====================================================== */
 
-    const container =
+async function loadPlanets(){
+
+    const planets =
+        await api("/api/planets");
+
+    let html = "";
+
+    planets.forEach(p=>{
+
+        html += `
+
+            <div class="market-item">
+
+                <div class="market-left">
+
+                    <div class="market-icon">
+                        ${p.name.split(" ")[0]}
+                    </div>
+
+                    <div>
+
+                        <div class="market-name">
+                            ${p.name}
+                        </div>
+
+                        <div class="market-amount">
+                            ${p.price === 0
+                                ? "Бесплатно"
+                                : "Путешествие: 💎 " + p.price}
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <button
+                    class="buy"
+                    onclick="travel('${p.name}')">
+                    ЛЕТЕТЬ
+                </button>
+
+            </div>
+        `;
+    });
+
+    document
+        .getElementById("modalContent")
+        .innerHTML = html;
+}
+
+
+async function travel(name){
+
+    const result =
+        await api(
+            "/api/planet/travel",
+            {
+                method:"POST",
+                headers:{
+                    "Content-Type":
+                        "application/json"
+                },
+                body:JSON.stringify({
+                    name
+                })
+            }
+        );
+
+    toast(
+        result.ok
+        ? "🪐 Добро пожаловать: " +
+          result.planet
+        : result.message
+    );
+
+    if(result.ok)
+        load();
+}
+
+
+/* ======================================================
+   PETS
+====================================================== */
+
+async function loadPets(){
+
+    const pets =
+        await api("/api/pets");
+
+    let html = "";
+
+    pets.forEach(p=>{
+
+        html += `
+
+            <div class="market-item">
+
+                <div class="market-left">
+
+                    <div class="market-icon">
+                        ${p.name.split(" ")[0]}
+                    </div>
+
+                    <div>
+
+                        <div class="market-name">
+                            ${p.name}
+                        </div>
+
+                        <div class="market-amount">
+                            Цена: 💎 ${p.price.toLocaleString()}
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <button
+                    class="buy"
+                    onclick="buyPet('${p.name}')">
+                    КУПИТЬ
+                </button>
+
+            </div>
+        `;
+    });
+
+    document
+        .getElementById("modalContent")
+        .innerHTML = html;
+}
+
+
+async function buyPet(name){
+
+    const result =
+        await api(
+            "/api/pet/buy",
+            {
+                method:"POST",
+                headers:{
+                    "Content-Type":
+                        "application/json"
+                },
+                body:JSON.stringify({
+                    name
+                })
+            }
+        );
+
+    toast(
+        result.ok
+        ? "🐉 Питомец добавлен!"
+        : result.message
+    );
+
+    if(result.ok)
+        load();
+}
+
+
+/* ======================================================
+   PROPERTIES
+====================================================== */
+
+async function loadProperties(){
+
+    const properties =
+        await api("/api/properties");
+
+    let html = "";
+
+    properties.forEach(p=>{
+
+        html += `
+
+            <div class="market-item">
+
+                <div class="market-left">
+
+                    <div class="market-icon">
+                        🏢
+                    </div>
+
+                    <div>
+
+                        <div class="market-name">
+                            ${p.name}
+                        </div>
+
+                        <div class="market-amount">
+                            💎 ${p.price.toLocaleString()}
+                            · доход ${p.income}
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <button
+                    class="buy"
+                    onclick="buyProperty('${p.name}')">
+                    КУПИТЬ
+                </button>
+
+            </div>
+        `;
+    });
+
+    document
+        .getElementById("modalContent")
+        .innerHTML = html;
+}
+
+
+async function buyProperty(name){
+
+    const result =
+        await api(
+            "/api/property/buy",
+            {
+                method:"POST",
+                headers:{
+                    "Content-Type":
+                        "application/json"
+                },
+                body:JSON.stringify({
+                    name
+                })
+            }
+        );
+
+    toast(
+        result.ok
+        ? "🏢 Недвижимость приобретена!"
+        : result.message
+    );
+
+    if(result.ok)
+        load();
+}
+
+
+/* ======================================================
+   INVENTORY
+====================================================== */
+
+async function openInventory(){
+
+    document
+        .getElementById("modal")
+        .classList.add("show");
+
+    document
+        .getElementById("modalTitle")
+        .innerText =
+        "🎒 Инвентарь";
+
+    const items =
+        await api("/api/inventory");
+
+    if(!items.length){
+
+        document
+            .getElementById("modalContent")
+            .innerHTML =
+            `<div class="empty">
+                Инвентарь пока пуст
+            </div>`;
+
+        return;
+    }
+
+    let html = "";
+
+    items.forEach(item=>{
+
+        html += `
+
+            <div class="market-item">
+
+                <div class="market-left">
+
+                    <div class="market-icon">
+                        ${item.item_name.includes("Кристалл")
+                            ? "💎"
+                            : item.item_name.includes("Золото")
+                            ? "🪙"
+                            : "📦"}
+                    </div>
+
+                    <div>
+
+                        <div class="market-name">
+                            ${item.item_name}
+                        </div>
+
+                        <div class="market-amount">
+                            Количество:
+                            ${item.amount}
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+        `;
+    });
+
+    document
+        .getElementById("modalContent")
+        .innerHTML = html;
+}
+
+
+/* ======================================================
+   MARKET
+====================================================== */
+
+async function loadMarket(){
+
+    const items =
+        await api("/api/market");
+
+    if(!items.length){
+
+        document
+            .getElementById("modalContent")
+            .innerHTML = `
+                <div class="empty">
+                    🛒 На рынке пока нет объявлений
+                </div>
+            `;
+
+        return;
+    }
+
+    let html = "";
+
+    items.forEach(item=>{
+
+        html += `
+
+            <div class="market-item">
+
+                <div class="market-left">
+
+                    <div class="market-icon">
+                        📦
+                    </div>
+
+                    <div>
+
+                        <div class="market-name">
+                            ${item.item_name}
+                        </div>
+
+                        <div class="market-amount">
+                            Количество:
+                            ${item.amount}
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <div>
+
+                    <span class="price">
+                        💎 ${item.price.toLocaleString()}
+                    </span>
+
+                    <button
+                        class="buy"
+                        onclick="buyMarket(${item.id})">
+                        КУПИТЬ
+                    </button>
+
+                </div>
+
+            </div>
+        `;
+    });
+
+    html += `
+
+        <hr style="
+            border:0;
+            border-top:1px solid #203a53;
+            margin:20px 0;
+        ">
+
+        <div class="card">
+
+            <div class="card-title">
+                📦 Выставить ресурс
+            </div>
+
+            <input
+                id="sellName"
+                placeholder="Название ресурса">
+
+            <input
+                id="sellAmount"
+                type="number"
+                placeholder="Количество">
+
+            <input
+                id="sellPrice"
+                type="number"
+                placeholder="Цена за весь лот">
+
+            <button
+                class="main-action"
+                onclick="sellMarket()">
+                ВЫСТАВИТЬ НА РЫНОК
+            </button>
+
+        </div>
+    `;
+
+    document
+        .getElementById("modalContent")
+        .innerHTML = html;
+}
+
+
+async function buyMarket(id){
+
+    const result =
+        await api(
+            "/api/market/buy",
+            {
+                method:"POST",
+                headers:{
+                    "Content-Type":
+                        "application/json"
+                },
+                body:JSON.stringify({
+                    id
+                })
+            }
+        );
+
+    toast(
+        result.ok
+        ? "🛒 Покупка совершена!"
+        : result.message
+    );
+
+    if(result.ok){
+
+        load();
+
+        loadMarket();
+    }
+}
+
+
+async function sellMarket(){
+
+    const item_name =
         document.getElementById(
-            "prefixes"
+            "sellName"
+        ).value;
+
+    const amount =
+        Number(
+            document.getElementById(
+                "sellAmount"
+            ).value
         );
 
-    try{
+    const price =
+        Number(
+            document.getElementById(
+                "sellPrice"
+            ).value
+        );
 
-        const data =
-            await api(
-                "/api/prefixes"
-            );
-
-        container.innerHTML = "";
-
-        data.prefixes.forEach(
-            prefix => {
-
-                const div =
-                    document.createElement(
-                        "div"
-                    );
-
-                div.className =
-                    "prefix-item";
-
-                let button = "";
-
-                if(prefix.equipped){
-
-                    button = `
-                        <button
-                            class="prefix-btn owned"
-                            disabled
-                        >
-                            НАДЕТ
-                        </button>
-                    `;
-
-                }else if(prefix.owned){
-
-                    button = `
-                        <button
-                            class="prefix-btn owned"
-                            onclick="equipPrefix(${prefix.id})"
-                        >
-                            НАДЕТЬ
-                        </button>
-                    `;
-
-                }else{
-
-                    button = `
-                        <button
-                            class="prefix-btn"
-                            onclick="buyPrefix(${prefix.id})"
-                        >
-                            ${formatNumber(prefix.price)}
-                            💎
-                        </button>
-                    `;
-
-                }
-
-                div.innerHTML = `
-
-                    <div class="prefix-info">
-
-                        <b>
-                            ${prefix.display}
-                        </b>
-
-                        <div class="prefix-price">
-                            ${
-                                prefix.owned
-                                ? "Уже куплен"
-                                : "Стоимость: "
-                                + formatNumber(
-                                    prefix.price
-                                )
-                                + " 💎"
-                            }
-                        </div>
-
-                    </div>
-
-                    ${button}
-
-                `;
-
-                container.appendChild(
-                    div
-                );
-
+    const result =
+        await api(
+            "/api/market/sell",
+            {
+                method:"POST",
+                headers:{
+                    "Content-Type":
+                        "application/json"
+                },
+                body:JSON.stringify({
+                    item_name,
+                    amount,
+                    price
+                })
             }
         );
 
-    }catch(error){
+    toast(
+        result.ok
+        ? "🛒 Лот выставлен!"
+        : result.message
+    );
 
-        container.innerHTML =
-            `<div class="empty">
-                ${error.message}
-            </div>`;
+    if(result.ok){
 
+        load();
+
+        loadMarket();
     }
-
 }
 
 
-async function buyPrefix(
-    prefixId
-){
+/* ======================================================
+   RATING
+====================================================== */
 
-    try{
+async function openRating(){
 
-        const data =
-            await api(
-                "/api/prefixes/buy",
-                {
-                    method:"POST",
-                    body:JSON.stringify({
-                        prefix_id:prefixId
-                    })
-                }
-            );
+    document
+        .getElementById("modal")
+        .classList.add("show");
 
-        user = data.user;
+    document
+        .getElementById("modalTitle")
+        .innerText =
+        "🏆 Рейтинг NEXORA";
 
-        updateUser();
+    const users =
+        await api("/api/leaderboard");
 
-        toast(
-            "Префикс куплен!"
-        );
+    let html = "";
 
-        loadPrefixes();
+    users.forEach((user,index)=>{
 
-    }catch(error){
+        html += `
 
-        toast(error.message);
+            <div class="market-item">
 
-    }
+                <div class="market-left">
 
-}
-
-
-async function equipPrefix(
-    prefixId
-){
-
-    try{
-
-        const data =
-            await api(
-                "/api/prefixes/equip",
-                {
-                    method:"POST",
-                    body:JSON.stringify({
-                        prefix_id:prefixId
-                    })
-                }
-            );
-
-        user = data.user;
-
-        updateUser();
-
-        toast(
-            "Префикс установлен!"
-        );
-
-        loadPrefixes();
-
-    }catch(error){
-
-        toast(error.message);
-
-    }
-
-}
-
-
-async function loadRating(){
-
-    const container =
-        document.getElementById(
-            "rating"
-        );
-
-    try{
-
-        const data =
-            await api(
-                "/api/leaderboard"
-            );
-
-        container.innerHTML = "";
-
-        if(!data.players.length){
-
-            container.innerHTML =
-                `<div class="empty">
-                    Пока никто не играл.
-                </div>`;
-
-            return;
-
-        }
-
-        data.players.forEach(
-            player => {
-
-                const div =
-                    document.createElement(
-                        "div"
-                    );
-
-                div.className =
-                    "player " +
-                    (
-                        player.creator
-                        ? "creator-row"
-                        : ""
-                    );
-
-                div.innerHTML = `
-
-                    <div class="rank">
-                        ${player.creator
-                            ? "👑"
-                            : player.rank}
+                    <div class="market-icon">
+                        ${index < 3
+                            ? ["🥇","🥈","🥉"][index]
+                            : "#" + (index+1)}
                     </div>
 
-                    <div class="player-avatar">
-                        ${player.creator
-                            ? "👑"
-                            : "👤"}
-                    </div>
+                    <div>
 
-                    <div class="player-info">
-
-                        <div class="player-name">
-                            ${
-                                player.first_name ||
-                                player.username ||
-                                "Player"
-                            }
+                        <div class="market-name">
+                            ${user.first_name || "Игрок"}
                         </div>
 
-                        <div class="player-prefix">
-                            ${
-                                player.creator
-                                ? "👑 CREATOR"
-                                : (
-                                    player.prefix ||
-                                    "Без префикса"
-                                )
-                            }
+                        <div class="market-amount">
+                            Уровень ${user.level}
                         </div>
 
                     </div>
 
-                    <div class="score">
-                        💎 ${formatNumber(
-                            player.score
-                        )}
-                    </div>
+                </div>
 
-                `;
+                <div class="price">
+                    ⭐ ${user.rating}
+                </div>
 
-                container.appendChild(
-                    div
-                );
+            </div>
+        `;
+    });
 
+    document
+        .getElementById("modalContent")
+        .innerHTML =
+        html ||
+        `<div class="empty">
+            Рейтинг пока пуст
+        </div>`;
+}
+
+
+/* ======================================================
+   DAILY
+====================================================== */
+
+async function dailyReward(){
+
+    const result =
+        await api(
+            "/api/reward",
+            {
+                method:"POST"
             }
         );
 
-    }catch(error){
+    toast(
+        result.ok
+        ? "🎁 Получено 💎 " +
+          result.amount
+        : result.message
+    );
 
-        container.innerHTML =
-            `<div class="empty">
-                ${error.message}
-            </div>`;
-
-    }
-
+    if(result.ok)
+        load();
 }
 
 
-loadMe();
-loadCases();
+/* ======================================================
+   START
+====================================================== */
+
+load();
 
 </script>
 
