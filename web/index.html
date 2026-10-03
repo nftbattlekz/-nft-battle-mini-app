@@ -636,6 +636,21 @@ input:focus,select:focus{
     }
 }
 
+.loading-screen{position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;background:#050914;transition:opacity .25s ease,visibility .25s ease;}
+.loading-screen.hide{opacity:0;visibility:hidden;pointer-events:none;}
+.loading-box{text-align:center;width:min(86vw,360px);}
+.loading-logo{font-size:42px;font-weight:1000;letter-spacing:5px;color:#fff;}
+.loading-logo span{color:#54e4ff;}
+.loading-spinner{width:42px;height:42px;margin:22px auto 14px;border:4px solid rgba(84,228,255,.16);border-top-color:#54e4ff;border-radius:50%;animation:nxspin .8s linear infinite;}
+.loading-text{color:#91a4bf;font-size:13px;}
+@keyframes nxspin{to{transform:rotate(360deg);}}
+
+.daily-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:14px 0;}
+.daily-day{padding:12px 6px;border-radius:14px;background:#0d192b;border:1px solid #1d3552;text-align:center;}
+.daily-day.active{border-color:#54e4ff;box-shadow:0 0 18px rgba(84,228,255,.12);}
+.daily-day.claimed{opacity:.55;}
+.daily-day b{display:block;font-size:13px;}
+.daily-day span{display:block;margin-top:7px;font-weight:900;color:#54e4ff;font-size:13px;}
 .modal{
     position:fixed;
     inset:0;
@@ -738,6 +753,14 @@ input:focus,select:focus{
 
 <body>
 
+<div class="loading-screen" id="loadingScreen">
+    <div class="loading-box">
+        <div class="loading-logo">NEX<span>ORA</span></div>
+        <div class="loading-spinner"></div>
+        <div class="loading-text" id="loadingText">Загрузка игры...</div>
+    </div>
+</div>
+
 <div id="app">
 
 <header class="header">
@@ -808,19 +831,6 @@ input:focus,select:focus{
             <div class="stat">
                 <small>БАНК</small>
                 <b id="bank">💎 0</b>
-            </div>
-
-        </div>
-
-        <div class="energy">
-
-            <div class="energy-top">
-                <span>⚡ Энергия</span>
-                <span id="energyText">100/100</span>
-            </div>
-
-            <div class="progress">
-                <div id="energyBar" style="width:100%"></div>
             </div>
 
         </div>
@@ -896,7 +906,7 @@ input:focus,select:focus{
         <div class="card">
             <div class="icon">🌍</div>
             <h3>Мир</h3>
-            <p>Планеты, питомцы и контракты.</p>
+            <p>Миры, контракты и развитие империи.</p>
             <button class="btn"
                     onclick="showScreen('world')">
                 Исследовать
@@ -1084,17 +1094,10 @@ input:focus,select:focus{
     <div class="section-title">🌍 Мир NEXORA</div>
 
     <div class="notice">
-        С 100 уровня можно перейти в следующий мир. Каждый новый мир имеет отдельную экономику: после перехода баланс, банк, предприятия, недвижимость, питомцы и инвентарь начинаются заново. Уровень и общий рейтинг сохраняются.
+        С 100 уровня можно перейти в следующий мир. Каждый новый мир имеет отдельную экономику: после перехода баланс, банк, предприятия, недвижимость и инвентарь начинаются заново. Уровень и общий рейтинг сохраняются.
     </div>
 
     <div class="grid" id="worldsList"></div>
-
-    <div class="section-title">🪐 Планеты</div>
-    <div class="grid" id="planets"></div>
-
-    <div class="section-title">🐾 Питомцы</div>
-
-    <div class="grid" id="pets"></div>
 
     <div class="section-title">📋 Контракты</div>
 
@@ -1370,6 +1373,17 @@ input:focus,select:focus{
     </div>
 </div>
 
+<!-- DAILY BONUS MODAL -->
+<div class="modal" id="dailyModal">
+    <div class="modal-box">
+        <button class="close" onclick="closeModal('dailyModal')">×</button>
+        <div class="modal-title">🎁 Ежедневный бонус</div>
+        <div class="notice" id="dailyMessage">Бонус за вход получен.</div>
+        <div class="daily-grid" id="dailyGrid"></div>
+        <button class="btn green" onclick="closeModal('dailyModal')">Забрать и продолжить</button>
+    </div>
+</div>
+
 <!-- WORK MODAL -->
 <div class="modal" id="workModal">
     <div class="modal-box">
@@ -1543,39 +1557,50 @@ async function loadHomeRating(){
     }catch(e){}
 }
 
-async function load(){
+function setLoading(show,text="Загрузка игры..."){
+    const screen=document.getElementById("loadingScreen");
+    const label=document.getElementById("loadingText");
+    if(label) label.textContent=text;
+    if(screen) screen.classList.toggle("hide",!show);
+}
 
-    if(loading){
-        return;
+function renderDailyBonus(daily){
+    if(!daily?.claimed) return;
+    const grid=document.getElementById("dailyGrid");
+    const day=Number(daily.day||daily.streak||1);
+    const rewards=[500,750,1000,1500,2500,5000];
+    if(grid){
+        grid.innerHTML=rewards.map((reward,i)=>`<div class="daily-day ${i+1===day?'active':''} ${i+1<day?'claimed':''}">
+            <b>День ${i+1}</b><span>💎 ${format(reward)}</span>
+        </div>`).join("");
     }
+    const msg=document.getElementById("dailyMessage");
+    if(msg) msg.innerHTML=`Сегодня получено <b class="reward">💎 ${format(daily.reward)}</b> — день <b>${day}/6</b>.<br><span class="small">Заходи каждый день, чтобы пройти всю 6-дневную серию.</span>`;
+    document.getElementById("dailyModal")?.classList.add("show");
+}
 
+async function load(){
+    if(loading) return;
     loading=true;
-
+    setLoading(true,"Загрузка NEXORA...");
+    const started=Date.now();
     try{
-
         state=await api("/api/bootstrap");
-
         renderAll();
         await loadHomeRating();
         await loadNotifications();
-
-        if(
-            document
-                .getElementById("screen-rating")
-                ?.classList
-                .contains("active")
-        ){
+        if(document.getElementById("screen-rating")?.classList.contains("active")){
             await loadRating();
         }
-
+        const wait=Math.max(0,700-(Date.now()-started));
+        if(wait) await new Promise(resolve=>setTimeout(resolve,wait));
+        setLoading(false);
+        renderDailyBonus(state.daily);
     }catch(e){
-
+        setLoading(false);
         toast(e.message,"error");
-
     }finally{
-
         loading=false;
-
     }
 }
 
@@ -1636,8 +1661,6 @@ function renderAll(){
     renderBusinessMarket();
     renderBusinesses();
     renderProperties();
-    renderPlanets();
-    renderPets();
     renderQuests();
 
     if(state.admin){
@@ -1687,25 +1710,6 @@ function renderUser(){
 
     document.getElementById("telegramId").textContent=
         u.telegram_id;
-
-    document.getElementById("energyText").textContent=
-        `${u.energy}/${u.max_energy}`;
-
-    const energyPercent=
-        u.max_energy>0
-        ?
-        Math.max(
-            0,
-            Math.min(
-                100,
-                u.energy/u.max_energy*100
-            )
-        )
-        :
-        0;
-
-    document.getElementById("energyBar")
-        .style.width=energyPercent+"%";
 
     let avatar=u.photo_url;
 
@@ -2493,93 +2497,6 @@ function renderProperties(){
 /* ============================================
    WORLD
 ============================================ */
-
-function renderPlanets(){
-
-    document.getElementById("planets").innerHTML=
-        (state.planets||[]).map(p=>{
-
-            const unlocked=
-                state.user.level>=p.level;
-
-            return `
-                <div class="card">
-
-                    <div class="icon">🪐</div>
-
-                    <h3>
-                        ${escapeHtml(p.name)}
-                    </h3>
-
-                    <p>
-                        Требуется:
-                        <b class="${unlocked?'':'lock'}">
-                            Lv.${p.level}
-                        </b>
-                    </p>
-
-                    <p class="price">
-                        💎 ${format(p.price)}
-                    </p>
-
-                    <button
-                        class="btn ${unlocked?'':'secondary'}"
-                        ${unlocked?'':'disabled'}
-                        onclick="travel('${escapeAttr(p.key)}')">
-
-                        ${
-                            unlocked
-                            ?"🚀 Полететь"
-                            :"🔒 Закрыто"
-                        }
-
-                    </button>
-
-                </div>
-            `;
-
-        }).join("");
-}
-
-
-function renderPets(){
-
-    document.getElementById("pets").innerHTML=
-        (state.pets||[]).map(p=>`
-
-            <div class="card">
-
-                <div class="icon">🐾</div>
-
-                <h3>
-                    ${escapeHtml(p.name)}
-                </h3>
-
-                <p>
-                    Бонус:
-                    <span class="reward">
-                        +${Math.round(p.bonus*100)}%
-                    </span>
-                </p>
-
-                <p class="price">
-                    💎 ${format(p.price)}
-                </p>
-
-                <button
-                    class="btn ${p.owned?'secondary':''}"
-                    ${p.owned?'disabled':''}
-                    onclick="buyPet('${escapeAttr(p.key)}')">
-
-                    ${p.owned?'✓ Есть':'Купить'}
-
-                </button>
-
-            </div>
-
-        `).join("");
-}
-
 
 function renderQuests(){
 
@@ -3410,59 +3327,6 @@ async function buyProperty(key){
 
         toast(
             "🏠 Недвижимость куплена",
-            "success"
-        );
-
-        await load();
-
-    }catch(e){
-
-        toast(e.message,"error");
-
-    }
-}
-
-
-/* ============================================
-   PETS / PLANETS
-============================================ */
-
-async function buyPet(key){
-
-    try{
-
-        await api("/api/pets/buy",{
-            method:"POST",
-            body:JSON.stringify({key})
-        });
-
-        toast(
-            "🐾 Питомец добавлен",
-            "success"
-        );
-
-        await load();
-
-    }catch(e){
-
-        toast(e.message,"error");
-
-    }
-}
-
-
-async function travel(key){
-
-    try{
-
-        const data=
-            await api("/api/planets/travel",{
-                method:"POST",
-                body:JSON.stringify({key})
-            });
-
-        toast(
-            `🚀 Ты посетил ${data.planet}`,
             "success"
         );
 
