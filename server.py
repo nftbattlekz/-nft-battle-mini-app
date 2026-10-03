@@ -161,6 +161,55 @@ def init_db():
         key TEXT PRIMARY KEY,
         value TEXT
     );
+
+    CREATE TABLE IF NOT EXISTS promo_codes (
+        code TEXT PRIMARY KEY,
+        coins INTEGER NOT NULL DEFAULT 0,
+        xp INTEGER NOT NULL DEFAULT 0,
+        active INTEGER DEFAULT 1
+    );
+
+    CREATE TABLE IF NOT EXISTS promo_redemptions (
+        user_id INTEGER NOT NULL,
+        code TEXT NOT NULL,
+        redeemed_at INTEGER DEFAULT 0,
+        PRIMARY KEY(user_id, code)
+    );
+
+    CREATE TABLE IF NOT EXISTS business_market (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        seller_id INTEGER NOT NULL,
+        business_id INTEGER NOT NULL,
+        business_key TEXT NOT NULL,
+        title TEXT NOT NULL,
+        level INTEGER DEFAULT 1,
+        price INTEGER NOT NULL,
+        created_at INTEGER DEFAULT 0,
+        status TEXT DEFAULT 'active'
+    );
+
+    CREATE TABLE IF NOT EXISTS wipe_history (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        creator_id TEXT NOT NULL,
+        created_at INTEGER DEFAULT 0,
+        affected_users INTEGER DEFAULT 0
+    );
+
+    CREATE TABLE IF NOT EXISTS admin_logs (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        creator_id TEXT NOT NULL,
+        action TEXT NOT NULL,
+        target_telegram_id TEXT DEFAULT '',
+        details TEXT DEFAULT '',
+        created_at INTEGER DEFAULT 0
+    );
+
+    CREATE TABLE IF NOT EXISTS item_catalog (
+        item_key TEXT PRIMARY KEY,
+        name TEXT NOT NULL,
+        icon TEXT DEFAULT '',
+        base_price INTEGER DEFAULT 0
+    );
     """)
 
     con.commit()
@@ -168,6 +217,22 @@ def init_db():
 
 
 init_db()
+
+# Permanent promo codes. Each account can redeem each code only once.
+def seed_promo_codes():
+    con = db()
+    con.executemany("""
+        INSERT OR IGNORE INTO promo_codes(code, coins, xp, active)
+        VALUES (?, ?, ?, 1)
+    """, [
+        ("START", 1500, 20),
+        ("BETA TEST", 1500, 20),
+        ("GO", 1500, 20)
+    ])
+    con.commit()
+    con.close()
+
+seed_promo_codes()
 
 
 # =========================================================
@@ -311,6 +376,23 @@ ITEMS = {
     }
 }
 
+
+BUSINESS_LIMITS = {
+    "farm": 100,
+    "mine": 75,
+    "factory": 50,
+    "tech": 25,
+    "space": 10
+}
+
+PROPERTY_LIMITS = {
+    "room": 500,
+    "apartment": 250,
+    "penthouse": 50,
+    "mansion": 10
+}
+
+BUSINESS_UPGRADE_MULTIPLIER = 1.55
 
 BUSINESSES = {
     "farm": {
@@ -507,6 +589,33 @@ def get_multiplier(con, event_type):
         return float(active["multiplier"])
 
     return 1.0
+
+
+def get_discount(con, event_type):
+    """Return the largest active percentage discount (0..0.90)."""
+    row = con.execute("""
+        SELECT multiplier
+        FROM events
+        WHERE active=1
+          AND ends_at>?
+          AND (event_type=? OR event_type='all')
+        ORDER BY multiplier DESC
+        LIMIT 1
+    """, (now(), event_type)).fetchone()
+    if row:
+        return max(0.0, min(0.90, float(row["multiplier"]) / 100.0))
+    return 0.0
+
+
+def discounted_price(con, event_type, base_price):
+    return max(1, int(round(base_price * (1.0 - get_discount(con, event_type)))))
+
+
+def log_admin(con, creator_id, action, target_telegram_id="", details=""):
+    con.execute("""
+        INSERT INTO admin_logs(creator_id, action, target_telegram_id, details, created_at)
+        VALUES (?, ?, ?, ?, ?)
+    """, (str(creator_id), action, str(target_telegram_id), details, now()))
 
 
 def restore_energy(con, user):
@@ -915,6 +1024,27 @@ def bootstrap(user):
                 "mine": row["seller_id"] == user["id"]
             })
 
+    business_market_rows = con.execute("""
+        SELECT bm.*, u.username, u.first_name
+        FROM business_market bm
+        JOIN users u ON u.id=bm.seller_id
+        WHERE bm.status='active'
+        ORDER BY bm.id DESC
+        LIMIT 50
+    """).fetchall()
+
+    business_market_data = []
+    for row in business_market_rows:
+        business_market_data.append({
+            "id": row["id"],
+            "business_key": row["business_key"],
+            "name": row["title"],
+            "level": row["level"],
+            "price": row["price"],
+            "seller": row["username"] or row["first_name"] or "Игрок",
+            "mine": row["seller_id"] == user["id"]
+        })
+
     businesses = []
 
     owned = con.execute("""
@@ -928,9 +1058,25 @@ def bootstrap(user):
     for key, value in BUSINESSES.items():
         own = owned_dict.get(key)
 
+        global_count = con.execute(
+            "SELECT COUNT(*) AS c FROM businesses WHERE business_key=?",
+            (key,)
+        ).fetchone()["c"]
+        custom_name_row = con.execute(
+            "SELECT value FROM settings WHERE key=?",
+            (f"business_name:{user['id']}:{key}",)
+        ).fetchone()
+        display_name = custom_name_row["value"] if custom_name_row else value["name"]
         businesses.append({
             "key": key,
             **value,
+            "name": display_name,
+            "price": discounted_price(con, "business_discount", value["price"]),
+            "base_price": value["price"],
+            "discount": int(get_discount(con, "business_discount") * 100),
+            "limit": BUSINESS_LIMITS.get(key, 0),
+            "owned_count": global_count,
+            "available": global_count < BUSINESS_LIMITS.get(key, 10**9),
             "owned": bool(own),
             "level_owned": own["level"] if own else 0,
             "last_collect": own["last_collect"] if own else 0
@@ -947,9 +1093,19 @@ def bootstrap(user):
     owned_prop_keys = {x["property_key"] for x in owned_props}
 
     for key, value in PROPERTIES.items():
+        global_count = con.execute(
+            "SELECT COUNT(*) AS c FROM properties WHERE property_key=?",
+            (key,)
+        ).fetchone()["c"]
         properties.append({
             "key": key,
             **value,
+            "price": discounted_price(con, "property_discount", value["price"]),
+            "base_price": value["price"],
+            "discount": int(get_discount(con, "property_discount") * 100),
+            "limit": PROPERTY_LIMITS.get(key, 0),
+            "owned_count": global_count,
+            "available": global_count < PROPERTY_LIMITS.get(key, 10**9),
             "owned": key in owned_prop_keys
         })
 
@@ -1023,7 +1179,9 @@ def bootstrap(user):
         "quests": quests,
         "skills": skills,
         "market": market_data,
+        "business_market": business_market_data,
         "events": events,
+        "promo_codes": ["START", "BETA TEST", "GO"],
         "creator": is_creator(user)
     })
 
@@ -1353,7 +1511,22 @@ def buy_business(user):
             "error": "Предприятие уже куплено"
         }), 400
 
-    if user["coins"] < business["price"]:
+    global_count = con.execute(
+        "SELECT COUNT(*) AS c FROM businesses WHERE business_key=?",
+        (key,)
+    ).fetchone()["c"]
+
+    limit = BUSINESS_LIMITS.get(key, 10**9)
+    if global_count >= limit:
+        con.close()
+        return jsonify({
+            "ok": False,
+            "error": f"Лимит предприятия достигнут: {limit} шт."
+        }), 400
+
+    price = discounted_price(con, "business_discount", business["price"])
+
+    if user["coins"] < price:
         con.close()
         return jsonify({
             "ok": False,
@@ -1363,7 +1536,7 @@ def buy_business(user):
     add_coins(
         con,
         user["id"],
-        -business["price"],
+        -price,
         f"Покупка предприятия: {business['name']}"
     )
 
@@ -1464,6 +1637,178 @@ def collect_business(user):
     })
 
 
+
+# =========================================================
+# BUSINESS MANAGEMENT / TRADING
+# =========================================================
+
+@app.post("/api/businesses/upgrade")
+@require_user
+def upgrade_business(user):
+    data = request.get_json(silent=True) or {}
+    key = data.get("key")
+    business = BUSINESSES.get(key)
+    if not business:
+        return jsonify({"ok": False, "error": "Предприятие не найдено"}), 400
+
+    con = db()
+    owned = con.execute("""
+        SELECT id, level FROM businesses
+        WHERE user_id=? AND business_key=?
+    """, (user["id"], key)).fetchone()
+
+    if not owned:
+        con.close()
+        return jsonify({"ok": False, "error": "Предприятие не куплено"}), 400
+
+    new_level = owned["level"] + 1
+    cost = int(business["price"] * (BUSINESS_UPGRADE_MULTIPLIER ** owned["level"]))
+
+    if user["coins"] < cost:
+        con.close()
+        return jsonify({"ok": False, "error": f"Нужно {cost:,} 💎".replace(",", " ")}), 400
+
+    add_coins(con, user["id"], -cost, f"Улучшение предприятия: {business['name']} Lv.{new_level}")
+    con.execute("UPDATE businesses SET level=? WHERE id=?", (new_level, owned["id"]))
+    add_xp(con, user["id"], 200 + new_level * 25)
+    con.commit()
+    con.close()
+    return jsonify({"ok": True, "level": new_level, "cost": cost})
+
+
+@app.post("/api/businesses/rename")
+@require_user
+def rename_business(user):
+    data = request.get_json(silent=True) or {}
+    key = data.get("key")
+    title = str(data.get("title", "")).strip()
+
+    if key not in BUSINESSES or not title:
+        return jsonify({"ok": False, "error": "Введите корректное название"}), 400
+    if len(title) > 32:
+        return jsonify({"ok": False, "error": "Название максимум 32 символа"}), 400
+
+    # Custom names are stored in settings with user/key scope.
+    setting_key = f"business_name:{user['id']}:{key}"
+    con = db()
+    con.execute("""
+        INSERT INTO settings(key, value) VALUES (?, ?)
+        ON CONFLICT(key) DO UPDATE SET value=excluded.value
+    """, (setting_key, title))
+    con.commit()
+    con.close()
+    return jsonify({"ok": True, "name": title})
+
+
+@app.post("/api/businesses/list")
+@require_user
+def list_business_for_sale(user):
+    data = request.get_json(silent=True) or {}
+    key = data.get("key")
+    price = int(data.get("price", 0))
+    title = str(data.get("title", "")).strip()
+
+    if key not in BUSINESSES or price <= 0:
+        return jsonify({"ok": False, "error": "Неверные данные"}), 400
+
+    con = db()
+    owned = con.execute("""
+        SELECT id, level FROM businesses
+        WHERE user_id=? AND business_key=?
+    """, (user["id"], key)).fetchone()
+
+    if not owned:
+        con.close()
+        return jsonify({"ok": False, "error": "Предприятие не найдено"}), 400
+
+    already = con.execute("""
+        SELECT id FROM business_market
+        WHERE business_id=? AND status='active'
+    """, (owned["id"],)).fetchone()
+    if already:
+        con.close()
+        return jsonify({"ok": False, "error": "Предприятие уже выставлено"}), 400
+
+    if not title:
+        setting = con.execute(
+            "SELECT value FROM settings WHERE key=?",
+            (f"business_name:{user['id']}:{key}",)
+        ).fetchone()
+        title = setting["value"] if setting else BUSINESSES[key]["name"]
+
+    con.execute("""
+        INSERT INTO business_market(
+            seller_id, business_id, business_key, title, level, price, created_at
+        ) VALUES (?, ?, ?, ?, ?, ?, ?)
+    """, (user["id"], owned["id"], key, title, owned["level"], price, now()))
+    con.commit()
+    con.close()
+    return jsonify({"ok": True})
+
+
+@app.post("/api/businesses/market/buy")
+@require_user
+def buy_business_from_market(user):
+    data = request.get_json(silent=True) or {}
+    listing_id = int(data.get("id", 0))
+    con = db()
+
+    listing = con.execute("""
+        SELECT * FROM business_market
+        WHERE id=? AND status='active'
+    """, (listing_id,)).fetchone()
+
+    if not listing:
+        con.close()
+        return jsonify({"ok": False, "error": "Предприятие уже продано"}), 404
+
+    if listing["seller_id"] == user["id"]:
+        con.close()
+        return jsonify({"ok": False, "error": "Нельзя купить своё предприятие"}), 400
+
+    if user["coins"] < listing["price"]:
+        con.close()
+        return jsonify({"ok": False, "error": "Недостаточно 💎"}), 400
+
+    already = con.execute("""
+        SELECT id FROM businesses
+        WHERE user_id=? AND business_key=?
+    """, (user["id"], listing["business_key"])).fetchone()
+    if already:
+        con.close()
+        return jsonify({"ok": False, "error": "У тебя уже есть это предприятие"}), 400
+
+    # Transfer the existing business row to the buyer.
+    add_coins(con, user["id"], -listing["price"], "Покупка предприятия на рынке")
+    add_coins(con, listing["seller_id"], listing["price"], "Продажа предприятия на рынке")
+    con.execute("UPDATE businesses SET user_id=? WHERE id=?", (user["id"], listing["business_id"]))
+    con.execute("UPDATE business_market SET status='sold' WHERE id=?", (listing_id,))
+    add_xp(con, user["id"], 300)
+    add_xp(con, listing["seller_id"], 300)
+    con.commit()
+    con.close()
+    return jsonify({"ok": True, "price": listing["price"]})
+
+
+@app.post("/api/businesses/market/cancel")
+@require_user
+def cancel_business_listing(user):
+    data = request.get_json(silent=True) or {}
+    listing_id = int(data.get("id", 0))
+    con = db()
+    row = con.execute("""
+        SELECT id FROM business_market
+        WHERE id=? AND seller_id=? AND status='active'
+    """, (listing_id, user["id"])).fetchone()
+    if not row:
+        con.close()
+        return jsonify({"ok": False, "error": "Лот не найден"}), 404
+    con.execute("UPDATE business_market SET status='cancelled' WHERE id=?", (listing_id,))
+    con.commit()
+    con.close()
+    return jsonify({"ok": True})
+
+
 # =========================================================
 # PROPERTIES
 # =========================================================
@@ -1496,7 +1841,18 @@ def buy_property(user):
             "error": "У тебя уже есть эта недвижимость"
         }), 400
 
-    if user["coins"] < prop["price"]:
+    global_count = con.execute(
+        "SELECT COUNT(*) AS c FROM properties WHERE property_key=?",
+        (key,)
+    ).fetchone()["c"]
+    limit = PROPERTY_LIMITS.get(key, 10**9)
+    if global_count >= limit:
+        con.close()
+        return jsonify({"ok": False, "error": f"Лимит достигнут: {limit} шт."}), 400
+
+    price = discounted_price(con, "property_discount", prop["price"])
+
+    if user["coins"] < price:
         con.close()
         return jsonify({
             "ok": False,
@@ -1506,7 +1862,7 @@ def buy_property(user):
     add_coins(
         con,
         user["id"],
-        -prop["price"],
+        -price,
         f"Покупка недвижимости: {prop['name']}"
     )
 
@@ -1955,6 +2311,53 @@ def quest_claim(user):
     })
 
 
+
+# =========================================================
+# PROMO CODES
+# =========================================================
+
+@app.post("/api/promo/redeem")
+@require_user
+def redeem_promo(user):
+    data = request.get_json(silent=True) or {}
+    code = " ".join(str(data.get("code", "")).strip().upper().split())
+
+    con = db()
+    promo = con.execute("""
+        SELECT * FROM promo_codes
+        WHERE code=? AND active=1
+    """, (code,)).fetchone()
+
+    if not promo:
+        con.close()
+        return jsonify({"ok": False, "error": "Промокод не найден"}), 400
+
+    used = con.execute("""
+        SELECT 1 FROM promo_redemptions
+        WHERE user_id=? AND code=?
+    """, (user["id"], code)).fetchone()
+
+    if used:
+        con.close()
+        return jsonify({"ok": False, "error": "Ты уже использовал этот промокод"}), 400
+
+    add_coins(con, user["id"], promo["coins"], f"Промокод {code}")
+    add_xp(con, user["id"], promo["xp"])
+    con.execute("""
+        INSERT INTO promo_redemptions(user_id, code, redeemed_at)
+        VALUES (?, ?, ?)
+    """, (user["id"], code, now()))
+    con.commit()
+    con.close()
+
+    return jsonify({
+        "ok": True,
+        "coins": promo["coins"],
+        "xp": promo["xp"],
+        "code": code
+    })
+
+
 # =========================================================
 # BANK
 # =========================================================
@@ -2071,31 +2474,219 @@ def leaderboard(user):
     })
 
 
+
+# =========================================================
+# RICHEST PLAYERS
+# =========================================================
+
+@app.get("/api/richest")
+@require_user
+def richest(user):
+    con = db()
+    rows = con.execute("""
+        SELECT telegram_id, username, first_name, photo_url, coins, bank, level
+        FROM users
+        ORDER BY (coins + bank) DESC, level DESC
+        LIMIT 50
+    """).fetchall()
+    result = []
+    for i, row in enumerate(rows, 1):
+        result.append({
+            "place": i,
+            "telegram_id": row["telegram_id"],
+            "username": row["username"],
+            "name": row["first_name"] or row["username"] or "Игрок",
+            "photo_url": row["photo_url"],
+            "coins": row["coins"],
+            "bank": row["bank"],
+            "total": row["coins"] + row["bank"],
+            "level": row["level"],
+            "creator": str(row["telegram_id"]) == str(CREATOR_TELEGRAM_ID)
+        })
+    con.close()
+    return jsonify({"ok": True, "players": result})
+
+
 # =========================================================
 # CREATOR PANEL
 # =========================================================
+
+
+@app.post("/api/admin/xp")
+@require_creator
+def admin_xp(user):
+    data = request.get_json(silent=True) or {}
+    target_tg_id = str(data.get("telegram_id", "")).strip()
+    amount = int(data.get("amount", 0))
+    if not target_tg_id or amount <= 0:
+        return jsonify({"ok": False, "error": "Неверные данные"}), 400
+    con = db()
+    target = con.execute("SELECT * FROM users WHERE telegram_id=?", (target_tg_id,)).fetchone()
+    if not target:
+        con.close()
+        return jsonify({"ok": False, "error": "Игрок не найден"}), 404
+    add_xp(con, target["id"], amount)
+    log_admin(con, user["telegram_id"], "give_xp", target_tg_id, f"+{amount} XP")
+    con.commit()
+    fresh = con.execute("SELECT xp, level FROM users WHERE id=?", (target["id"],)).fetchone()
+    con.close()
+    return jsonify({"ok": True, "xp": fresh["xp"], "level": fresh["level"]})
+
+
+@app.post("/api/admin/level")
+@require_creator
+def admin_level(user):
+    data = request.get_json(silent=True) or {}
+    target_tg_id = str(data.get("telegram_id", "")).strip()
+    level = int(data.get("level", 0))
+    if not target_tg_id or level < 1 or level > 100:
+        return jsonify({"ok": False, "error": "Уровень должен быть 1-100"}), 400
+    con = db()
+    target = con.execute("SELECT * FROM users WHERE telegram_id=?", (target_tg_id,)).fetchone()
+    if not target:
+        con.close()
+        return jsonify({"ok": False, "error": "Игрок не найден"}), 404
+    # Find minimum cumulative XP needed for requested level.
+    xp = 0
+    for lv in range(1, level):
+        xp += int(100 * (1.18 ** (lv - 1)))
+    con.execute("UPDATE users SET level=?, xp=? WHERE id=?", (level, xp, target["id"]))
+    log_admin(con, user["telegram_id"], "set_level", target_tg_id, f"level={level}")
+    con.commit()
+    con.close()
+    return jsonify({"ok": True, "level": level})
+
+
+@app.post("/api/admin/item")
+@require_creator
+def admin_item(user):
+    data = request.get_json(silent=True) or {}
+    target_tg_id = str(data.get("telegram_id", "")).strip()
+    item_key = str(data.get("item_key", "")).strip()
+    quantity = int(data.get("quantity", 0))
+    if not target_tg_id or item_key not in ITEMS or quantity <= 0 or quantity > 100000:
+        return jsonify({"ok": False, "error": "Неверные данные"}), 400
+    con = db()
+    target = con.execute("SELECT * FROM users WHERE telegram_id=?", (target_tg_id,)).fetchone()
+    if not target:
+        con.close()
+        return jsonify({"ok": False, "error": "Игрок не найден"}), 404
+    add_item(con, target["id"], item_key, quantity)
+    log_admin(con, user["telegram_id"], "give_item", target_tg_id, f"{item_key} x{quantity}")
+    con.commit()
+    con.close()
+    return jsonify({"ok": True, "item_key": item_key, "quantity": quantity})
+
+
+@app.get("/api/admin/items")
+@require_creator
+def admin_items(user):
+    return jsonify({
+        "ok": True,
+        "items": [{"key": k, **v} for k, v in ITEMS.items()]
+    })
+
+
+@app.get("/api/admin/logs")
+@require_creator
+def admin_logs(user):
+    con = db()
+    rows = con.execute("""
+        SELECT * FROM admin_logs
+        ORDER BY id DESC
+        LIMIT 100
+    """).fetchall()
+    result = [dict(x) for x in rows]
+    con.close()
+    return jsonify({"ok": True, "logs": result})
+
+
+@app.post("/api/admin/wipe")
+@require_creator
+def admin_wipe(user):
+    data = request.get_json(silent=True) or {}
+    if str(data.get("confirm", "")).upper() != "WIPE":
+        return jsonify({"ok": False, "error": "Для вайпа отправь confirm=WIPE"}), 400
+
+    con = db()
+    users = con.execute("SELECT id FROM users").fetchall()
+
+    # Preserve Telegram accounts and promo redemption history, but reset all game progress.
+    for row in users:
+        uid = row["id"]
+        con.execute("""
+            UPDATE users
+            SET coins=1000, xp=0, level=1, energy=100,
+                energy_updated=?, rating=0, bank=0, last_daily=0
+            WHERE id=?
+        """, (now(), uid))
+        con.execute("DELETE FROM inventory WHERE user_id=?", (uid,))
+        con.execute("DELETE FROM cooldowns WHERE user_id=?", (uid,))
+        con.execute("DELETE FROM businesses WHERE user_id=?", (uid,))
+        con.execute("DELETE FROM properties WHERE user_id=?", (uid,))
+        con.execute("DELETE FROM pets WHERE user_id=?", (uid,))
+        con.execute("""
+            UPDATE skills
+            SET mining=1, farming=1, fishing=1, business=1, work=1
+            WHERE user_id=?
+        """, (uid,))
+        con.execute("DELETE FROM quests WHERE user_id=?", (uid,))
+        for key in QUESTS:
+            con.execute("INSERT OR IGNORE INTO quests(user_id, quest_key) VALUES (?, ?)", (uid, key))
+        con.execute("DELETE FROM achievements WHERE user_id=?", (uid,))
+        # Creator prefix is restored for creator below.
+        if str(con.execute("SELECT telegram_id FROM users WHERE id=?", (uid,)).fetchone()["telegram_id"]) != str(CREATOR_TELEGRAM_ID):
+            con.execute("DELETE FROM prefixes WHERE user_id=?", (uid,))
+        else:
+            con.execute("DELETE FROM prefixes WHERE user_id=? AND prefix_key!='creator'", (uid,))
+
+    # Return active item listings to sellers before clearing them.
+    listings = con.execute("SELECT seller_id, item_key, quantity FROM market WHERE status='active'").fetchall()
+    for row in listings:
+        add_item(con, row["seller_id"], row["item_key"], row["quantity"])
+    con.execute("UPDATE market SET status='wiped' WHERE status='active'")
+
+    con.execute("UPDATE business_market SET status='wiped' WHERE status='active'")
+    con.execute("UPDATE events SET active=0 WHERE active=1")
+
+    affected = len(users)
+    con.execute("""
+        INSERT INTO wipe_history(creator_id, created_at, affected_users)
+        VALUES (?, ?, ?)
+    """, (user["telegram_id"], now(), affected))
+    log_admin(con, user["telegram_id"], "WIPE", "", f"{affected} players reset; each received 1000 coins")
+    con.commit()
+    con.close()
+
+    return jsonify({"ok": True, "affected_users": affected, "start_balance": 1000})
+
 
 @app.get("/api/admin/players")
 @require_creator
 def admin_players(user):
     con = db()
 
-    rows = con.execute("""
-        SELECT
-            id,
-            telegram_id,
-            username,
-            first_name,
-            last_name,
-            coins,
-            bank,
-            level,
-            xp,
-            rating
-        FROM users
-        ORDER BY id DESC
-        LIMIT 200
-    """).fetchall()
+    q = str(request.args.get("q", "")).strip()
+    if q:
+        like = f"%{q}%"
+        rows = con.execute("""
+            SELECT
+                id, telegram_id, username, first_name, last_name,
+                coins, bank, level, xp, rating
+            FROM users
+            WHERE telegram_id LIKE ? OR username LIKE ? OR first_name LIKE ?
+            ORDER BY id DESC
+            LIMIT 200
+        """, (like, like, like)).fetchall()
+    else:
+        rows = con.execute("""
+            SELECT
+                id, telegram_id, username, first_name, last_name,
+                coins, bank, level, xp, rating
+            FROM users
+            ORDER BY id DESC
+            LIMIT 200
+        """).fetchall()
 
     players = [dict(x) for x in rows]
 
@@ -2165,6 +2756,13 @@ def admin_money(user):
             "error": "Неизвестное действие"
         }), 400
 
+    log_admin(
+        con,
+        user["telegram_id"],
+        f"money_{action}",
+        target_tg_id,
+        f"amount={amount}; reason={reason}"
+    )
     con.commit()
 
     new_user = con.execute("""
@@ -2190,70 +2788,51 @@ def admin_event(user):
     event_type = data.get("event_type", "all")
     multiplier = float(data.get("multiplier", 2))
     duration_minutes = int(data.get("duration_minutes", 60))
-    title = data.get("title", "Событие NEXORA")
-    description = data.get(
+    title = str(data.get("title", "Событие NEXORA")).strip()[:80]
+    description = str(data.get(
         "description",
         "Временный бонус для экономики NEXORA"
-    )
+    )).strip()[:200]
 
-    if event_type not in ["jobs", "businesses", "all"]:
-        return jsonify({
-            "ok": False,
-            "error": "Тип события должен быть jobs, businesses или all"
-        }), 400
+    allowed = [
+        "jobs", "businesses", "all",
+        "business_discount", "property_discount"
+    ]
+    if event_type not in allowed:
+        return jsonify({"ok": False, "error": "Неизвестный тип события"}), 400
 
-    if multiplier < 1 or multiplier > 10:
-        return jsonify({
-            "ok": False,
-            "error": "Множитель должен быть от x1 до x10"
-        }), 400
+    if event_type.endswith("_discount"):
+        if multiplier <= 0 or multiplier > 90:
+            return jsonify({"ok": False, "error": "Скидка должна быть от 1% до 90%"}), 400
+    else:
+        if multiplier < 1 or multiplier > 10:
+            return jsonify({"ok": False, "error": "Множитель должен быть от x1 до x10"}), 400
 
     if duration_minutes < 1 or duration_minutes > 10080:
-        return jsonify({
-            "ok": False,
-            "error": "Неверная длительность"
-        }), 400
+        return jsonify({"ok": False, "error": "Неверная длительность"}), 400
 
     con = db()
-
-    con.execute("""
-        UPDATE events
-        SET active=0
-        WHERE active=1 AND event_type=?
-    """, (event_type,))
-
+    con.execute("UPDATE events SET active=0 WHERE active=1 AND event_type=?", (event_type,))
     ends_at = now() + duration_minutes * 60
 
     con.execute("""
         INSERT INTO events(
-            creator_id,
-            event_type,
-            multiplier,
-            ends_at,
-            title,
-            description,
-            active,
-            created_at
+            creator_id, event_type, multiplier, ends_at,
+            title, description, active, created_at
         )
         VALUES (?, ?, ?, ?, ?, ?, 1, ?)
     """, (
-        user["telegram_id"],
-        event_type,
-        multiplier,
-        ends_at,
-        title,
-        description,
-        now()
+        user["telegram_id"], event_type, multiplier, ends_at,
+        title, description, now()
     ))
-
+    log_admin(
+        con, user["telegram_id"], "event_create", "",
+        f"type={event_type}; value={multiplier}; duration={duration_minutes}m"
+    )
     con.commit()
     con.close()
 
-    return jsonify({
-        "ok": True,
-        "ends_at": ends_at,
-        "multiplier": multiplier
-    })
+    return jsonify({"ok": True, "ends_at": ends_at, "multiplier": multiplier})
 
 
 @app.get("/api/admin/events")
@@ -2298,6 +2877,26 @@ def admin_event_stop(user):
     return jsonify({
         "ok": True
     })
+
+
+
+# =========================================================
+# TRANSACTION HISTORY
+# =========================================================
+
+@app.get("/api/history")
+@require_user
+def history(user):
+    con = db()
+    rows = con.execute("""
+        SELECT amount, reason, created_at
+        FROM transactions
+        WHERE user_id=?
+        ORDER BY id DESC
+        LIMIT 50
+    """, (user["id"],)).fetchall()
+    con.close()
+    return jsonify({"ok": True, "history": [dict(x) for x in rows]})
 
 
 # =========================================================
