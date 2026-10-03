@@ -110,7 +110,7 @@ JOBS={
 'industrial_tycoon':{'name':'Промышленный магнат','level':225,'reward':95000,'xp':1100,'cooldown':680,'world':3,'taps':82},
 'global_empire':{'name':'Глобальный император','level':250,'reward':140000,'xp':1400,'cooldown':750,'world':3,'taps':90}}
 ITEMS={'iron':{'name':'Железо','icon':'⛓️','base_price':35},'coal':{'name':'Уголь','icon':'⬛','base_price':25},'gold':{'name':'Золото','icon':'🪙','base_price':120},'wood':{'name':'Древесина','icon':'🪵','base_price':30},'wheat':{'name':'Пшеница','icon':'🌾','base_price':20},'apple':{'name':'Яблоко','icon':'🍎','base_price':25},'fish':{'name':'Рыба','icon':'🐟','base_price':70},'rare_fish':{'name':'Редкая рыба','icon':'🐠','base_price':250},'steel':{'name':'Сталь','icon':'🔩','base_price':180},'energy_core':{'name':'Энергокристалл','icon':'🔷','base_price':500},'microchip':{'name':'Микрочип','icon':'💾','base_price':750},'quantum':{'name':'Квантовый модуль','icon':'🧬','base_price':1800}}
-BUSINESS_LIMITS={'farm':5,'mine':5,'factory':5,'tech':5,'space':5}; BUSINESS_REQUIRED_LEVEL=3
+BUSINESS_LIMITS={'farm':5,'mine':5,'factory':5,'tech':2,'space':1}; BUSINESS_REQUIRED_LEVEL=3
 PROPERTY_LIMITS={'room':500,'apartment':250,'penthouse':50,'mansion':10}; BUSINESS_UPGRADE_MULTIPLIER=1.55
 BUSINESSES={'farm':{'name':'Ферма','price':5000,'income':300,'interval':3600},'mine':{'name':'Шахта','price':15000,'income':900,'interval':3600},'factory':{'name':'Завод','price':50000,'income':3200,'interval':3600},'tech':{'name':'IT-компания','price':150000,'income':10000,'interval':3600},'space':{'name':'Космическая корпорация','price':500000,'income':38000,'interval':3600}}
 PROPERTIES={'room':{'name':'Комната','price':2500,'rating':5},'apartment':{'name':'Квартира','price':25000,'rating':30},'penthouse':{'name':'Пентхаус','price':150000,'rating':100},'mansion':{'name':'Особняк','price':750000,'rating':300}}
@@ -166,15 +166,9 @@ def add_xp(con,user_id,amount):
 def add_coins(con,user_id,amount,reason=''):
     con.execute('UPDATE users SET coins=coins+? WHERE id=?',(amount,user_id)); con.execute('INSERT INTO transactions(user_id,amount,reason,created_at) VALUES(?,?,?,?)',(user_id,amount,reason,now()))
 
-def cleanup_events(con): con.execute('UPDATE events SET active=0 WHERE active=1 AND ends_at<=?',(now(),))
-def get_multiplier(con,event_type):
-    cleanup_events(con); rows=con.execute("SELECT multiplier FROM events WHERE active=1 AND ends_at>? AND (event_type=? OR event_type='all')",(now(),event_type)).fetchall(); r=1.0
-    for x in rows:r*=max(1,float(x['multiplier']))
-    return min(10,r)
-def get_discount(con,event_type):
-    cleanup_events(con); rows=con.execute("SELECT multiplier FROM events WHERE active=1 AND ends_at>? AND event_type=?",(now(),event_type)).fetchall(); rem=1
-    for x in rows: rem*=1-max(0,min(.9,float(x['multiplier'])/100))
-    return min(.9,1-rem)
+def cleanup_events(con): return None
+def get_multiplier(con,event_type): return 1.0
+def get_discount(con,event_type): return 0
 def discounted_price(con,event_type,p): return max(1,int(round(p*(1-get_discount(con,event_type)))))
 def log_admin(con,actor,action,target='',details=''): con.execute('INSERT INTO admin_logs(creator_id,action,target_telegram_id,details,created_at) VALUES(?,?,?,?,?)',(str(actor),action,str(target),details,now()))
 
@@ -266,7 +260,6 @@ def index():return send_from_directory('web','index.html')
 @require_user
 def bootstrap(u):
     con=db();cleanup_events(con);data=user_json(u,con)
-    events=[dict(x) for x in con.execute('SELECT id,event_type,multiplier,ends_at,title,description FROM events WHERE active=1 AND ends_at>? ORDER BY id DESC',(now(),)).fetchall()]
     market=[]
     for r in con.execute('SELECT m.*,u.username,u.first_name FROM market m JOIN users u ON u.id=m.seller_id WHERE m.status="active" ORDER BY m.id DESC LIMIT 50').fetchall():
         if r['item_key'] in ITEMS:market.append({'id':r['id'],'item_key':r['item_key'],'name':ITEMS[r['item_key']]['name'],'icon':ITEMS[r['item_key']]['icon'],'quantity':r['quantity'],'price_each':r['price_each'],'total':r['quantity']*r['price_each'],'seller':r['username'] or r['first_name'] or 'Игрок','mine':r['seller_id']==u['id']})
@@ -282,7 +275,7 @@ def bootstrap(u):
         if r['quest_key'] in QUESTS:quests.append({'key':r['quest_key'],**QUESTS[r['quest_key']],'progress':r['progress'],'completed':bool(r['completed']),'claimed':bool(r['claimed'])})
     sr=con.execute('SELECT * FROM skills WHERE user_id=?',(u['id'],)).fetchone();skills=dict(sr) if sr else {}
     con.commit();con.close()
-    return jsonify({'ok':True,'user':data,'jobs':[{'key':k,**v,'world_name':WORLDS[v['world']]['name'],'world_unlocked':world_unlocked(u['level'],v['world'])} for k,v in JOBS.items()],'worlds':[{'key':k,**v,'unlocked':world_unlocked(u['level'],k)} for k,v in WORLDS.items()],'items':ITEMS,'businesses':businesses,'properties':properties,'quests':quests,'skills':skills,'market':market,'business_market':bm,'events':events,'promo_codes':['START','BETA TEST','GO'],'creator':is_creator(u),'assistant':is_assistant(u),'admin':is_creator(u) or is_assistant(u)})
+    return jsonify({'ok':True,'user':data,'jobs':[{'key':k,**v,'world_name':WORLDS[v['world']]['name'],'world_unlocked':world_unlocked(u['level'],v['world'])} for k,v in JOBS.items()],'worlds':[{'key':k,**v,'unlocked':world_unlocked(u['level'],k)} for k,v in WORLDS.items()],'items':ITEMS,'businesses':businesses,'properties':properties,'quests':quests,'skills':skills,'market':market,'business_market':bm,'promo_codes':['START','BETA TEST','GO'],'creator':is_creator(u),'assistant':is_assistant(u),'admin':is_creator(u) or is_assistant(u)})
 
 # WORLD SWITCH
 @app.post('/api/world/switch')
@@ -582,14 +575,14 @@ def notifications_read(u):
 def leaderboard(u):
     con=db();rows=con.execute('SELECT telegram_id,username,first_name,photo_url,level,rating,coins,xp,role FROM users ORDER BY rating DESC,level DESC,xp DESC,id ASC').fetchall();res=[];mine=None
     for i,r in enumerate(rows,1):
-        role='creator' if str(r['telegram_id'])==str(CREATOR_TELEGRAM_ID) else (r['role'] or 'player');role=role if role in ROLE_LABELS else 'player';res.append({'place':i,'telegram_id':r['telegram_id'],'username':r['username'],'name':r['first_name'] or r['username'] or 'Игрок','photo_url':r['photo_url'],'level':r['level'],'rating':r['rating'],'coins':r['coins'],'role':role,'role_display':ROLE_LABELS[role],'prefix':ROLE_LABELS[role],'creator':role=='creator','assistant':role=='assistant'});mine=i if str(r['telegram_id'])==str(u['telegram_id']) else mine
+        role='creator' if str(r['telegram_id'])==str(CREATOR_TELEGRAM_ID) else (r['role'] or 'player');role=role if role in ROLE_LABELS else 'player';res.append({'place':i,'telegram_id':r['telegram_id'],'username':r['username'],'name':r['first_name'] or r['username'] or 'Игрок','photo_url':r['photo_url'],'level':r['level'],'rating':r['rating'],'coins':r['coins'],'role':role,'role_display':ROLE_LABELS[role],'prefix':(ROLE_LABELS[role] if role in ('creator','assistant') else ''),'creator':role=='creator','assistant':role=='assistant'});mine=i if str(r['telegram_id'])==str(u['telegram_id']) else mine
     con.close();return jsonify({'ok':True,'players':res[:100],'my_place':mine})
 @app.get('/api/richest')
 @require_user
 def richest(u):
     con=db();rows=con.execute('SELECT telegram_id,username,first_name,photo_url,coins,bank,level,role FROM users ORDER BY (coins+bank) DESC,level DESC LIMIT 50').fetchall();res=[]
     for i,r in enumerate(rows,1):
-        role='creator' if str(r['telegram_id'])==str(CREATOR_TELEGRAM_ID) else (r['role'] or 'player');res.append({'place':i,'telegram_id':r['telegram_id'],'username':r['username'],'name':r['first_name'] or r['username'] or 'Игрок','photo_url':r['photo_url'],'coins':r['coins'],'bank':r['bank'],'total':r['coins']+r['bank'],'level':r['level'],'role':role,'role_display':ROLE_LABELS.get(role,'Игрок'),'prefix':ROLE_LABELS.get(role,'Игрок'),'creator':role=='creator','assistant':role=='assistant'})
+        role='creator' if str(r['telegram_id'])==str(CREATOR_TELEGRAM_ID) else (r['role'] or 'player');res.append({'place':i,'telegram_id':r['telegram_id'],'username':r['username'],'name':r['first_name'] or r['username'] or 'Игрок','photo_url':r['photo_url'],'coins':r['coins'],'bank':r['bank'],'total':r['coins']+r['bank'],'level':r['level'],'role':role,'role_display':ROLE_LABELS.get(role,'Игрок'),'prefix':(ROLE_LABELS.get(role,'') if role in ('creator','assistant') else ''),'creator':role=='creator','assistant':role=='assistant'})
     con.close();return jsonify({'ok':True,'players':res})
 
 # ADMIN
@@ -669,39 +662,9 @@ def admin_role(actor):
     if role=='assistant':con.execute("INSERT OR IGNORE INTO prefixes(user_id,prefix_key) VALUES(?, 'assistant')",(t['id'],))
     else:con.execute("DELETE FROM prefixes WHERE user_id=? AND prefix_key='assistant'",(t['id'],))
     add_notification(con,t['id'],'🛡️ Роль изменена',f'Тебе назначена роль: {ROLE_LABELS[role]}.','admin');log_admin(con,actor['telegram_id'],'set_role',tid,f'role={role}');con.commit();con.close();return jsonify({'ok':True,'telegram_id':tid,'role':role,'role_display':ROLE_LABELS[role]})
-@app.post('/api/admin/event')
-@require_admin
-def admin_event(actor):
-    d=request.get_json(silent=True) or {};et=d.get('event_type','all');mult=float(d.get('multiplier',2));mins=int(d.get('duration_minutes',60));title=str(d.get('title','Событие NEXORA')).strip()[:80];desc=str(d.get('description','Временный бонус для экономики NEXORA')).strip()[:200]
-    allowed=['jobs','businesses','all','business_discount','property_discount']
-    if et not in allowed:return jsonify({'ok':False,'error':'Неизвестный тип события'}),400
-    if et.endswith('_discount') and not(0<mult<=90):return jsonify({'ok':False,'error':'Скидка 1-90%'}),400
-    if not et.endswith('_discount') and not(1<=mult<=10):return jsonify({'ok':False,'error':'Множитель x1-x10'}),400
-    if not(1<=mins<=10080):return jsonify({'ok':False,'error':'Неверная длительность'}),400
-    con=db()
-    try:
-        cleanup_events(con)
-        con.execute('UPDATE events SET active=0 WHERE active=1 AND event_type=?',(et,))
-        end=now()+mins*60
-        con.execute('INSERT INTO events(creator_id,event_type,multiplier,ends_at,title,description,active,created_at) VALUES(?,?,?,?,?,?,1,?)',(actor['telegram_id'],et,mult,end,title,desc,now()))
-        event_id=con.execute('SELECT last_insert_rowid()').fetchone()[0]
-        value_text=f'-{mult:g}%' if et.endswith('_discount') else f'x{mult:g}'
-        add_notification_all(con,'⚡ Новое событие NEXORA',f'{title} — {desc} · {value_text} · на {mins} мин.','event')
-        log_admin(con,actor['telegram_id'],'event_create','',f'id={event_id}; type={et}; value={mult}; duration={mins}m')
-        con.commit()
-        return jsonify({'ok':True,'id':event_id,'ends_at':end,'multiplier':mult,'title':title,'description':desc,'event_type':et,'duration_minutes':mins})
-    except Exception as exc:
-        con.rollback();return jsonify({'ok':False,'error':f'Не удалось запустить событие: {exc}'}),500
-    finally:
-        con.close()
-@app.get('/api/admin/events')
-@require_admin
-def admin_events(actor):
-    con=db();cleanup_events(con);con.commit();r=[dict(x) for x in con.execute('SELECT * FROM events ORDER BY id DESC LIMIT 50').fetchall()];con.close();return jsonify({'ok':True,'events':r})
-@app.post('/api/admin/event/stop')
-@require_admin
-def admin_event_stop(actor):
-    d=request.get_json(silent=True) or {};eid=int(d.get('id',0));con=db();con.execute('UPDATE events SET active=0 WHERE id=?',(eid,));log_admin(con,actor['telegram_id'],'event_stop','',f'id={eid}');con.commit();con.close();return jsonify({'ok':True})
+
+
+
 @app.post('/api/admin/wipe')
 @require_creator
 def admin_wipe(actor):
@@ -717,7 +680,7 @@ def admin_wipe(actor):
         if str(r['telegram_id'])==str(CREATOR_TELEGRAM_ID):con.execute("INSERT OR IGNORE INTO prefixes(user_id,prefix_key) VALUES(?, 'creator')",(uid,))
         elif con.execute('SELECT role FROM users WHERE id=?',(uid,)).fetchone()['role']=='assistant':con.execute("INSERT OR IGNORE INTO prefixes(user_id,prefix_key) VALUES(?, 'assistant')",(uid,))
     for r in con.execute("SELECT seller_id,item_key,quantity FROM market WHERE status='active'").fetchall():add_item(con,r['seller_id'],r['item_key'],r['quantity'])
-    con.execute("UPDATE market SET status='wiped' WHERE status='active'");con.execute("UPDATE business_market SET status='wiped' WHERE status='active'");con.execute("UPDATE events SET active=0 WHERE active=1");con.execute('INSERT INTO wipe_history(creator_id,created_at,affected_users) VALUES(?,?,?)',(actor['telegram_id'],now(),len(users)));log_admin(con,actor['telegram_id'],'WIPE','',f'{len(users)} players reset; each received 1000 coins');con.commit();con.close();return jsonify({'ok':True,'affected_users':len(users),'start_balance':1000})
+    con.execute("UPDATE market SET status='wiped' WHERE status='active'");con.execute("UPDATE business_market SET status='wiped' WHERE status='active'");con.execute('INSERT INTO wipe_history(creator_id,created_at,affected_users) VALUES(?,?,?)',(actor['telegram_id'],now(),len(users)));log_admin(con,actor['telegram_id'],'WIPE','',f'{len(users)} players reset; each received 1000 coins');con.commit();con.close();return jsonify({'ok':True,'affected_users':len(users),'start_balance':1000})
 
 @app.get('/api/history')
 @require_user
