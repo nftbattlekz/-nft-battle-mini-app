@@ -2,10 +2,7 @@
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
-<meta
-    name="viewport"
-    content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"
->
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
 <title>NEXORA</title>
 
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
@@ -31,6 +28,10 @@
     --muted:#7f91ad;
 }
 
+html{
+    background:#050914;
+}
+
 body{
     margin:0;
     background:
@@ -39,7 +40,7 @@ body{
     color:var(--text);
     font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
     min-height:100vh;
-    padding-bottom:90px;
+    padding-bottom:88px;
 }
 
 button,input,select{
@@ -48,6 +49,10 @@ button,input,select{
 
 button{
     border:0;
+}
+
+button:disabled{
+    opacity:.55;
 }
 
 #app{
@@ -61,6 +66,11 @@ button{
     display:flex;
     align-items:center;
     justify-content:space-between;
+    position:sticky;
+    top:0;
+    z-index:20;
+    background:rgba(5,9,20,.72);
+    backdrop-filter:blur(14px);
 }
 
 .logo{
@@ -247,11 +257,22 @@ button{
 
 .btn.gold{
     background:linear-gradient(135deg,#e5a933,#ffd76e);
+    color:#211603;
 }
 
 .btn.red{
     background:#4a1924;
     color:#ff8190;
+}
+
+.btn.purple{
+    background:linear-gradient(135deg,#7251df,#a27fff);
+    color:white;
+}
+
+.btn.green{
+    background:linear-gradient(135deg,#24a96a,#52e79c);
+    color:#03150d;
 }
 
 .btn:active{
@@ -301,6 +322,16 @@ button{
     font-weight:1000;
 }
 
+.notice{
+    padding:11px;
+    background:#0d1a2b;
+    border:1px solid #1d3552;
+    border-radius:14px;
+    color:#9fb1c9;
+    font-size:12px;
+    margin-bottom:10px;
+}
+
 .item-row{
     display:flex;
     align-items:center;
@@ -315,10 +346,12 @@ button{
     border-radius:13px;
     background:#111f35;
     font-size:23px;
+    flex-shrink:0;
 }
 
 .item-info{
     flex:1;
+    min-width:0;
 }
 
 .item-info b{
@@ -328,6 +361,110 @@ button{
 .item-info span{
     color:var(--muted);
     font-size:12px;
+}
+
+.market-item{
+    display:flex;
+    gap:10px;
+    align-items:center;
+}
+
+.market-main{
+    flex:1;
+    min-width:0;
+}
+
+.market-price{
+    color:var(--gold);
+    font-weight:900;
+}
+
+.empty{
+    text-align:center;
+    padding:30px 15px;
+    color:var(--muted);
+}
+
+.form{
+    display:grid;
+    gap:9px;
+}
+
+input,select{
+    width:100%;
+    padding:12px;
+    border-radius:12px;
+    border:1px solid #203654;
+    background:#08111f;
+    color:white;
+    outline:none;
+}
+
+input:focus,select:focus{
+    border-color:#328ed0;
+}
+
+.admin{
+    border:1px solid #7250d0;
+    background:linear-gradient(145deg,#17102c,#0b1020);
+}
+
+.danger-zone{
+    border:1px solid #6f2533;
+    background:linear-gradient(145deg,#291018,#100a0e);
+}
+
+.badge{
+    display:inline-block;
+    padding:4px 7px;
+    border-radius:7px;
+    background:#162842;
+    color:#9fcfff;
+    font-size:10px;
+    font-weight:800;
+}
+
+.badge.gold{
+    background:#3a2c12;
+    color:#ffd96c;
+}
+
+.badge.green{
+    background:#103425;
+    color:#67e7a6;
+}
+
+.badge.red{
+    background:#3a151e;
+    color:#ff8797;
+}
+
+.owner{
+    color:#54e4ff;
+    font-weight:900;
+}
+
+.market-tabs{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:8px;
+    margin-bottom:10px;
+}
+
+.nav{
+    color:#6f819d;
+    background:transparent;
+    font-size:10px;
+    font-weight:700;
+}
+
+.nav div{
+    font-size:21px;
+    margin-bottom:2px;
+}
+
+.nav.active{
+    color:var(--cyan);
 }
 
 .bottom{
@@ -348,74 +485,7 @@ button{
     width:100%;
     max-width:620px;
     display:grid;
-    grid-template-columns:repeat(5,1fr);
-}
-
-.nav{
-    color:#6f819d;
-    background:transparent;
-    font-size:10px;
-    font-weight:700;
-}
-
-.nav div{
-    font-size:21px;
-    margin-bottom:2px;
-}
-
-.nav.active{
-    color:var(--cyan);
-}
-
-.form{
-    display:grid;
-    gap:9px;
-}
-
-input,select{
-    width:100%;
-    padding:12px;
-    border-radius:12px;
-    border:1px solid #203654;
-    background:#08111f;
-    color:white;
-    outline:none;
-}
-
-.admin{
-    border:1px solid #7250d0;
-    background:linear-gradient(145deg,#17102c,#0b1020);
-}
-
-.notice{
-    padding:11px;
-    background:#0d1a2b;
-    border:1px solid #1d3552;
-    border-radius:14px;
-    color:#9fb1c9;
-    font-size:12px;
-    margin-bottom:10px;
-}
-
-.market-item{
-    display:flex;
-    gap:10px;
-    align-items:center;
-}
-
-.market-main{
-    flex:1;
-}
-
-.market-price{
-    color:var(--gold);
-    font-weight:900;
-}
-
-.empty{
-    text-align:center;
-    padding:30px 15px;
-    color:var(--muted);
+    grid-template-columns:repeat(6,1fr);
 }
 
 .toast{
@@ -441,9 +511,69 @@ input,select{
     transform:translateX(-50%) translateY(0);
 }
 
+.modal{
+    position:fixed;
+    inset:0;
+    z-index:200;
+    display:none;
+    align-items:flex-end;
+    justify-content:center;
+    background:rgba(0,0,0,.65);
+    backdrop-filter:blur(5px);
+}
+
+.modal.show{
+    display:flex;
+}
+
+.modal-box{
+    width:100%;
+    max-width:620px;
+    max-height:85vh;
+    overflow:auto;
+    background:#08111f;
+    border:1px solid #29496e;
+    border-radius:24px 24px 0 0;
+    padding:18px;
+}
+
+.modal-title{
+    font-size:19px;
+    font-weight:900;
+    margin-bottom:12px;
+}
+
+.close{
+    float:right;
+    background:#17253b;
+    color:white;
+    width:34px;
+    height:34px;
+    border-radius:10px;
+}
+
+.small{
+    font-size:11px;
+    color:var(--muted);
+}
+
+.divider{
+    height:1px;
+    background:#182b46;
+    margin:12px 0;
+}
+
 @media(max-width:390px){
     .grid{
         grid-template-columns:1fr;
+    }
+
+    .bottom-inner{
+        grid-template-columns:repeat(6,1fr);
+    }
+
+    .nav{
+        font-size:9px;
     }
 }
 </style>
@@ -459,16 +589,20 @@ input,select{
 </header>
 
 
-<!-- PROFILE -->
+<!-- HOME -->
 <section class="screen active" id="screen-home">
 
     <div class="hero">
+
         <div class="profile">
             <img id="avatar" class="avatar" src="">
             <div>
                 <div class="name" id="profileName">Загрузка...</div>
-                <div class="username" id="profileUsername">@username</div>
-                <div class="creator" id="creatorBadge" style="display:none">
+                <div class="username" id="profileUsername">Telegram</div>
+
+                <div class="creator"
+                     id="creatorBadge"
+                     style="display:none">
                     👑 СОЗДАТЕЛЬ NEXORA
                 </div>
             </div>
@@ -479,10 +613,12 @@ input,select{
                 <small>УРОВЕНЬ</small>
                 <b id="level">1</b>
             </div>
+
             <div class="stat">
                 <small>РЕЙТИНГ</small>
                 <b id="rating">0</b>
             </div>
+
             <div class="stat">
                 <small>БАНК</small>
                 <b id="bank">💎 0</b>
@@ -494,14 +630,17 @@ input,select{
                 <span>⚡ Энергия</span>
                 <span id="energyText">100/100</span>
             </div>
+
             <div class="progress">
                 <div id="energyBar" style="width:100%"></div>
             </div>
         </div>
 
         <div style="margin-top:12px;color:#6f819d;font-size:11px">
-            Telegram ID: <span id="telegramId">—</span>
+            Telegram ID:
+            <span id="telegramId">—</span>
         </div>
+
     </div>
 
     <div id="eventsHome"></div>
@@ -509,11 +648,13 @@ input,select{
     <div class="section-title">⚡ Быстрые действия</div>
 
     <div class="grid">
+
         <div class="card">
             <div class="icon">👷</div>
             <h3>Работа</h3>
-            <p>Заработай 💎 и получи XP.</p>
-            <button class="btn" onclick="showScreen('work')">
+            <p>Работай, получай 💎 и XP.</p>
+            <button class="btn"
+                    onclick="showScreen('work')">
                 Открыть
             </button>
         </div>
@@ -521,29 +662,33 @@ input,select{
         <div class="card">
             <div class="icon">⛏️</div>
             <h3>Добыча</h3>
-            <p>Ресурсы попадают прямо в инвентарь.</p>
-            <button class="btn" onclick="showScreen('mine')">
+            <p>Ресурсы попадают в инвентарь.</p>
+            <button class="btn"
+                    onclick="showScreen('mine')">
                 Добывать
-            </button>
-        </div>
-
-        <div class="card">
-            <div class="icon">🛒</div>
-            <h3>Маркет</h3>
-            <p>Торгуй ресурсами с игроками.</p>
-            <button class="btn" onclick="showScreen('market')">
-                Маркет
             </button>
         </div>
 
         <div class="card">
             <div class="icon">🏭</div>
             <h3>Империя</h3>
-            <p>Строй предприятия и недвижимость.</p>
-            <button class="btn" onclick="showScreen('empire')">
+            <p>Предприятия и недвижимость.</p>
+            <button class="btn"
+                    onclick="showScreen('empire')">
                 Развивать
             </button>
         </div>
+
+        <div class="card">
+            <div class="icon">🛒</div>
+            <h3>Маркет</h3>
+            <p>Торгуй ресурсами и предприятиями.</p>
+            <button class="btn"
+                    onclick="showScreen('market')">
+                Маркет
+            </button>
+        </div>
+
     </div>
 
 </section>
@@ -551,14 +696,16 @@ input,select{
 
 <!-- WORK -->
 <section class="screen" id="screen-work">
+
     <div class="section-title">👷 Работа</div>
 
     <div class="notice">
         Чем выше уровень работы — тем больше доход.
-        После каждой смены требуется перерыв.
+        Активные события могут временно увеличить заработок.
     </div>
 
-    <div class="grid" id="jobs"></div>
+    <div id="jobs"></div>
+
 </section>
 
 
@@ -570,12 +717,13 @@ input,select{
     <div class="card">
         <div class="icon">⛏️</div>
         <h3>Шахта NEXORA</h3>
+
         <p>
-            Добывай ресурсы, прокачивай навык и открывай
-            более ценные материалы.
+            Добывай ресурсы, развивай навык и пополняй инвентарь.
         </p>
 
-        <button class="btn" onclick="action('/api/mining')">
+        <button class="btn"
+                onclick="action('/api/mining')">
             ⛏️ Добывать
         </button>
     </div>
@@ -585,11 +733,13 @@ input,select{
     <div class="card">
         <div class="icon">🌾</div>
         <h3>Собрать урожай</h3>
+
         <p>
-            Производит пшеницу и яблоки.
+            Производит ресурсы для инвентаря.
         </p>
 
-        <button class="btn" onclick="action('/api/farm')">
+        <button class="btn"
+                onclick="action('/api/farm')">
             🌾 Собрать
         </button>
     </div>
@@ -599,11 +749,13 @@ input,select{
     <div class="card">
         <div class="icon">🎣</div>
         <h3>Озеро NEXORA</h3>
+
         <p>
-            Лови обычную и редкую рыбу.
+            Лови рыбу и прокачивай навык.
         </p>
 
-        <button class="btn" onclick="action('/api/fishing')">
+        <button class="btn"
+                onclick="action('/api/fishing')">
             🎣 Рыбачить
         </button>
     </div>
@@ -617,9 +769,7 @@ input,select{
     <div class="section-title">🎒 Инвентарь</div>
 
     <div class="notice">
-        Все добытые ресурсы и предметы хранятся здесь.
-        Чтобы выставить предмет на маркет, он обязательно
-        должен находиться в инвентаре.
+        Предметы из инвентаря можно выставлять на маркет.
     </div>
 
     <div id="inventoryList"></div>
@@ -632,35 +782,67 @@ input,select{
 
     <div class="section-title">🛒 Маркет</div>
 
-    <div class="card">
-        <h3>Выставить предмет</h3>
+    <div class="market-tabs">
+        <button class="btn"
+                onclick="setMarketMode('items')">
+            📦 Предметы
+        </button>
 
-        <div class="form">
-            <select id="marketItem"></select>
-
-            <input
-                id="marketQuantity"
-                type="number"
-                min="1"
-                placeholder="Количество"
-            >
-
-            <input
-                id="marketPrice"
-                type="number"
-                min="1"
-                placeholder="Цена за 1 шт."
-            >
-
-            <button class="btn" onclick="createListing()">
-                🛒 Выставить
-            </button>
-        </div>
+        <button class="btn purple"
+                onclick="setMarketMode('businesses')">
+            🏭 Предприятия
+        </button>
     </div>
 
-    <div class="section-title">🔥 Лоты игроков</div>
+    <div id="itemMarketSection">
 
-    <div id="marketList"></div>
+        <div class="card">
+            <h3>Выставить предмет</h3>
+
+            <div class="form">
+
+                <select id="marketItem"></select>
+
+                <input
+                    id="marketQuantity"
+                    type="number"
+                    min="1"
+                    placeholder="Количество"
+                >
+
+                <input
+                    id="marketPrice"
+                    type="number"
+                    min="1"
+                    placeholder="Цена за 1 шт."
+                >
+
+                <button class="btn"
+                        onclick="createListing()">
+                    🛒 Выставить
+                </button>
+
+            </div>
+        </div>
+
+        <div class="section-title">🔥 Лоты игроков</div>
+
+        <div id="marketList"></div>
+
+    </div>
+
+
+    <div id="businessMarketSection"
+         style="display:none">
+
+        <div class="notice">
+            Предприятие становится отдельным активом.
+            Его можно улучшать, переименовывать и продавать.
+        </div>
+
+        <div id="businessMarketList"></div>
+
+    </div>
 
 </section>
 
@@ -703,27 +885,93 @@ input,select{
     <div class="section-title">👤 Профиль</div>
 
     <div class="card">
+
         <div class="profile">
-            <img id="avatar2" class="avatar" src="">
+            <img id="avatar2"
+                 class="avatar"
+                 src="">
+
             <div>
-                <div class="name" id="profileName2"></div>
-                <div class="username" id="profileUsername2"></div>
+                <div class="name"
+                     id="profileName2">
+                </div>
+
+                <div class="username"
+                     id="profileUsername2">
+                </div>
             </div>
         </div>
 
         <div class="section-title">Статистика</div>
 
-        <p>💎 Баланс: <b id="profileCoins"></b></p>
-        <p>🏦 Банк: <b id="profileBank"></b></p>
-        <p>⭐ Уровень: <b id="profileLevel"></b></p>
-        <p>🏆 Рейтинг: <b id="profileRating"></b></p>
-        <p>🆔 Telegram ID: <b id="profileTelegram"></b></p>
+        <p>
+            💎 Баланс:
+            <b id="profileCoins"></b>
+        </p>
+
+        <p>
+            🏦 Банк:
+            <b id="profileBank"></b>
+        </p>
+
+        <p>
+            ⭐ Уровень:
+            <b id="profileLevel"></b>
+        </p>
+
+        <p>
+            🏆 Рейтинг:
+            <b id="profileRating"></b>
+        </p>
+
+        <p>
+            🆔 Telegram ID:
+            <b id="profileTelegram"></b>
+        </p>
+
     </div>
 
+
+    <!-- PROMO -->
+    <div class="section-title">🎟️ Промокод</div>
+
+    <div class="card">
+
+        <p>
+            Активируй промокод и получи награду.
+            Каждый код можно использовать один раз.
+        </p>
+
+        <div class="form">
+
+            <input
+                id="promoCode"
+                placeholder="Введите промокод"
+                autocomplete="off"
+            >
+
+            <button class="btn gold"
+                    onclick="redeemPromo()">
+                🎁 Активировать
+            </button>
+
+        </div>
+
+        <div class="small"
+             style="margin-top:9px">
+            Доступные коды: START · BETA TEST · GO
+        </div>
+
+    </div>
+
+
+    <!-- BANK -->
     <div class="section-title">🏦 Банк</div>
 
     <div class="card">
+
         <div class="form">
+
             <input
                 id="bankAmount"
                 type="number"
@@ -732,7 +980,9 @@ input,select{
             >
 
             <div class="grid">
-                <button class="btn" onclick="bankAction('deposit')">
+
+                <button class="btn"
+                        onclick="bankAction('deposit')">
                     Внести
                 </button>
 
@@ -740,9 +990,13 @@ input,select{
                         onclick="bankAction('withdraw')">
                     Снять
                 </button>
+
             </div>
+
         </div>
+
     </div>
+
 
     <div id="adminPanel"></div>
 
@@ -752,7 +1006,16 @@ input,select{
 <!-- RATING -->
 <section class="screen" id="screen-rating">
 
-    <div class="section-title">🏆 Рейтинг</div>
+    <div class="section-title">🏆 Богатейшие</div>
+
+    <div class="notice">
+        Рейтинг считается по общему капиталу:
+        💎 баланс + 🏦 банк.
+    </div>
+
+    <div id="richestList"></div>
+
+    <div class="section-title">⭐ Общий рейтинг</div>
 
     <div id="ratingList"></div>
 
@@ -762,98 +1025,214 @@ input,select{
 </div>
 
 
+<!-- BUSINESS RENAME MODAL -->
+<div class="modal"
+     id="renameModal">
+
+    <div class="modal-box">
+
+        <button class="close"
+                onclick="closeModal('renameModal')">
+            ×
+        </button>
+
+        <div class="modal-title">
+            ✏️ Переименовать предприятие
+        </div>
+
+        <div class="form">
+
+            <input id="renameKey"
+                   type="hidden">
+
+            <input id="renameTitle"
+                   maxlength="32"
+                   placeholder="Новое название">
+
+            <button class="btn"
+                    onclick="renameBusiness()">
+                Сохранить
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- WIPE CONFIRM -->
+<div class="modal"
+     id="wipeModal">
+
+    <div class="modal-box">
+
+        <button class="close"
+                onclick="closeModal('wipeModal')">
+            ×
+        </button>
+
+        <div class="modal-title">
+            ⚠️ Полный WIPE
+        </div>
+
+        <div class="notice">
+            Все игровые аккаунты будут обнулены.
+            Каждый игрок получит 1000 💎.
+            Telegram-профили сохранятся.
+        </div>
+
+        <input
+            id="wipeConfirm"
+            placeholder="Введите WIPE"
+        >
+
+        <button class="btn red"
+                onclick="executeWipe()">
+            🧹 ОБНУЛИТЬ ИГРУ
+        </button>
+
+    </div>
+
+</div>
+
+
 <!-- NAVIGATION -->
 <div class="bottom">
+
     <div class="bottom-inner">
 
-        <button class="nav active" data-screen="home">
+        <button class="nav active"
+                data-screen="home">
             <div>🏠</div>
             Главная
         </button>
 
-        <button class="nav" data-screen="work">
+        <button class="nav"
+                data-screen="work">
             <div>👷</div>
             Работа
         </button>
 
-        <button class="nav" data-screen="inventory">
+        <button class="nav"
+                data-screen="inventory">
             <div>🎒</div>
             Инвентарь
         </button>
 
-        <button class="nav" data-screen="market">
+        <button class="nav"
+                data-screen="market">
             <div>🛒</div>
             Маркет
         </button>
 
-        <button class="nav" data-screen="profile">
+        <button class="nav"
+                data-screen="empire">
+            <div>🏭</div>
+            Империя
+        </button>
+
+        <button class="nav"
+                data-screen="profile">
             <div>👤</div>
             Профиль
         </button>
 
     </div>
+
 </div>
 
 
-<div class="toast" id="toast"></div>
+<div class="toast"
+     id="toast">
+</div>
 
 
 <script>
+
 const tg = window.Telegram?.WebApp;
 
 if(tg){
     tg.ready();
     tg.expand();
+
+    try{
+        tg.setHeaderColor("#050914");
+        tg.setBackgroundColor("#050914");
+    }catch(e){}
 }
 
+
 let state = null;
-let loaded = false;
+let loading = false;
+let toastTimer = null;
+let marketMode = "items";
 
 
 /* ============================================
    API
 ============================================ */
 
-async function api(url, options = {}){
-    const headers = {
+async function api(url,options={}){
+
+    const headers={
         "Content-Type":"application/json"
     };
 
     if(tg?.initData){
-        headers["X-Telegram-Init-Data"] = tg.initData;
+        headers["X-Telegram-Init-Data"]=tg.initData;
     }
 
-    const response = await fetch(url,{
+    const response=await fetch(url,{
         ...options,
         headers:{
             ...headers,
-            ...(options.headers || {})
+            ...(options.headers||{})
         }
     });
 
     let data;
 
     try{
-        data = await response.json();
+        data=await response.json();
     }catch{
         throw new Error("Ошибка сервера");
     }
 
-    if(!response.ok || data.ok === false){
-        throw new Error(data.error || "Ошибка");
+    if(!response.ok || data.ok===false){
+        throw new Error(data.error||"Ошибка");
     }
 
     return data;
 }
 
 
+/* ============================================
+   LOAD
+============================================ */
+
 async function load(){
+
+    if(loading){
+        return;
+    }
+
+    loading=true;
+
     try{
-        state = await api("/api/bootstrap");
+
+        state=await api("/api/bootstrap");
+
         renderAll();
-        loaded = true;
+
     }catch(e){
+
         toast(e.message);
+
+    }finally{
+
+        loading=false;
+
     }
 }
 
@@ -864,39 +1243,53 @@ async function load(){
 
 function showScreen(name){
 
-    document.querySelectorAll(".screen").forEach(el=>{
-        el.classList.remove("active");
-    });
+    document.querySelectorAll(".screen")
+        .forEach(el=>el.classList.remove("active"));
 
-    const target = document.getElementById("screen-"+name);
+    const target=
+        document.getElementById("screen-"+name);
 
     if(target){
         target.classList.add("active");
     }
 
-    document.querySelectorAll(".nav").forEach(el=>{
-        el.classList.toggle(
-            "active",
-            el.dataset.screen === name
-        );
-    });
+    document.querySelectorAll(".nav")
+        .forEach(el=>{
+            el.classList.toggle(
+                "active",
+                el.dataset.screen===name
+            );
+        });
 
-    if(name === "rating"){
+    if(name==="rating"){
         loadRating();
     }
+
+    if(name==="profile" && state?.creator){
+        loadAdminPlayers();
+    }
+
+    window.scrollTo({
+        top:0,
+        behavior:"instant"
+    });
 }
 
 
 /* ============================================
-   RENDER
+   RENDER ALL
 ============================================ */
 
 function renderAll(){
+
+    if(!state) return;
+
     renderUser();
     renderEvents();
     renderJobs();
     renderInventory();
     renderMarket();
+    renderBusinessMarket();
     renderBusinesses();
     renderProperties();
     renderPlanets();
@@ -909,118 +1302,212 @@ function renderAll(){
 }
 
 
+/* ============================================
+   USER
+============================================ */
+
 function renderUser(){
 
-    const u = state.user;
+    const u=state.user;
 
-    document.getElementById("topBalance").textContent =
+    document.getElementById("topBalance").textContent=
         `💎 ${format(u.coins)}`;
 
-    const fullName =
+    const fullName=
         [u.first_name,u.last_name]
         .filter(Boolean)
-        .join(" ") || "Игрок";
+        .join(" ")||"Игрок";
 
-    document.getElementById("profileName").textContent = fullName;
-    document.getElementById("profileUsername").textContent =
-        u.username ? "@"+u.username : "Telegram";
-
-    document.getElementById("level").textContent = u.level;
-    document.getElementById("rating").textContent = format(u.rating);
-    document.getElementById("bank").textContent =
-        `💎 ${format(u.bank)}`;
-
-    document.getElementById("telegramId").textContent =
-        u.telegram_id;
-
-    document.getElementById("energyText").textContent =
-        `${u.energy}/${u.max_energy}`;
-
-    document.getElementById("energyBar").style.width =
-        `${(u.energy/u.max_energy)*100}%`;
-
-    if(u.photo_url){
-        document.getElementById("avatar").src = u.photo_url;
-        document.getElementById("avatar2").src = u.photo_url;
-    }else{
-        const fallback =
-            "https://ui-avatars.com/api/?name="+
-            encodeURIComponent(fullName);
-
-        document.getElementById("avatar").src = fallback;
-        document.getElementById("avatar2").src = fallback;
-    }
-
-    document.getElementById("creatorBadge").style.display =
-        u.creator ? "inline-block" : "none";
-
-    document.getElementById("profileName2").textContent =
+    document.getElementById("profileName").textContent=
         fullName;
 
-    document.getElementById("profileUsername2").textContent =
-        u.username ? "@"+u.username : "Telegram";
+    document.getElementById("profileUsername").textContent=
+        u.username
+        ? "@"+u.username
+        : "Telegram";
 
-    document.getElementById("profileCoins").textContent =
-        `💎 ${format(u.coins)}`;
-
-    document.getElementById("profileBank").textContent =
-        `💎 ${format(u.bank)}`;
-
-    document.getElementById("profileLevel").textContent =
+    document.getElementById("level").textContent=
         u.level;
 
-    document.getElementById("profileRating").textContent =
+    document.getElementById("rating").textContent=
         format(u.rating);
 
-    document.getElementById("profileTelegram").textContent =
+    document.getElementById("bank").textContent=
+        `💎 ${format(u.bank)}`;
+
+    document.getElementById("telegramId").textContent=
         u.telegram_id;
+
+    document.getElementById("energyText").textContent=
+        `${u.energy}/${u.max_energy}`;
+
+    const energyPercent=
+        Math.max(
+            0,
+            Math.min(
+                100,
+                u.energy/u.max_energy*100
+            )
+        );
+
+    document.getElementById("energyBar")
+        .style.width=energyPercent+"%";
+
+    let avatar=u.photo_url;
+
+    if(!avatar){
+        avatar=
+            "https://ui-avatars.com/api/?name="+
+            encodeURIComponent(fullName);
+    }
+
+    document.getElementById("avatar").src=avatar;
+    document.getElementById("avatar2").src=avatar;
+
+    document.getElementById("creatorBadge")
+        .style.display=
+            u.creator
+            ?"inline-block"
+            :"none";
+
+    document.getElementById("profileName2")
+        .textContent=fullName;
+
+    document.getElementById("profileUsername2")
+        .textContent=
+            u.username
+            ? "@"+u.username
+            :"Telegram";
+
+    document.getElementById("profileCoins")
+        .textContent=
+            `💎 ${format(u.coins)}`;
+
+    document.getElementById("profileBank")
+        .textContent=
+            `💎 ${format(u.bank)}`;
+
+    document.getElementById("profileLevel")
+        .textContent=u.level;
+
+    document.getElementById("profileRating")
+        .textContent=format(u.rating);
+
+    document.getElementById("profileTelegram")
+        .textContent=u.telegram_id;
 }
 
+
+/* ============================================
+   EVENTS
+============================================ */
 
 function renderEvents(){
 
-    const box = document.getElementById("eventsHome");
+    const box=
+        document.getElementById("eventsHome");
 
-    if(!state.events.length){
-        box.innerHTML = "";
+    if(!state.events?.length){
+
+        box.innerHTML="";
+
         return;
     }
 
-    box.innerHTML = state.events.map(event => {
+    box.innerHTML=
+        state.events.map(event=>{
 
-        const left = Math.max(
-            0,
-            event.ends_at - Math.floor(Date.now()/1000)
-        );
+            const left=Math.max(
+                0,
+                event.ends_at-
+                Math.floor(Date.now()/1000)
+            );
 
-        return `
-            <div class="event">
-                <b>⚡ ${escapeHtml(event.title)}</b>
-                <div class="mult">x${event.multiplier}</div>
-                <div style="color:#9fb1c9;font-size:12px">
-                    ${escapeHtml(event.description)}
+            let label="⚡ БОНУС";
+
+            if(event.event_type==="business_discount"){
+                label="🏭 СКИДКА НА ПРЕДПРИЯТИЯ";
+            }
+
+            if(event.event_type==="property_discount"){
+                label="🏠 СКИДКА НА КВАРТИРЫ";
+            }
+
+            if(event.event_type==="jobs"){
+                label="👷 БОНУС РАБОТ";
+            }
+
+            if(event.event_type==="businesses"){
+                label="🏭 БОНУС ПРЕДПРИЯТИЙ";
+            }
+
+            return `
+                <div class="event">
+
+                    <b>
+                        ${label}
+                    </b>
+
+                    <div style="
+                        font-size:17px;
+                        font-weight:900;
+                        margin-top:4px">
+                        ${escapeHtml(event.title)}
+                    </div>
+
+                    <div class="mult">
+                        ${
+                            event.event_type.endsWith("_discount")
+                            ? `-${event.multiplier}%`
+                            : `x${event.multiplier}`
+                        }
+                    </div>
+
+                    <div style="
+                        color:#9fb1c9;
+                        font-size:12px">
+                        ${escapeHtml(event.description)}
+                    </div>
+
+                    <div style="
+                        margin-top:6px;
+                        color:#6f819d;
+                        font-size:11px">
+                        Осталось:
+                        ${formatTime(left)}
+                    </div>
+
                 </div>
-                <div style="margin-top:6px;color:#6f819d;font-size:11px">
-                    Осталось: ${formatTime(left)}
-                </div>
-            </div>
-        `;
-    }).join("");
+            `;
+
+        }).join("");
 }
 
 
+/* ============================================
+   JOBS
+============================================ */
+
 function renderJobs(){
 
-    document.getElementById("jobs").innerHTML =
+    const box=
+        document.getElementById("jobs");
+
+    box.innerHTML=
         state.jobs.map(job=>{
 
-            const unlocked =
-                state.user.level >= job.level;
+            const unlocked=
+                state.user.level>=job.level;
 
             return `
-                <div class="card">
+                <div class="card"
+                     style="margin-bottom:10px">
+
                     <div class="icon">👷</div>
-                    <h3>${job.name}</h3>
+
+                    <h3>
+                        ${escapeHtml(job.name)}
+                    </h3>
 
                     <p>
                         Уровень:
@@ -1043,135 +1530,321 @@ function renderJobs(){
                         </span>
                     </p>
 
-                    <p>⏱ ${job.cooldown} сек.</p>
+                    <p>
+                        ⏱ ${job.cooldown} сек.
+                    </p>
 
                     <button
                         class="btn ${unlocked?'':'secondary'}"
                         ${unlocked?'':'disabled'}
-                        onclick="doWork('${job.key}')"
-                    >
-                        ${unlocked?'👷 Работать':'🔒 Закрыто'}
+                        onclick="doWork('${job.key}')">
+
+                        ${
+                            unlocked
+                            ?"👷 Работать"
+                            :"🔒 Закрыто"
+                        }
+
                     </button>
+
                 </div>
             `;
+
         }).join("");
 }
 
 
+/* ============================================
+   INVENTORY
+============================================ */
+
 function renderInventory(){
 
-    const box = document.getElementById("inventoryList");
+    const box=
+        document.getElementById("inventoryList");
 
-    if(!state.user.inventory.length){
-        box.innerHTML =
-            `<div class="empty">
+    const inventory=
+        state.user.inventory||[];
+
+    if(!inventory.length){
+
+        box.innerHTML=`
+            <div class="empty">
                 🎒 Инвентарь пуст.<br>
-                Начни добывать ресурсы.
-            </div>`;
+                Начни работать или добывать ресурсы.
+            </div>
+        `;
+
         return;
     }
 
-    box.innerHTML = state.user.inventory.map(item=>`
-        <div class="card" style="margin-bottom:9px">
-            <div class="item-row">
-                <div class="item-icon">${item.icon}</div>
+    box.innerHTML=
+        inventory.map(item=>`
 
-                <div class="item-info">
-                    <b>${item.name}</b>
-                    <span>
-                        В наличии: ${format(item.quantity)}
-                    </span>
+            <div class="card"
+                 style="margin-bottom:9px">
+
+                <div class="item-row">
+
+                    <div class="item-icon">
+                        ${item.icon}
+                    </div>
+
+                    <div class="item-info">
+
+                        <b>
+                            ${escapeHtml(item.name)}
+                        </b>
+
+                        <span>
+                            В наличии:
+                            ${format(item.quantity)}
+                        </span>
+
+                    </div>
+
+                    <div>
+
+                        <div class="price">
+                            💎 ${format(item.price)}
+                        </div>
+
+                        <div class="small">
+                            базовая цена
+                        </div>
+
+                    </div>
+
                 </div>
 
-                <div>
-                    <div class="price">
-                        💎 ${format(item.price)}
-                    </div>
-                    <div style="font-size:10px;color:#6f819d">
-                        базовая цена
-                    </div>
-                </div>
             </div>
-        </div>
-    `).join("");
 
-    const select = document.getElementById("marketItem");
+        `).join("");
 
-    select.innerHTML = state.user.inventory.map(item=>`
-        <option value="${item.key}">
-            ${item.icon} ${item.name} — ${item.quantity} шт.
-        </option>
-    `).join("");
+    const select=
+        document.getElementById("marketItem");
+
+    select.innerHTML=
+        inventory.map(item=>`
+            <option value="${item.key}">
+                ${item.icon}
+                ${escapeHtml(item.name)}
+                — ${item.quantity} шт.
+            </option>
+        `).join("");
 }
 
+
+/* ============================================
+   ITEM MARKET
+============================================ */
 
 function renderMarket(){
 
-    const box = document.getElementById("marketList");
+    const box=
+        document.getElementById("marketList");
 
-    if(!state.market.length){
-        box.innerHTML =
-            `<div class="empty">
+    if(!state.market?.length){
+
+        box.innerHTML=`
+            <div class="empty">
                 На рынке пока нет предложений.
-            </div>`;
+            </div>
+        `;
+
         return;
     }
 
-    box.innerHTML = state.market.map(item=>`
-        <div class="card" style="margin-bottom:9px">
-            <div class="market-item">
-                <div class="item-icon">${item.icon}</div>
+    box.innerHTML=
+        state.market.map(item=>`
 
-                <div class="market-main">
-                    <b>${item.name}</b>
+            <div class="card"
+                 style="margin-bottom:9px">
 
-                    <div style="font-size:12px;color:#7f91ad">
-                        ${format(item.quantity)} шт.
+                <div class="market-item">
+
+                    <div class="item-icon">
+                        ${item.icon}
                     </div>
 
-                    <div class="market-price">
-                        💎 ${format(item.price_each)} / шт.
+                    <div class="market-main">
+
+                        <b>
+                            ${escapeHtml(item.name)}
+                        </b>
+
+                        <div class="small">
+                            ${format(item.quantity)} шт.
+                        </div>
+
+                        <div class="market-price">
+                            💎 ${format(item.price_each)} / шт.
+                        </div>
+
+                        <div class="small">
+                            ${escapeHtml(item.seller)}
+                        </div>
+
                     </div>
 
-                    <div style="font-size:10px;color:#61738e">
-                        ${escapeHtml(item.seller)}
-                    </div>
+                    ${
+                        item.mine
+
+                        ?
+
+                        `<button
+                            class="btn red"
+                            style="width:auto;margin:0"
+                            onclick="cancelListing(${item.id})">
+                            Снять
+                        </button>`
+
+                        :
+
+                        `<button
+                            class="btn"
+                            style="width:auto;margin:0"
+                            onclick="buyListing(${item.id})">
+                            Купить
+                        </button>`
+                    }
+
                 </div>
 
-                ${
-                    item.mine
-                    ?
-                    `<button
-                        class="btn red"
-                        style="width:auto;margin:0"
-                        onclick="cancelListing(${item.id})">
-                        Снять
-                    </button>`
-                    :
-                    `<button
-                        class="btn"
-                        style="width:auto;margin:0"
-                        onclick="buyListing(${item.id})">
-                        Купить
-                    </button>`
-                }
             </div>
-        </div>
-    `).join("");
+
+        `).join("");
 }
 
 
+/* ============================================
+   BUSINESS MARKET
+============================================ */
+
+function renderBusinessMarket(){
+
+    const box=
+        document.getElementById("businessMarketList");
+
+    const listings=
+        state.business_market||[];
+
+    if(!listings.length){
+
+        box.innerHTML=`
+            <div class="empty">
+                🏭 На рынке предприятий пока ничего нет.
+            </div>
+        `;
+
+        return;
+    }
+
+    box.innerHTML=
+        listings.map(item=>`
+
+            <div class="card"
+                 style="margin-bottom:9px">
+
+                <div class="item-row">
+
+                    <div class="item-icon">
+                        🏭
+                    </div>
+
+                    <div class="item-info">
+
+                        <b>
+                            ${escapeHtml(item.name)}
+                        </b>
+
+                        <span>
+                            Уровень Lv.${item.level}
+                        </span>
+
+                        <span>
+                            Продавец:
+                            ${escapeHtml(item.seller)}
+                        </span>
+
+                        <div class="price"
+                             style="margin-top:4px">
+                            💎 ${format(item.price)}
+                        </div>
+
+                    </div>
+
+                    ${
+                        item.mine
+
+                        ?
+
+                        `<button
+                            class="btn red"
+                            style="width:auto;margin:0"
+                            onclick="cancelBusinessListing(${item.id})">
+                            Снять
+                        </button>`
+
+                        :
+
+                        `<button
+                            class="btn purple"
+                            style="width:auto;margin:0"
+                            onclick="buyBusinessMarket(${item.id})">
+                            Купить
+                        </button>`
+                    }
+
+                </div>
+
+            </div>
+
+        `).join("");
+}
+
+
+function setMarketMode(mode){
+
+    marketMode=mode;
+
+    document.getElementById("itemMarketSection")
+        .style.display=
+            mode==="items"
+            ?"block"
+            :"none";
+
+    document.getElementById("businessMarketSection")
+        .style.display=
+            mode==="businesses"
+            ?"block"
+            :"none";
+}
+
+
+/* ============================================
+   BUSINESSES
+============================================ */
+
 function renderBusinesses(){
 
-    document.getElementById("businesses").innerHTML =
+    const box=
+        document.getElementById("businesses");
+
+    box.innerHTML=
         state.businesses.map(b=>{
 
             if(!b.owned){
 
                 return `
-                    <div class="card" style="margin-bottom:10px">
+                    <div class="card"
+                         style="margin-bottom:10px">
+
                         <div class="icon">🏭</div>
-                        <h3>${b.name}</h3>
+
+                        <h3>
+                            ${escapeHtml(b.name)}
+                        </h3>
 
                         <p>
                             Доход:
@@ -1188,47 +1861,133 @@ function renderBusinesses(){
                             </span>
                         </p>
 
-                        <button class="btn"
+                        ${
+                            b.discount>0
+                            ?
+                            `<span class="badge green">
+                                -${b.discount}% скидка
+                            </span>`
+                            :""
+                        }
+
+                        <p>
+                            Лимит:
+                            ${b.owned_count}/${b.limit}
+                        </p>
+
+                        <button
+                            class="btn"
+                            ${b.available?"":"disabled"}
                             onclick="buyBusiness('${b.key}')">
-                            Купить предприятие
+
+                            ${
+                                b.available
+                                ?"Купить предприятие"
+                                :"Лимит достигнут"
+                            }
+
                         </button>
+
                     </div>
                 `;
             }
 
+            const upgradeCost=
+                Math.round(
+                    b.base_price*
+                    Math.pow(
+                        1.55,
+                        Math.max(0,b.level_owned)
+                    )
+                );
+
             return `
-                <div class="card" style="margin-bottom:10px">
+                <div class="card"
+                     style="margin-bottom:10px">
+
                     <div class="icon">🏭</div>
 
                     <h3>
-                        ${b.name}
-                        <span style="color:#54e4ff">
+
+                        ${escapeHtml(b.name)}
+
+                        <span class="badge">
                             Lv.${b.level_owned}
                         </span>
+
                     </h3>
 
                     <p>
-                        Базовый доход:
-                        💎 ${format(b.income)}
+                        Доход:
+                        <span class="reward">
+                            💎 ${format(b.income)}
+                        </span>
+                        / час
                     </p>
 
-                    <button class="btn gold"
+                    <p>
+                        Владение:
+                        <span class="owner">
+                            твоё
+                        </span>
+                    </p>
+
+                    <button
+                        class="btn gold"
                         onclick="collectBusiness('${b.key}')">
                         💰 Забрать доход
                     </button>
+
+                    <button
+                        class="btn"
+                        onclick="upgradeBusiness('${b.key}')">
+                        📈 Улучшить
+                    </button>
+
+                    <button
+                        class="btn secondary"
+                        onclick="openRename('${b.key}','${escapeAttr(b.name)}')">
+                        ✏️ Переименовать
+                    </button>
+
+                    <button
+                        class="btn purple"
+                        onclick="openSellBusiness('${b.key}','${escapeAttr(b.name)}')">
+                        🏷️ Выставить на продажу
+                    </button>
+
+                    <div class="small"
+                         style="margin-top:8px">
+                        Следующее улучшение:
+                        💎 ${format(upgradeCost)}
+                    </div>
+
                 </div>
             `;
+
         }).join("");
 }
 
 
+/* ============================================
+   PROPERTIES
+============================================ */
+
 function renderProperties(){
 
-    document.getElementById("properties").innerHTML =
+    const box=
+        document.getElementById("properties");
+
+    box.innerHTML=
         state.properties.map(p=>`
+
             <div class="card">
+
                 <div class="icon">🏠</div>
-                <h3>${p.name}</h3>
+
+                <h3>
+                    ${escapeHtml(p.name)}
+                </h3>
 
                 <p>
                     Рейтинг:
@@ -1237,33 +1996,66 @@ function renderProperties(){
                     </span>
                 </p>
 
+                <p>
+                    Лимит:
+                    ${p.owned_count}/${p.limit}
+                </p>
+
                 <p class="price">
                     💎 ${format(p.price)}
                 </p>
 
+                ${
+                    p.discount>0
+                    ?
+                    `<span class="badge green">
+                        -${p.discount}%
+                    </span>`
+                    :""
+                }
+
                 <button
                     class="btn ${p.owned?'secondary':''}"
-                    ${p.owned?'disabled':''}
+                    ${p.owned||!p.available?'disabled':''}
                     onclick="buyProperty('${p.key}')">
-                    ${p.owned?'✓ Куплено':'Купить'}
+
+                    ${
+                        p.owned
+                        ?"✓ Куплено"
+                        :
+                        p.available
+                        ?"Купить"
+                        :"Лимит достигнут"
+                    }
+
                 </button>
+
             </div>
+
         `).join("");
 }
 
 
+/* ============================================
+   WORLD
+============================================ */
+
 function renderPlanets(){
 
-    document.getElementById("planets").innerHTML =
+    document.getElementById("planets").innerHTML=
         state.planets.map(p=>{
 
-            const unlocked =
-                state.user.level >= p.level;
+            const unlocked=
+                state.user.level>=p.level;
 
             return `
                 <div class="card">
+
                     <div class="icon">🪐</div>
-                    <h3>${p.name}</h3>
+
+                    <h3>
+                        ${escapeHtml(p.name)}
+                    </h3>
 
                     <p>
                         Требуется:
@@ -1280,21 +2072,34 @@ function renderPlanets(){
                         class="btn ${unlocked?'':'secondary'}"
                         ${unlocked?'':'disabled'}
                         onclick="travel('${p.key}')">
-                        ${unlocked?'🚀 Полететь':'🔒 Закрыто'}
+
+                        ${
+                            unlocked
+                            ?"🚀 Полететь"
+                            :"🔒 Закрыто"
+                        }
+
                     </button>
+
                 </div>
             `;
+
         }).join("");
 }
 
 
 function renderPets(){
 
-    document.getElementById("pets").innerHTML =
+    document.getElementById("pets").innerHTML=
         state.pets.map(p=>`
+
             <div class="card">
+
                 <div class="icon">🐾</div>
-                <h3>${p.name}</h3>
+
+                <h3>
+                    ${escapeHtml(p.name)}
+                </h3>
 
                 <p>
                     Бонус:
@@ -1311,22 +2116,32 @@ function renderPets(){
                     class="btn ${p.owned?'secondary':''}"
                     ${p.owned?'disabled':''}
                     onclick="buyPet('${p.key}')">
+
                     ${p.owned?'✓ Есть':'Купить'}
+
                 </button>
+
             </div>
+
         `).join("");
 }
 
 
 function renderQuests(){
 
-    document.getElementById("quests").innerHTML =
+    document.getElementById("quests").innerHTML=
         state.quests.map(q=>`
-            <div class="card" style="margin-bottom:9px">
 
-                <h3>📋 ${q.name}</h3>
+            <div class="card"
+                 style="margin-bottom:9px">
 
-                <p>${q.description}</p>
+                <h3>
+                    📋 ${escapeHtml(q.name)}
+                </h3>
+
+                <p>
+                    ${escapeHtml(q.description)}
+                </p>
 
                 <div class="progress">
                     <div style="
@@ -1342,43 +2157,64 @@ function renderQuests(){
                 </p>
 
                 <p class="reward">
-                    Награда: 💎 ${format(q.reward)}
+                    Награда:
+                    💎 ${format(q.reward)}
                 </p>
 
                 ${
                     q.claimed
+
                     ?
-                    `<button class="btn secondary" disabled>
+
+                    `<button class="btn secondary"
+                             disabled>
                         ✓ Получено
                     </button>`
+
                     :
+
                     q.completed
+
                     ?
-                    `<button class="btn gold"
+
+                    `<button
+                        class="btn gold"
                         onclick="claimQuest('${q.key}')">
                         Забрать награду
                     </button>`
+
                     :
-                    `<button class="btn secondary" disabled>
+
+                    `<button
+                        class="btn secondary"
+                        disabled>
                         Ещё не выполнено
                     </button>`
                 }
 
             </div>
+
         `).join("");
 }
 
 
 /* ============================================
-   CREATOR
+   CREATOR PANEL
 ============================================ */
 
 function renderAdmin(){
 
-    document.getElementById("adminPanel").innerHTML = `
+    const panel=
+        document.getElementById("adminPanel");
+
+    panel.innerHTML=`
+
         <div class="section-title">
-            👑 Панель создателя
+            👑 Панель Создателя
         </div>
+
+
+        <!-- MONEY -->
 
         <div class="card admin">
 
@@ -1388,21 +2224,18 @@ function renderAdmin(){
 
                 <input
                     id="adminTelegram"
-                    placeholder="Telegram ID игрока"
-                >
+                    placeholder="Telegram ID игрока">
 
                 <input
                     id="adminAmount"
                     type="number"
                     min="1"
-                    placeholder="Количество 💎"
-                >
+                    placeholder="Количество 💎">
 
                 <input
                     id="adminReason"
                     placeholder="Причина"
-                    value="Награда от создателя"
-                >
+                    value="Награда от создателя">
 
                 <div class="grid">
 
@@ -1421,71 +2254,167 @@ function renderAdmin(){
                 </div>
 
             </div>
+
         </div>
 
-        <div class="card admin" style="margin-top:10px">
 
-            <h3>⚡ Создать событие</h3>
+        <!-- XP / LEVEL -->
+
+        <div class="card admin"
+             style="margin-top:10px">
+
+            <h3>⭐ Управление прогрессом</h3>
 
             <div class="form">
 
                 <input
-                    id="eventTitle"
-                    placeholder="Название события"
-                    value="Бонус NEXORA"
-                >
-
-                <input
-                    id="eventDescription"
-                    placeholder="Описание"
-                    value="Увеличенный доход!"
-                >
-
-                <select id="eventType">
-                    <option value="jobs">
-                        👷 Только работы
-                    </option>
-
-                    <option value="businesses">
-                        🏭 Только предприятия
-                    </option>
-
-                    <option value="all">
-                        ⚡ Работы + предприятия
-                    </option>
-                </select>
-
-                <input
-                    id="eventMultiplier"
+                    id="adminXP"
                     type="number"
                     min="1"
-                    max="10"
-                    step="0.5"
-                    value="2"
-                    placeholder="Множитель"
-                >
-
-                <input
-                    id="eventDuration"
-                    type="number"
-                    min="1"
-                    value="60"
-                    placeholder="Длительность в минутах"
-                >
+                    placeholder="Количество XP">
 
                 <button
-                    class="btn gold"
-                    onclick="createEvent()">
-                    ⚡ Запустить событие
+                    class="btn"
+                    onclick="adminXP()">
+                    ⭐ Выдать XP
+                </button>
+
+                <input
+                    id="adminLevel"
+                    type="number"
+                    min="1"
+                    max="100"
+                    placeholder="Новый уровень">
+
+                <button
+                    class="btn purple"
+                    onclick="adminLevel()">
+                    🆙 Установить уровень
                 </button>
 
             </div>
 
         </div>
 
-        <div class="card admin" style="margin-top:10px">
+
+        <!-- ITEMS -->
+
+        <div class="card admin"
+             style="margin-top:10px">
+
+            <h3>💎 Выдать дорогой предмет</h3>
+
+            <div class="form">
+
+                <select id="adminItem">
+                    <option>
+                        Загрузка предметов...
+                    </option>
+                </select>
+
+                <input
+                    id="adminItemQuantity"
+                    type="number"
+                    min="1"
+                    placeholder="Количество">
+
+                <button
+                    class="btn gold"
+                    onclick="adminItem()">
+                    🎁 Выдать предмет
+                </button>
+
+            </div>
+
+        </div>
+
+
+        <!-- EVENTS -->
+
+        <div class="card admin"
+             style="margin-top:10px">
+
+            <h3>⚡ Управление событиями</h3>
+
+            <div class="form">
+
+                <input
+                    id="eventTitle"
+                    placeholder="Название события"
+                    value="Бонус NEXORA">
+
+                <input
+                    id="eventDescription"
+                    placeholder="Описание"
+                    value="Временный бонус для экономики">
+
+                <select id="eventType">
+
+                    <option value="jobs">
+                        👷 Множитель работ
+                    </option>
+
+                    <option value="businesses">
+                        🏭 Множитель предприятий
+                    </option>
+
+                    <option value="all">
+                        ⚡ Работы + предприятия
+                    </option>
+
+                    <option value="business_discount">
+                        🏭 Скидка на предприятия
+                    </option>
+
+                    <option value="property_discount">
+                        🏠 Скидка на квартиры
+                    </option>
+
+                </select>
+
+                <input
+                    id="eventMultiplier"
+                    type="number"
+                    min="1"
+                    max="90"
+                    step="0.5"
+                    value="2"
+                    placeholder="Множитель или % скидки">
+
+                <input
+                    id="eventDuration"
+                    type="number"
+                    min="1"
+                    max="10080"
+                    value="60"
+                    placeholder="Длительность, минут">
+
+                <button
+                    class="btn gold"
+                    onclick="createEvent()">
+                    ⚡ Запустить
+                </button>
+
+            </div>
+
+            <div class="divider"></div>
+
+            <div id="adminEvents"></div>
+
+        </div>
+
+
+        <!-- PLAYERS -->
+
+        <div class="card admin"
+             style="margin-top:10px">
 
             <h3>👥 Игроки</h3>
+
+            <input
+                id="adminSearch"
+                placeholder="ID, username или имя"
+                oninput="debouncedAdminSearch()">
 
             <button
                 class="btn secondary"
@@ -1498,7 +2427,52 @@ function renderAdmin(){
             </div>
 
         </div>
+
+
+        <!-- LOGS -->
+
+        <div class="card admin"
+             style="margin-top:10px">
+
+            <h3>📜 История действий</h3>
+
+            <button
+                class="btn secondary"
+                onclick="loadAdminLogs()">
+                Показать историю
+            </button>
+
+            <div id="adminLogs"
+                 style="margin-top:10px">
+            </div>
+
+        </div>
+
+
+        <!-- WIPE -->
+
+        <div class="card danger-zone"
+             style="margin-top:10px">
+
+            <h3>🧹 Полный WIPE</h3>
+
+            <p>
+                Полностью сбрасывает игровой прогресс.
+                Каждый существующий игрок получает
+                <b>1000 💎</b>.
+            </p>
+
+            <button
+                class="btn red"
+                onclick="openModal('wipeModal')">
+                ⚠️ Открыть WIPE
+            </button>
+
+        </div>
     `;
+
+    loadAdminItems();
+    loadAdminEvents();
 }
 
 
@@ -1509,10 +2483,12 @@ function renderAdmin(){
 async function doWork(job){
 
     try{
-        const data = await api("/api/work",{
-            method:"POST",
-            body:JSON.stringify({job})
-        });
+
+        const data=
+            await api("/api/work",{
+                method:"POST",
+                body:JSON.stringify({job})
+            });
 
         toast(
             `+💎 ${format(data.reward)} | +${data.user.xp} XP`
@@ -1521,7 +2497,9 @@ async function doWork(job){
         await load();
 
     }catch(e){
+
         toast(e.message);
+
     }
 }
 
@@ -1529,37 +2507,53 @@ async function doWork(job){
 async function action(url){
 
     try{
-        const data = await api(url,{
-            method:"POST",
-            body:"{}"
-        });
+
+        const data=
+            await api(url,{
+                method:"POST",
+                body:"{}"
+            });
 
         toast(
-            data.message ||
-            `${data.icon || ''} ${data.item || ''} ${data.quantity ? 'x'+data.quantity : ''}`
+            data.message||
+            `${data.icon||""} ${data.item||""} ${
+                data.quantity
+                ?"x"+data.quantity
+                :""
+            }`
         );
 
         await load();
 
     }catch(e){
+
         toast(e.message);
+
     }
 }
 
 
+/* ============================================
+   BUSINESSES
+============================================ */
+
 async function buyBusiness(key){
 
     try{
+
         await api("/api/businesses/buy",{
             method:"POST",
             body:JSON.stringify({key})
         });
 
         toast("🏭 Предприятие куплено");
+
         await load();
 
     }catch(e){
+
         toast(e.message);
+
     }
 }
 
@@ -1567,10 +2561,12 @@ async function buyBusiness(key){
 async function collectBusiness(key){
 
     try{
-        const data = await api("/api/businesses/collect",{
-            method:"POST",
-            body:JSON.stringify({key})
-        });
+
+        const data=
+            await api("/api/businesses/collect",{
+                method:"POST",
+                body:JSON.stringify({key})
+            });
 
         toast(
             `💎 Получено ${format(data.income)}`
@@ -1579,41 +2575,220 @@ async function collectBusiness(key){
         await load();
 
     }catch(e){
+
         toast(e.message);
+
     }
 }
 
 
+async function upgradeBusiness(key){
+
+    try{
+
+        const data=
+            await api("/api/businesses/upgrade",{
+                method:"POST",
+                body:JSON.stringify({key})
+            });
+
+        toast(
+            `📈 Предприятие теперь Lv.${data.level}`
+        );
+
+        await load();
+
+    }catch(e){
+
+        toast(e.message);
+
+    }
+}
+
+
+function openRename(key,name){
+
+    document.getElementById("renameKey").value=key;
+    document.getElementById("renameTitle").value=name;
+
+    openModal("renameModal");
+}
+
+
+async function renameBusiness(){
+
+    const key=
+        document.getElementById("renameKey").value;
+
+    const title=
+        document.getElementById("renameTitle").value.trim();
+
+    if(!title){
+        toast("Введите название");
+        return;
+    }
+
+    try{
+
+        await api("/api/businesses/rename",{
+            method:"POST",
+            body:JSON.stringify({
+                key,
+                title
+            })
+        });
+
+        closeModal("renameModal");
+
+        toast("✏️ Название изменено");
+
+        await load();
+
+    }catch(e){
+
+        toast(e.message);
+
+    }
+}
+
+
+function openSellBusiness(key,name){
+
+    const price=prompt(
+        `Цена продажи предприятия "${name}" в 💎:`
+    );
+
+    if(price===null){
+        return;
+    }
+
+    const numericPrice=Number(price);
+
+    if(!numericPrice || numericPrice<=0){
+        toast("Введите корректную цену");
+        return;
+    }
+
+    sellBusiness(key,numericPrice,name);
+}
+
+
+async function sellBusiness(key,price,name){
+
+    try{
+
+        await api("/api/businesses/list",{
+            method:"POST",
+            body:JSON.stringify({
+                key,
+                price,
+                title:name
+            })
+        });
+
+        toast("🏷️ Предприятие выставлено");
+
+        await load();
+
+    }catch(e){
+
+        toast(e.message);
+
+    }
+}
+
+
+async function buyBusinessMarket(id){
+
+    try{
+
+        const data=
+            await api("/api/businesses/market/buy",{
+                method:"POST",
+                body:JSON.stringify({id})
+            });
+
+        toast(
+            `🏭 Предприятие куплено за 💎 ${format(data.price)}`
+        );
+
+        await load();
+
+    }catch(e){
+
+        toast(e.message);
+
+    }
+}
+
+
+async function cancelBusinessListing(id){
+
+    try{
+
+        await api("/api/businesses/market/cancel",{
+            method:"POST",
+            body:JSON.stringify({id})
+        });
+
+        toast("Лот снят");
+
+        await load();
+
+    }catch(e){
+
+        toast(e.message);
+
+    }
+}
+
+
+/* ============================================
+   PROPERTIES
+============================================ */
+
 async function buyProperty(key){
 
     try{
+
         await api("/api/properties/buy",{
             method:"POST",
             body:JSON.stringify({key})
         });
 
         toast("🏠 Недвижимость куплена");
+
         await load();
 
     }catch(e){
+
         toast(e.message);
+
     }
 }
 
 
+/* ============================================
+   PETS / PLANETS
+============================================ */
+
 async function buyPet(key){
 
     try{
+
         await api("/api/pets/buy",{
             method:"POST",
             body:JSON.stringify({key})
         });
 
         toast("🐾 Питомец добавлен");
+
         await load();
 
     }catch(e){
+
         toast(e.message);
+
     }
 }
 
@@ -1621,30 +2796,52 @@ async function buyPet(key){
 async function travel(key){
 
     try{
-        const data = await api("/api/planets/travel",{
-            method:"POST",
-            body:JSON.stringify({key})
-        });
 
-        toast(`🚀 Ты посетил ${data.planet}`);
+        const data=
+            await api("/api/planets/travel",{
+                method:"POST",
+                body:JSON.stringify({key})
+            });
+
+        toast(
+            `🚀 Ты посетил ${data.planet}`
+        );
+
         await load();
 
     }catch(e){
+
         toast(e.message);
+
     }
 }
 
 
+/* ============================================
+   ITEM MARKET
+============================================ */
+
 async function createListing(){
 
-    const item_key =
+    const item_key=
         document.getElementById("marketItem").value;
 
-    const quantity =
-        Number(document.getElementById("marketQuantity").value);
+    const quantity=
+        Number(
+            document.getElementById("marketQuantity").value
+        );
 
-    const price_each =
-        Number(document.getElementById("marketPrice").value);
+    const price_each=
+        Number(
+            document.getElementById("marketPrice").value
+        );
+
+    if(!item_key||quantity<=0||price_each<=0){
+
+        toast("Заполни все поля");
+
+        return;
+    }
 
     try{
 
@@ -1658,10 +2855,13 @@ async function createListing(){
         });
 
         toast("🛒 Лот выставлен");
+
         await load();
 
     }catch(e){
+
         toast(e.message);
+
     }
 }
 
@@ -1670,10 +2870,11 @@ async function buyListing(id){
 
     try{
 
-        const data = await api("/api/market/buy",{
-            method:"POST",
-            body:JSON.stringify({id})
-        });
+        const data=
+            await api("/api/market/buy",{
+                method:"POST",
+                body:JSON.stringify({id})
+            });
 
         toast(
             `🛒 Куплено за 💎 ${format(data.total)}`
@@ -1682,7 +2883,9 @@ async function buyListing(id){
         await load();
 
     }catch(e){
+
         toast(e.message);
+
     }
 }
 
@@ -1697,22 +2900,30 @@ async function cancelListing(id){
         });
 
         toast("Лот снят");
+
         await load();
 
     }catch(e){
+
         toast(e.message);
+
     }
 }
 
+
+/* ============================================
+   QUEST
+============================================ */
 
 async function claimQuest(key){
 
     try{
 
-        const data = await api("/api/quests/claim",{
-            method:"POST",
-            body:JSON.stringify({key})
-        });
+        const data=
+            await api("/api/quests/claim",{
+                method:"POST",
+                body:JSON.stringify({key})
+            });
 
         toast(
             `🎁 Получено 💎 ${format(data.reward)}`
@@ -1721,18 +2932,28 @@ async function claimQuest(key){
         await load();
 
     }catch(e){
+
         toast(e.message);
+
     }
 }
 
 
+/* ============================================
+   BANK
+============================================ */
+
 async function bankAction(action){
 
-    const amount =
-        Number(document.getElementById("bankAmount").value);
+    const amount=
+        Number(
+            document.getElementById("bankAmount").value
+        );
 
     if(!amount){
+
         toast("Введите сумму");
+
         return;
     }
 
@@ -1747,80 +2968,340 @@ async function bankAction(action){
         });
 
         toast("🏦 Операция выполнена");
+
         await load();
 
     }catch(e){
+
         toast(e.message);
+
     }
 }
 
 
 /* ============================================
-   ADMIN
+   PROMO
 ============================================ */
 
-async function adminMoney(action){
+async function redeemPromo(){
 
-    const telegram_id =
-        document.getElementById("adminTelegram").value.trim();
+    const code=
+        document.getElementById("promoCode")
+        .value
+        .trim();
 
-    const amount =
-        Number(document.getElementById("adminAmount").value);
+    if(!code){
 
-    const reason =
-        document.getElementById("adminReason").value;
+        toast("Введите промокод");
 
-    if(!telegram_id || !amount){
-        toast("Заполни Telegram ID и сумму");
         return;
     }
 
     try{
 
-        const data = await api("/api/admin/money",{
-            method:"POST",
-            body:JSON.stringify({
-                telegram_id,
-                amount,
-                action,
-                reason
-            })
-        });
+        const data=
+            await api("/api/promo/redeem",{
+                method:"POST",
+                body:JSON.stringify({
+                    code
+                })
+            });
 
         toast(
-            action === "give"
-            ? `💎 Выдано ${format(data.amount)}`
-            : `💎 Забрано ${format(data.amount)}`
+            `🎁 ${data.code}: +${format(data.coins)} 💎 +${data.xp} XP`
+        );
+
+        document.getElementById("promoCode").value="";
+
+        await load();
+
+    }catch(e){
+
+        toast(e.message);
+
+    }
+}
+
+
+/* ============================================
+   ADMIN MONEY
+============================================ */
+
+async function adminMoney(action){
+
+    const telegram_id=
+        document.getElementById("adminTelegram")
+        .value
+        .trim();
+
+    const amount=
+        Number(
+            document.getElementById("adminAmount")
+            .value
+        );
+
+    const reason=
+        document.getElementById("adminReason")
+        .value;
+
+    if(!telegram_id||!amount){
+
+        toast("Заполни Telegram ID и сумму");
+
+        return;
+    }
+
+    try{
+
+        const data=
+            await api("/api/admin/money",{
+                method:"POST",
+                body:JSON.stringify({
+                    telegram_id,
+                    amount,
+                    action,
+                    reason
+                })
+            });
+
+        toast(
+            action==="give"
+            ?`💎 Выдано ${format(data.amount)}`
+            :`💎 Забрано ${format(data.amount)}`
         );
 
         await loadAdminPlayers();
 
     }catch(e){
+
         toast(e.message);
+
     }
 }
 
 
+/* ============================================
+   ADMIN XP
+============================================ */
+
+async function adminXP(){
+
+    const telegram_id=
+        document.getElementById("adminTelegram")
+        .value
+        .trim();
+
+    const amount=
+        Number(
+            document.getElementById("adminXP")
+            .value
+        );
+
+    if(!telegram_id||!amount){
+
+        toast("Укажи Telegram ID и XP");
+
+        return;
+    }
+
+    try{
+
+        const data=
+            await api("/api/admin/xp",{
+                method:"POST",
+                body:JSON.stringify({
+                    telegram_id,
+                    amount
+                })
+            });
+
+        toast(
+            `⭐ Выдано ${format(amount)} XP. Lv.${data.level}`
+        );
+
+        await load();
+
+    }catch(e){
+
+        toast(e.message);
+
+    }
+}
+
+
+/* ============================================
+   ADMIN LEVEL
+============================================ */
+
+async function adminLevel(){
+
+    const telegram_id=
+        document.getElementById("adminTelegram")
+        .value
+        .trim();
+
+    const level=
+        Number(
+            document.getElementById("adminLevel")
+            .value
+        );
+
+    if(!telegram_id||!level){
+
+        toast("Укажи Telegram ID и уровень");
+
+        return;
+    }
+
+    try{
+
+        const data=
+            await api("/api/admin/level",{
+                method:"POST",
+                body:JSON.stringify({
+                    telegram_id,
+                    level
+                })
+            });
+
+        toast(
+            `🆙 Уровень установлен: ${data.level}`
+        );
+
+        await load();
+
+    }catch(e){
+
+        toast(e.message);
+
+    }
+}
+
+
+/* ============================================
+   ADMIN ITEM
+============================================ */
+
+async function loadAdminItems(){
+
+    if(!state?.creator){
+        return;
+    }
+
+    try{
+
+        const data=
+            await api("/api/admin/items");
+
+        const select=
+            document.getElementById("adminItem");
+
+        if(!select){
+            return;
+        }
+
+        select.innerHTML=
+            data.items.map(item=>`
+
+                <option value="${item.key}">
+                    ${item.icon}
+                    ${escapeHtml(item.name)}
+                    — 💎 ${format(item.price)}
+                </option>
+
+            `).join("");
+
+    }catch(e){
+
+        toast(e.message);
+
+    }
+}
+
+
+async function adminItem(){
+
+    const telegram_id=
+        document.getElementById("adminTelegram")
+        .value
+        .trim();
+
+    const item_key=
+        document.getElementById("adminItem")
+        .value;
+
+    const quantity=
+        Number(
+            document.getElementById("adminItemQuantity")
+            .value
+        );
+
+    if(!telegram_id||!item_key||quantity<=0){
+
+        toast("Заполни Telegram ID, предмет и количество");
+
+        return;
+    }
+
+    try{
+
+        await api("/api/admin/item",{
+            method:"POST",
+            body:JSON.stringify({
+                telegram_id,
+                item_key,
+                quantity
+            })
+        });
+
+        toast("🎁 Предмет выдан");
+
+        await load();
+
+    }catch(e){
+
+        toast(e.message);
+
+    }
+}
+
+
+/* ============================================
+   ADMIN EVENTS
+============================================ */
+
 async function createEvent(){
 
-    const title =
+    const title=
         document.getElementById("eventTitle").value;
 
-    const description =
+    const description=
         document.getElementById("eventDescription").value;
 
-    const event_type =
+    const event_type=
         document.getElementById("eventType").value;
 
-    const multiplier =
+    const multiplier=
         Number(
             document.getElementById("eventMultiplier").value
         );
 
-    const duration_minutes =
+    const duration_minutes=
         Number(
             document.getElementById("eventDuration").value
         );
+
+    if(
+        !title||
+        !event_type||
+        !multiplier||
+        !duration_minutes
+    ){
+
+        toast("Заполни параметры события");
+
+        return;
+    }
 
     try{
 
@@ -1836,61 +3317,373 @@ async function createEvent(){
         });
 
         toast("⚡ Событие запущено");
+
         await load();
 
     }catch(e){
+
         toast(e.message);
+
     }
+}
+
+
+async function loadAdminEvents(){
+
+    if(!state?.creator){
+        return;
+    }
+
+    try{
+
+        const data=
+            await api("/api/admin/events");
+
+        const box=
+            document.getElementById("adminEvents");
+
+        if(!box){
+            return;
+        }
+
+        if(!data.events.length){
+
+            box.innerHTML=`
+                <div class="small">
+                    Событий пока нет.
+                </div>
+            `;
+
+            return;
+        }
+
+        box.innerHTML=
+            data.events.slice(0,20).map(event=>{
+
+                const active=
+                    event.active &&
+                    event.ends_at>
+                    Math.floor(Date.now()/1000);
+
+                return `
+                    <div class="card"
+                         style="margin-top:7px">
+
+                        <b>
+                            ${escapeHtml(event.title)}
+                        </b>
+
+                        <div class="small"
+                             style="margin-top:4px">
+                            ${escapeHtml(event.description)}
+                        </div>
+
+                        <div style="margin-top:5px">
+                            ${
+                                event.event_type.endsWith("_discount")
+                                ?`-${event.multiplier}%`
+                                :`x${event.multiplier}`
+                            }
+                        </div>
+
+                        <div class="small"
+                             style="margin-top:4px">
+                            ${active?"🟢 Активно":"⚪ Завершено"}
+                        </div>
+
+                        ${
+                            active
+                            ?
+                            `<button
+                                class="btn red"
+                                onclick="stopEvent(${event.id})">
+                                Остановить
+                            </button>`
+                            :""
+                        }
+
+                    </div>
+                `;
+
+            }).join("");
+
+    }catch(e){
+
+        toast(e.message);
+
+    }
+}
+
+
+async function stopEvent(id){
+
+    try{
+
+        await api("/api/admin/event/stop",{
+            method:"POST",
+            body:JSON.stringify({
+                id
+            })
+        });
+
+        toast("Событие остановлено");
+
+        await loadAdminEvents();
+        await load();
+
+    }catch(e){
+
+        toast(e.message);
+
+    }
+}
+
+
+/* ============================================
+   ADMIN PLAYERS
+============================================ */
+
+let adminSearchTimer=null;
+
+function debouncedAdminSearch(){
+
+    clearTimeout(adminSearchTimer);
+
+    adminSearchTimer=
+        setTimeout(
+            loadAdminPlayers,
+            350
+        );
 }
 
 
 async function loadAdminPlayers(){
 
+    if(!state?.creator){
+        return;
+    }
+
     try{
 
-        const data =
-            await api("/api/admin/players");
+        const q=
+            document.getElementById("adminSearch")
+            ?.value
+            .trim()||"";
 
-        const box =
+        const data=
+            await api(
+                "/api/admin/players"+
+                (q
+                    ?"?q="+encodeURIComponent(q)
+                    :"")
+            );
+
+        const box=
             document.getElementById("adminPlayers");
 
-        if(!box) return;
+        if(!box){
+            return;
+        }
 
-        box.innerHTML =
+        if(!data.players.length){
+
+            box.innerHTML=`
+                <div class="small">
+                    Игроки не найдены.
+                </div>
+            `;
+
+            return;
+        }
+
+        box.innerHTML=
             data.players.map(p=>`
+
                 <div class="card"
                      style="margin-top:7px;padding:10px">
 
                     <b>
                         ${escapeHtml(
-                            p.first_name ||
-                            p.username ||
+                            p.first_name||
+                            p.username||
                             "Игрок"
                         )}
                     </b>
 
-                    <div style="
-                        color:#6f819d;
-                        font-size:11px;
-                        margin-top:3px
-                    ">
-                        ID: ${p.telegram_id}
+                    <div class="small"
+                         style="margin-top:3px">
+
+                        ${
+                            p.username
+                            ?"@"+escapeHtml(p.username)
+                            :""
+                        }
+
+                        · ID:
+                        ${p.telegram_id}
+
                     </div>
 
                     <div style="
                         margin-top:5px;
-                        font-size:12px
-                    ">
+                        font-size:12px">
+
                         💎 ${format(p.coins)}
+                        · 🏦 ${format(p.bank)}
                         · Lv.${p.level}
                         · ⭐ ${format(p.rating)}
+
                     </div>
 
+                    <button
+                        class="btn secondary"
+                        onclick="selectAdminPlayer('${p.telegram_id}')">
+                        Выбрать
+                    </button>
+
                 </div>
+
             `).join("");
 
     }catch(e){
+
         toast(e.message);
+
+    }
+}
+
+
+function selectAdminPlayer(id){
+
+    const input=
+        document.getElementById("adminTelegram");
+
+    if(input){
+        input.value=id;
+    }
+
+    toast("Игрок выбран");
+
+    window.scrollTo({
+        top:document.body.scrollHeight,
+        behavior:"smooth"
+    });
+}
+
+
+/* ============================================
+   ADMIN LOGS
+============================================ */
+
+async function loadAdminLogs(){
+
+    try{
+
+        const data=
+            await api("/api/admin/logs");
+
+        const box=
+            document.getElementById("adminLogs");
+
+        if(!box){
+            return;
+        }
+
+        if(!data.logs.length){
+
+            box.innerHTML=`
+                <div class="small">
+                    История пуста.
+                </div>
+            `;
+
+            return;
+        }
+
+        box.innerHTML=
+            data.logs.map(log=>`
+
+                <div class="card"
+                     style="margin-top:7px;padding:10px">
+
+                    <b>
+                        ${escapeHtml(log.action)}
+                    </b>
+
+                    <div class="small"
+                         style="margin-top:4px">
+
+                        Игрок:
+                        ${escapeHtml(
+                            log.target_telegram_id||"—"
+                        )}
+
+                    </div>
+
+                    <div class="small"
+                         style="margin-top:3px">
+
+                        ${escapeHtml(
+                            log.details||""
+                        )}
+
+                    </div>
+
+                </div>
+
+            `).join("");
+
+    }catch(e){
+
+        toast(e.message);
+
+    }
+}
+
+
+/* ============================================
+   WIPE
+============================================ */
+
+async function executeWipe(){
+
+    const confirmValue=
+        document.getElementById("wipeConfirm")
+        .value
+        .trim();
+
+    if(confirmValue!=="WIPE"){
+
+        toast("Введите WIPE");
+
+        return;
+    }
+
+    try{
+
+        const data=
+            await api("/api/admin/wipe",{
+                method:"POST",
+                body:JSON.stringify({
+                    confirm:"WIPE"
+                })
+            });
+
+        closeModal("wipeModal");
+
+        document.getElementById("wipeConfirm")
+            .value="";
+
+        toast(
+            `🧹 WIPE выполнен. Игроков: ${data.affected_users}`
+        );
+
+        await load();
+
+    }catch(e){
+
+        toast(e.message);
+
     }
 }
 
@@ -1903,14 +3696,15 @@ async function loadRating(){
 
     try{
 
-        const data =
-            await api("/api/leaderboard");
+        const richest=
+            await api("/api/richest");
 
-        const box =
-            document.getElementById("ratingList");
+        const richBox=
+            document.getElementById("richestList");
 
-        box.innerHTML =
-            data.players.map(p=>`
+        richBox.innerHTML=
+            richest.players.map(p=>`
+
                 <div class="card"
                      style="margin-bottom:8px">
 
@@ -1919,48 +3713,144 @@ async function loadRating(){
                         <div style="
                             width:35px;
                             text-align:center;
-                            font-size:18px
-                        ">
+                            font-size:18px">
+
                             ${
-                                p.place === 1
-                                ? "🥇"
-                                : p.place === 2
-                                ? "🥈"
-                                : p.place === 3
-                                ? "🥉"
-                                : p.place
+                                p.place===1
+                                ?"🥇"
+                                :p.place===2
+                                ?"🥈"
+                                :p.place===3
+                                ?"🥉"
+                                :p.place
                             }
+
                         </div>
 
                         <img
                             class="avatar"
                             style="width:42px;height:42px"
                             src="${
-                                p.photo_url ||
-                                'https://ui-avatars.com/api/?name='+
+                                p.photo_url||
+                                "https://ui-avatars.com/api/?name="+
                                 encodeURIComponent(p.name)
-                            }"
-                        >
+                            }">
 
                         <div class="item-info">
+
                             <b>
                                 ${escapeHtml(p.name)}
-                                ${p.creator?' 👑':''}
+                                ${p.creator?" 👑":""}
+                            </b>
+
+                            <span>
+                                Lv.${p.level}
+                            </span>
+
+                            <span>
+                                💎 Капитал:
+                                ${format(p.total)}
+                            </span>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            `).join("");
+
+
+        const rating=
+            await api("/api/leaderboard");
+
+        const box=
+            document.getElementById("ratingList");
+
+        box.innerHTML=
+            rating.players.map(p=>`
+
+                <div class="card"
+                     style="margin-bottom:8px">
+
+                    <div class="item-row">
+
+                        <div style="
+                            width:35px;
+                            text-align:center;
+                            font-size:18px">
+
+                            ${
+                                p.place===1
+                                ?"🥇"
+                                :p.place===2
+                                ?"🥈"
+                                :p.place===3
+                                ?"🥉"
+                                :p.place
+                            }
+
+                        </div>
+
+                        <img
+                            class="avatar"
+                            style="width:42px;height:42px"
+                            src="${
+                                p.photo_url||
+                                "https://ui-avatars.com/api/?name="+
+                                encodeURIComponent(p.name)
+                            }">
+
+                        <div class="item-info">
+
+                            <b>
+                                ${escapeHtml(p.name)}
+                                ${p.creator?" 👑":""}
                             </b>
 
                             <span>
                                 Lv.${p.level}
                                 · ⭐ ${format(p.rating)}
                             </span>
+
                         </div>
 
                     </div>
 
                 </div>
+
             `).join("");
 
     }catch(e){
+
         toast(e.message);
+
+    }
+}
+
+
+/* ============================================
+   MODALS
+============================================ */
+
+function openModal(id){
+
+    const el=
+        document.getElementById(id);
+
+    if(el){
+        el.classList.add("show");
+    }
+}
+
+
+function closeModal(id){
+
+    const el=
+        document.getElementById(id);
+
+    if(el){
+        el.classList.remove("show");
     }
 }
 
@@ -1970,18 +3860,21 @@ async function loadRating(){
 ============================================ */
 
 function format(number){
-    return Number(number || 0)
+
+    return Number(number||0)
         .toLocaleString("ru-RU");
 }
 
 
 function formatTime(seconds){
 
-    seconds = Math.max(0,seconds);
+    seconds=Math.max(0,seconds);
 
-    const h = Math.floor(seconds/3600);
-    const m = Math.floor((seconds%3600)/60);
-    const s = seconds%60;
+    const h=Math.floor(seconds/3600);
+    const m=Math.floor(
+        (seconds%3600)/60
+    );
+    const s=seconds%60;
 
     if(h){
         return `${h}ч ${m}м`;
@@ -1997,7 +3890,7 @@ function formatTime(seconds){
 
 function escapeHtml(value){
 
-    return String(value ?? "")
+    return String(value??"")
         .replaceAll("&","&amp;")
         .replaceAll("<","&lt;")
         .replaceAll(">","&gt;")
@@ -2006,21 +3899,30 @@ function escapeHtml(value){
 }
 
 
-let toastTimer;
+function escapeAttr(value){
+
+    return String(value??"")
+        .replaceAll("\\","\\\\")
+        .replaceAll("'","&#039;")
+        .replaceAll('"',"&quot;");
+}
+
 
 function toast(message){
 
-    const el =
+    const el=
         document.getElementById("toast");
 
-    el.textContent = message;
+    el.textContent=message;
+
     el.classList.add("show");
 
     clearTimeout(toastTimer);
 
-    toastTimer = setTimeout(()=>{
-        el.classList.remove("show");
-    },2500);
+    toastTimer=
+        setTimeout(()=>{
+            el.classList.remove("show");
+        },2600);
 }
 
 
@@ -2028,20 +3930,57 @@ function toast(message){
    NAV EVENTS
 ============================================ */
 
-document.querySelectorAll(".nav").forEach(button=>{
+document.querySelectorAll(".nav")
+    .forEach(button=>{
 
-    button.addEventListener("click",()=>{
+        button.addEventListener(
+            "click",
+            ()=>{
 
-        const screen = button.dataset.screen;
+                showScreen(
+                    button.dataset.screen
+                );
 
-        showScreen(screen);
+            }
+        );
 
-        if(screen === "profile" && state?.creator){
-            loadAdminPlayers();
-        }
     });
 
-});
+
+/* ============================================
+   MODAL OUTSIDE CLICK
+============================================ */
+
+document.querySelectorAll(".modal")
+    .forEach(modal=>{
+
+        modal.addEventListener(
+            "click",
+            e=>{
+
+                if(e.target===modal){
+                    modal.classList.remove("show");
+                }
+
+            }
+        );
+
+    });
+
+
+/* ============================================
+   EVENT TIMER
+============================================ */
+
+setInterval(()=>{
+
+    if(state){
+
+        renderEvents();
+
+    }
+
+},1000);
 
 
 /* ============================================
@@ -2049,14 +3988,6 @@ document.querySelectorAll(".nav").forEach(button=>{
 ============================================ */
 
 load();
-
-setInterval(()=>{
-
-    if(state){
-        renderEvents();
-    }
-
-},1000);
 
 </script>
 
