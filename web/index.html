@@ -1,0 +1,604 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    >
+
+    <title>NFT BATTLE</title>
+
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            margin: 0;
+            background: #090909;
+            color: white;
+            font-family: Arial, sans-serif;
+        }
+
+        .app {
+            max-width: 600px;
+            margin: auto;
+            min-height: 100vh;
+            padding: 20px 16px 90px;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: 900;
+            letter-spacing: 2px;
+        }
+
+        .balance {
+            background: #181818;
+            border: 1px solid #333;
+            border-radius: 12px;
+            padding: 10px 14px;
+            font-weight: bold;
+        }
+
+        .profile {
+            background: linear-gradient(135deg, #171717, #101010);
+            border: 1px solid #292929;
+            border-radius: 18px;
+            padding: 20px;
+            margin-bottom: 18px;
+        }
+
+        .avatar {
+            width: 58px;
+            height: 58px;
+            border-radius: 50%;
+            background: #252525;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 25px;
+            margin-bottom: 12px;
+        }
+
+        .username {
+            font-size: 21px;
+            font-weight: 800;
+        }
+
+        .id {
+            color: #888;
+            font-size: 13px;
+            margin-top: 4px;
+        }
+
+        .title {
+            font-size: 18px;
+            font-weight: 800;
+            margin: 24px 0 12px;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+        }
+
+        .card {
+            background: #151515;
+            border: 1px solid #292929;
+            border-radius: 16px;
+            padding: 16px;
+        }
+
+        .nft-icon {
+            height: 100px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #252525, #101010);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 40px;
+            margin-bottom: 12px;
+        }
+
+        .nft-name {
+            font-weight: 800;
+            font-size: 15px;
+        }
+
+        .rarity {
+            color: #999;
+            font-size: 12px;
+            margin-top: 5px;
+        }
+
+        .power {
+            margin-top: 8px;
+            font-weight: bold;
+        }
+
+        .buttons {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin-top: 18px;
+        }
+
+        button {
+            border: none;
+            border-radius: 13px;
+            padding: 15px;
+            color: white;
+            background: #252525;
+            font-size: 15px;
+            font-weight: 800;
+            cursor: pointer;
+        }
+
+        button:active {
+            transform: scale(.97);
+        }
+
+        .primary {
+            background: #e50914;
+        }
+
+        .battle {
+            margin-top: 18px;
+            background: #151515;
+            border: 1px solid #292929;
+            border-radius: 18px;
+            padding: 18px;
+        }
+
+        .battle-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            text-align: center;
+        }
+
+        .fighter {
+            width: 42%;
+        }
+
+        .fighter-icon {
+            font-size: 42px;
+            margin-bottom: 8px;
+        }
+
+        .vs {
+            font-size: 20px;
+            font-weight: 900;
+            color: #e50914;
+        }
+
+        .message {
+            text-align: center;
+            margin-top: 15px;
+            min-height: 22px;
+            color: #aaa;
+        }
+
+        .bottom {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(10, 10, 10, .96);
+            border-top: 1px solid #222;
+            padding: 10px;
+        }
+
+        .bottom-inner {
+            max-width: 600px;
+            margin: auto;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+        }
+
+        .bottom button {
+            padding: 12px 5px;
+            font-size: 12px;
+        }
+
+        .empty {
+            color: #888;
+            text-align: center;
+            padding: 30px 10px;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="app">
+
+    <div class="header">
+        <div class="logo">NFT BATTLE</div>
+        <div class="balance" id="balance">💰 1000</div>
+    </div>
+
+    <div class="profile">
+        <div class="avatar">👤</div>
+        <div class="username" id="username">Игрок</div>
+        <div class="id" id="userId">ID: —</div>
+    </div>
+
+    <div class="title">Мои NFT</div>
+
+    <div id="inventory" class="grid">
+        <div class="empty">Загрузка коллекции...</div>
+    </div>
+
+    <div class="buttons">
+        <button class="primary" onclick="addDemoNFT()">
+            + Получить NFT
+        </button>
+
+        <button onclick="upgradeNFT()">
+            ⚡ Апгрейд
+        </button>
+    </div>
+
+    <div class="title">⚔️ Battle</div>
+
+    <div class="battle">
+
+        <div class="battle-row">
+
+            <div class="fighter">
+                <div class="fighter-icon">🧑</div>
+                <strong>Ты</strong>
+                <div id="myPower">Power: 0</div>
+            </div>
+
+            <div class="vs">VS</div>
+
+            <div class="fighter">
+                <div class="fighter-icon">🤖</div>
+                <strong>Opponent</strong>
+                <div id="enemyPower">Power: 50</div>
+            </div>
+
+        </div>
+
+        <button
+            class="primary"
+            style="width:100%; margin-top:18px;"
+            onclick="battle()"
+        >
+            ⚔️ Начать Battle
+        </button>
+
+        <div class="message" id="message"></div>
+
+    </div>
+
+</div>
+
+<div class="bottom">
+    <div class="bottom-inner">
+        <button onclick="scrollToTop()">🏠 Главная</button>
+        <button onclick="scrollToInventory()">🎴 NFT</button>
+        <button onclick="showLeaderboard()">🏆 Топ</button>
+    </div>
+</div>
+
+<script>
+
+    const tg = window.Telegram?.WebApp;
+
+    if (tg) {
+        tg.ready();
+        tg.expand();
+    }
+
+    let userId = 123456;
+    let userData = null;
+
+    if (tg && tg.initDataUnsafe && tg.initDataUnsafe.user) {
+        userId = tg.initDataUnsafe.user.id;
+    }
+
+    async function loadUser() {
+
+        try {
+
+            const response = await fetch(`/api/user/${userId}`);
+
+            if (!response.ok) {
+                throw new Error("Server error");
+            }
+
+            const data = await response.json();
+
+            userData = data.user;
+
+            document.getElementById("username").textContent =
+                data.user.username || "Игрок";
+
+            document.getElementById("userId").textContent =
+                "ID: " + data.user.id;
+
+            document.getElementById("balance").textContent =
+                "💰 " + data.user.balance;
+
+            renderInventory(data.inventory);
+
+        } catch (error) {
+
+            console.error(error);
+
+            document.getElementById("inventory").innerHTML =
+                '<div class="empty">Не удалось загрузить данные</div>';
+
+        }
+
+    }
+
+
+    function renderInventory(items) {
+
+        const container = document.getElementById("inventory");
+
+        if (!items || items.length === 0) {
+
+            container.innerHTML =
+                '<div class="empty" style="grid-column:1/-1;">Коллекция пока пустая</div>';
+
+            document.getElementById("myPower").textContent =
+                "Power: 0";
+
+            return;
+        }
+
+        container.innerHTML = items.map(item => `
+
+            <div class="card">
+
+                <div class="nft-icon">
+                    🎴
+                </div>
+
+                <div class="nft-name">
+                    ${escapeHtml(item.nft_name)}
+                </div>
+
+                <div class="rarity">
+                    ${escapeHtml(item.rarity)}
+                </div>
+
+                <div class="power">
+                    ⚡ ${item.power}
+                </div>
+
+            </div>
+
+        `).join("");
+
+        const totalPower = items.reduce(
+            (sum, item) => sum + Number(item.power || 0),
+            0
+        );
+
+        document.getElementById("myPower").textContent =
+            "Power: " + totalPower;
+    }
+
+
+    async function addDemoNFT() {
+
+        const names = [
+            "Cyber Dragon",
+            "Shadow Wolf",
+            "Neon Samurai",
+            "Dark Knight"
+        ];
+
+        const name =
+            names[Math.floor(Math.random() * names.length)];
+
+        const power =
+            Math.floor(Math.random() * 30) + 10;
+
+        try {
+
+            const response = await fetch(
+                `/api/inventory/${userId}`,
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        nft_name: name,
+                        rarity: "Common",
+                        power: power
+                    })
+                }
+            );
+
+            if (!response.ok) {
+                throw new Error("NFT error");
+            }
+
+            await loadUser();
+
+            showMessage("NFT добавлен в коллекцию");
+
+        } catch (error) {
+
+            showMessage("Ошибка добавления NFT");
+
+        }
+
+    }
+
+
+    async function upgradeNFT() {
+
+        showMessage(
+            "Апгрейд доступен после выбора NFT"
+        );
+
+    }
+
+
+    function battle() {
+
+        const powerText =
+            document.getElementById("myPower").textContent;
+
+        const myPower =
+            Number(powerText.replace("Power: ", "")) || 0;
+
+        const enemyPower =
+            Number(
+                document
+                    .getElementById("enemyPower")
+                    .textContent
+                    .replace("Power: ", "")
+            );
+
+        if (myPower === 0) {
+
+            showMessage("Сначала получи NFT");
+
+            return;
+        }
+
+        if (myPower >= enemyPower) {
+
+            showMessage(
+                "🏆 Победа! Твоя сила выше."
+            );
+
+        } else {
+
+            showMessage(
+                "⚔️ Бой завершён. Улучши свою коллекцию."
+            );
+
+        }
+
+    }
+
+
+    async function showLeaderboard() {
+
+        try {
+
+            const response =
+                await fetch("/api/leaderboard");
+
+            const data =
+                await response.json();
+
+            if (!data.leaderboard.length) {
+
+                showMessage("Таблица лидеров пока пустая");
+
+                return;
+            }
+
+            const text =
+                data.leaderboard
+                    .slice(0, 5)
+                    .map(
+                        (u, i) =>
+                            `${i + 1}. ${u.username || "Игрок"} — ${u.balance}`
+                    )
+                    .join("\n");
+
+            if (tg) {
+
+                tg.showAlert(
+                    "🏆 TOP PLAYERS\n\n" + text
+                );
+
+            } else {
+
+                alert(
+                    "🏆 TOP PLAYERS\n\n" + text
+                );
+
+            }
+
+        } catch (error) {
+
+            showMessage("Не удалось загрузить рейтинг");
+
+        }
+
+    }
+
+
+    function showMessage(text) {
+
+        const element =
+            document.getElementById("message");
+
+        element.textContent = text;
+
+        setTimeout(() => {
+
+            element.textContent = "";
+
+        }, 3000);
+
+    }
+
+
+    function scrollToTop() {
+
+        window.scrollTo({
+            top: 0,
+            behavior: "smooth"
+        });
+
+    }
+
+
+    function scrollToInventory() {
+
+        document
+            .getElementById("inventory")
+            .scrollIntoView({
+                behavior: "smooth"
+            });
+
+    }
+
+
+    function escapeHtml(text) {
+
+        const div =
+            document.createElement("div");
+
+        div.textContent = text;
+
+        return div.innerHTML;
+
+    }
+
+
+    loadUser();
+
+</script>
+
+</body>
+</html>
