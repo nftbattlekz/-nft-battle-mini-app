@@ -1,0 +1,31 @@
+<!doctype html><html lang="ru"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+<title>NFT BATTLE</title><script src="https://telegram.org/js/telegram-web-app.js"></script>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#090b10;color:#fff;font-family:Arial}.app{max-width:520px;margin:auto;padding:16px}
+.top{display:flex;justify-content:space-between;align-items:center}.logo{font-size:24px;font-weight:900}.bal{background:#171c25;padding:10px 13px;border-radius:13px}
+nav{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;margin:18px 0}button{border:0;border-radius:13px;padding:12px;font-weight:800;background:#171c25;color:#fff}nav button.active{background:#fff;color:#000}
+.view{display:none}.view.active{display:block}.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.card,.panel,.item{background:#151a23;border-radius:16px;padding:14px}.art{font-size:50px;text-align:center;padding:15px}.name{font-weight:900;margin-top:8px}.price{color:#ffd84d;margin:7px 0}.open{width:100%;background:#fff;color:#000}.slot{height:120px;background:#080a0e;border-radius:15px;display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:900;margin:10px 0}.result{text-align:center;padding:12px}.big{font-size:55px}.item{margin:8px 0;display:flex;justify-content:space-between}.muted{font-size:12px;color:#8993a4}
+</style></head><body><div class="app">
+<div class="top"><div class="logo">⚡ NFT BATTLE</div><div class="bal">🪙 <span id="balance">...</span></div></div>
+<nav><button data-v="cases" class="active">📦</button><button data-v="battle">⚔️</button><button data-v="upgrade">🔼</button><button data-v="inventory">🎒</button></nav>
+<section id="cases" class="view active"><h2>Кейсы</h2><div class="grid" id="casesGrid"></div></section>
+<section id="open" class="view"><div class="panel"><h2 id="ct"></h2><div class="slot" id="slot">ГОТОВ</div><button class="open" id="openBtn">Открыть</button><div id="result"></div></div></section>
+<section id="battle" class="view"><h2>Battle</h2><div class="panel"><select id="sel" style="width:100%;padding:12px;border-radius:12px;background:#171c25;color:#fff"></select><br><br><button onclick="battle()" style="width:100%">⚔️ Battle</button><div id="bres" class="result"></div></div></section>
+<section id="upgrade" class="view"><h2>Апгрейд</h2><div class="panel">3 NFT одной редкости → 1 NFT следующей редкости.<br><br><button onclick="upgrade()" style="width:100%">🔼 Апгрейд</button><div id="ures" class="result"></div></div></section>
+<section id="inventory" class="view"><h2>Инвентарь</h2><div id="inv"></div></section>
+</div>
+<script>
+const tg=window.Telegram?.WebApp;if(tg){tg.ready();tg.expand();}
+let me=null,selectedCase=null;
+const cases=[["starter","Starter Case","📦",100],["neon","Neon Case","🌈",250],["elite","Elite Case","👑",500]];
+async function api(path,opt={}){let h={"Content-Type":"application/json"};let uid=tg?.initDataUnsafe?.user?.id;if(uid)h["X-Telegram-User-Id"]=uid;let r=await fetch(path,{...opt,headers:h});let j=await r.json();if(!r.ok)throw Error(j.error||"Ошибка");return j}
+async function load(){me=await api("/api/me");document.getElementById("balance").textContent=me.balance;renderCases();renderInv()}
+function renderCases(){document.getElementById("casesGrid").innerHTML=cases.map(c=>`<div class=card><div class=art>${c[2]}</div><div class=name>${c[1]}</div><div class=price>🪙 ${c[3]}</div><button class=open onclick="openCase('${c[0]}','${c[1]}')">Открыть</button></div>`).join("")}
+async function openCase(id,name){selectedCase=id;document.getElementById("ct").textContent=name;go("open");document.getElementById("result").innerHTML="";let slot=document.getElementById("slot");for(let i=0;i<12;i++){slot.textContent=["🐱","🥷","🐉","🤖","👑"][Math.floor(Math.random()*5)];await new Promise(r=>setTimeout(r,50+i*10))}try{let x=await api("/api/open",{method:"POST",body:JSON.stringify({case:id})});slot.textContent=x.nft.emoji+" "+x.nft.name;document.getElementById("result").innerHTML=`<div class=big>${x.nft.emoji}</div><b>${x.nft.name}</b><div class=muted>${x.nft.rarity} · ${x.nft.chance}% · ${x.nft.power} ⚡</div>`;await load()}catch(e){slot.textContent="Ошибка";alert(e.message)}}
+function renderInv(){document.getElementById("inv").innerHTML=me.inventory.length?me.inventory.map(x=>`<div class=item>${x.emoji} <b>${x.name}</b><span class=muted>${x.rarity} · ${x.power}⚡</span></div>`).join(""):"<div class=panel>Инвентарь пуст.</div>";document.getElementById("sel").innerHTML=me.inventory.map(x=>`<option value="${x.id}">${x.emoji} ${x.name} · ${x.power}⚡</option>`).join("")}
+async function battle(){try{let x=await api("/api/battle",{method:"POST",body:JSON.stringify({nft_id:Number(document.getElementById("sel").value)})});document.getElementById("bres").innerHTML=(x.won?"🏆 Победа!":"💥 Поражение")+`<br><span class=muted>Соперник: ${x.enemy.name} · ${x.enemy.power}⚡</span>`;await load()}catch(e){alert(e.message)}}
+async function upgrade(){try{let x=await api("/api/upgrade",{method:"POST"});document.getElementById("ures").textContent="Создан: "+x.nft.emoji+" "+x.nft.name;await load()}catch(e){alert(e.message)}}
+function go(id){document.querySelectorAll(".view").forEach(x=>x.classList.remove("active"));document.getElementById(id).classList.add("active");document.querySelectorAll("nav button").forEach(x=>x.classList.toggle("active",x.dataset.v==id))}
+document.querySelectorAll("nav button").forEach(b=>b.onclick=()=>go(b.dataset.v));load();
+</script></body></html>
