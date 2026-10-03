@@ -18,7 +18,6 @@ def init_db():
     schema=[
         "CREATE TABLE IF NOT EXISTS users(id INTEGER PRIMARY KEY AUTOINCREMENT,telegram_id TEXT UNIQUE NOT NULL,username TEXT DEFAULT '',first_name TEXT DEFAULT '',last_name TEXT DEFAULT '',photo_url TEXT DEFAULT '',coins INTEGER DEFAULT 1000,xp INTEGER DEFAULT 0,level INTEGER DEFAULT 1,rating INTEGER DEFAULT 0,bank INTEGER DEFAULT 0,created_at INTEGER DEFAULT 0,last_daily INTEGER DEFAULT 0,role TEXT DEFAULT 'player',world INTEGER DEFAULT 1);",
         'CREATE TABLE IF NOT EXISTS inventory(id INTEGER PRIMARY KEY AUTOINCREMENT,user_id INTEGER NOT NULL,item_key TEXT NOT NULL,quantity INTEGER DEFAULT 0,UNIQUE(user_id,item_key));',
-        "CREATE TABLE IF NOT EXISTS daily_rewards(user_id INTEGER PRIMARY KEY,last_day TEXT DEFAULT '',streak INTEGER DEFAULT 0);",
         'CREATE TABLE IF NOT EXISTS cooldowns(user_id INTEGER NOT NULL,action TEXT NOT NULL,last_used INTEGER DEFAULT 0,PRIMARY KEY(user_id,action));',
         'CREATE TABLE IF NOT EXISTS businesses(id INTEGER PRIMARY KEY AUTOINCREMENT,user_id INTEGER NOT NULL,business_key TEXT NOT NULL,level INTEGER DEFAULT 1,last_collect INTEGER DEFAULT 0,UNIQUE(user_id,business_key));',
         'CREATE TABLE IF NOT EXISTS properties(id INTEGER PRIMARY KEY AUTOINCREMENT,user_id INTEGER NOT NULL,property_key TEXT NOT NULL,UNIQUE(user_id,property_key));',
@@ -39,10 +38,17 @@ def init_db():
         "CREATE TABLE IF NOT EXISTS notifications(id INTEGER PRIMARY KEY AUTOINCREMENT,user_id INTEGER NOT NULL,title TEXT NOT NULL,message TEXT NOT NULL,type TEXT DEFAULT 'info',is_read INTEGER DEFAULT 0,created_at INTEGER DEFAULT 0);",
         'CREATE TABLE IF NOT EXISTS work_sessions(id TEXT PRIMARY KEY,user_id INTEGER NOT NULL,job_key TEXT NOT NULL,taps_required INTEGER NOT NULL,taps INTEGER DEFAULT 0,started_at INTEGER DEFAULT 0,expires_at INTEGER NOT NULL,completed INTEGER DEFAULT 0);',
     ]
-    for statement in schema:
-        con.execute(statement)
-    con.commit()
-    con.close()
+    try:
+        for index, statement in enumerate(schema, 1):
+            try:
+                con.execute(statement)
+            except sqlite3.Error as exc:
+                print(f'NEXORA SQL ERROR #{index}: {exc} | {statement}', flush=True)
+                con.rollback()
+                raise
+        con.commit()
+    finally:
+        con.close()
 try:
     init_db()
 except Exception as exc:
@@ -159,36 +165,6 @@ def get_discount(con,event_type):
 def discounted_price(con,event_type,p): return max(1,int(round(p*(1-get_discount(con,event_type)))))
 def log_admin(con,actor,action,target='',details=''): con.execute('INSERT INTO admin_logs(creator_id,action,target_telegram_id,details,created_at) VALUES(?,?,?,?,?)',(str(actor),action,str(target),details,now()))
 
-DAILY_REWARDS=[500,750,1000,1500,2500,5000]
-
-def local_day():
-    return time.strftime('%Y-%m-%d',time.gmtime(time.time()+5*3600))
-
-def process_daily_login(con,user_id):
-    today=local_day()
-    row=con.execute('SELECT last_day,streak FROM daily_rewards WHERE user_id=?',(user_id,)).fetchone()
-    if row is None:
-        con.execute('INSERT INTO daily_rewards(user_id,last_day,streak) VALUES(?,?,0)',(user_id,'',0))
-        last_day=''; old_streak=0
-    else:
-        last_day=str(row['last_day'] or '')
-        old_streak=int(row['streak'] or 0)
-    if last_day==today:
-        return {'claimed':False,'streak':old_streak,'day':old_streak,'reward':0}
-    consecutive=False
-    if last_day:
-        try:
-            from datetime import date
-            consecutive=(date.fromisoformat(today)-date.fromisoformat(last_day)).days==1
-        except Exception:
-            consecutive=False
-    streak=old_streak+1 if consecutive else 1
-    if streak>6: streak=1
-    reward=DAILY_REWARDS[streak-1]
-    add_coins(con,user_id,reward,f'Ежедневный бонус: день {streak}/6')
-    con.execute('UPDATE daily_rewards SET last_day=?,streak=? WHERE user_id=?',(today,streak,user_id))
-    add_notification(con,user_id,'🎁 Ежедневный бонус',f'День {streak}/6 — получено {reward} 💎. Заходи завтра, чтобы продолжить серию.','daily')
-    return {'claimed':True,'streak':streak,'day':streak,'reward':reward}
 
 def cooldown_remaining(con,uid,action,cooldown):
     r=con.execute('SELECT last_used FROM cooldowns WHERE user_id=? AND action=?',(uid,action)).fetchone(); return 0 if not r else max(0,cooldown-(now()-r['last_used']))
@@ -276,7 +252,7 @@ def index():return send_from_directory('web','index.html')
 @app.get('/api/bootstrap')
 @require_user
 def bootstrap(u):
-    con=db();cleanup_events(con);daily=process_daily_login(con,u['id']);data=user_json(u,con)
+    con=db();cleanup_events(con);data=user_json(u,con)
     events=[dict(x) for x in con.execute('SELECT id,event_type,multiplier,ends_at,title,description FROM events WHERE active=1 AND ends_at>? ORDER BY id DESC',(now(),)).fetchall()]
     market=[]
     for r in con.execute('SELECT m.*,u.username,u.first_name FROM market m JOIN users u ON u.id=m.seller_id WHERE m.status="active" ORDER BY m.id DESC LIMIT 50').fetchall():
@@ -293,7 +269,7 @@ def bootstrap(u):
         if r['quest_key'] in QUESTS:quests.append({'key':r['quest_key'],**QUESTS[r['quest_key']],'progress':r['progress'],'completed':bool(r['completed']),'claimed':bool(r['claimed'])})
     sr=con.execute('SELECT * FROM skills WHERE user_id=?',(u['id'],)).fetchone();skills=dict(sr) if sr else {}
     con.commit();con.close()
-    return jsonify({'ok':True,'user':data,'jobs':[{'key':k,**v,'world_name':WORLDS[v['world']]['name'],'world_unlocked':world_unlocked(u['level'],v['world'])} for k,v in JOBS.items()],'worlds':[{'key':k,**v,'unlocked':world_unlocked(u['level'],k)} for k,v in WORLDS.items()],'items':ITEMS,'businesses':businesses,'properties':properties,'quests':quests,'daily':daily,'skills':skills,'market':market,'business_market':bm,'events':events,'promo_codes':['START','BETA TEST','GO'],'creator':is_creator(u),'assistant':is_assistant(u),'admin':is_creator(u) or is_assistant(u)})
+    return jsonify({'ok':True,'user':data,'jobs':[{'key':k,**v,'world_name':WORLDS[v['world']]['name'],'world_unlocked':world_unlocked(u['level'],v['world'])} for k,v in JOBS.items()],'worlds':[{'key':k,**v,'unlocked':world_unlocked(u['level'],k)} for k,v in WORLDS.items()],'items':ITEMS,'businesses':businesses,'properties':properties,'quests':quests,'skills':skills,'market':market,'business_market':bm,'events':events,'promo_codes':['START','BETA TEST','GO'],'creator':is_creator(u),'assistant':is_assistant(u),'admin':is_creator(u) or is_assistant(u)})
 
 # WORLD SWITCH
 @app.post('/api/world/switch')
