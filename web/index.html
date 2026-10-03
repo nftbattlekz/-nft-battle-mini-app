@@ -1,0 +1,893 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>NEXORA</title>
+
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            margin: 0;
+            background: #08090d;
+            color: white;
+            font-family: Arial, sans-serif;
+            min-height: 100vh;
+        }
+
+        button {
+            border: none;
+            cursor: pointer;
+            color: white;
+        }
+
+        .app {
+            max-width: 600px;
+            margin: auto;
+            padding-bottom: 90px;
+        }
+
+        header {
+            padding: 22px 18px 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 25px;
+            font-weight: 900;
+            letter-spacing: 3px;
+        }
+
+        .balance {
+            background: #151820;
+            border: 1px solid #272b36;
+            padding: 9px 13px;
+            border-radius: 14px;
+            font-weight: bold;
+        }
+
+        .page {
+            display: none;
+            padding: 10px 16px;
+        }
+
+        .page.active {
+            display: block;
+        }
+
+        .profile {
+            background: linear-gradient(145deg, #151821, #0e1016);
+            border: 1px solid #282c37;
+            border-radius: 22px;
+            padding: 20px;
+            margin-bottom: 15px;
+        }
+
+        .avatar {
+            width: 65px;
+            height: 65px;
+            border-radius: 20px;
+            background: linear-gradient(135deg, #8b5cf6, #ec4899);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 28px;
+            font-weight: bold;
+            margin-bottom: 12px;
+        }
+
+        .username {
+            font-size: 22px;
+            font-weight: 800;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+            margin-top: 18px;
+        }
+
+        .stat {
+            background: #0a0c11;
+            border-radius: 14px;
+            padding: 13px 5px;
+            text-align: center;
+        }
+
+        .stat b {
+            display: block;
+            font-size: 18px;
+        }
+
+        .stat span {
+            color: #858b98;
+            font-size: 11px;
+        }
+
+        .title {
+            font-size: 25px;
+            font-weight: 900;
+            margin: 12px 0 15px;
+        }
+
+        .card {
+            background: #11141b;
+            border: 1px solid #242833;
+            border-radius: 20px;
+            padding: 16px;
+            margin-bottom: 12px;
+        }
+
+        .nft {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .nft-icon {
+            width: 65px;
+            height: 65px;
+            border-radius: 17px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            background: #191d27;
+        }
+
+        .nft-info {
+            flex: 1;
+        }
+
+        .nft-name {
+            font-weight: 800;
+            font-size: 17px;
+        }
+
+        .rarity {
+            color: #999;
+            font-size: 12px;
+            margin-top: 4px;
+        }
+
+        .power {
+            margin-top: 5px;
+            color: #b18cff;
+            font-weight: bold;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 15px;
+            border-radius: 15px;
+            background: #7c3aed;
+            font-size: 15px;
+            font-weight: 800;
+            margin-top: 10px;
+        }
+
+        .btn:active {
+            transform: scale(.98);
+        }
+
+        .btn.secondary {
+            background: #1c202a;
+        }
+
+        .reward {
+            text-align: center;
+            padding: 28px 15px;
+        }
+
+        .reward-icon {
+            font-size: 60px;
+            margin-bottom: 10px;
+        }
+
+        .battle-select {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .select-card {
+            background: #11141b;
+            border: 2px solid #242833;
+            border-radius: 18px;
+            padding: 15px;
+            text-align: center;
+        }
+
+        .select-card.selected {
+            border-color: #8b5cf6;
+        }
+
+        .select-card .big {
+            font-size: 40px;
+        }
+
+        .select-card b {
+            display: block;
+            margin-top: 7px;
+        }
+
+        .result {
+            text-align: center;
+            font-size: 22px;
+            font-weight: 900;
+            padding: 20px;
+            display: none;
+        }
+
+        .leader {
+            display: flex;
+            align-items: center;
+            padding: 14px 0;
+            border-bottom: 1px solid #222630;
+        }
+
+        .place {
+            width: 35px;
+            font-weight: 900;
+            color: #888;
+        }
+
+        .leader-name {
+            flex: 1;
+            font-weight: 700;
+        }
+
+        .leader-power {
+            color: #b18cff;
+            font-weight: 800;
+        }
+
+        nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            max-width: 600px;
+            margin: auto;
+            background: rgba(10, 11, 15, .96);
+            border-top: 1px solid #242833;
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            padding: 10px 5px calc(10px + env(safe-area-inset-bottom));
+            z-index: 10;
+        }
+
+        nav button {
+            background: transparent;
+            color: #777d89;
+            font-size: 11px;
+            padding: 7px 2px;
+        }
+
+        nav button.active {
+            color: white;
+        }
+
+        nav .icon {
+            display: block;
+            font-size: 21px;
+            margin-bottom: 3px;
+        }
+
+        .loading {
+            text-align: center;
+            color: #888;
+            padding: 30px;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="app">
+
+    <header>
+        <div class="logo">NEXORA</div>
+        <div class="balance">🪙 <span id="coins">0</span></div>
+    </header>
+
+    <!-- PROFILE -->
+    <section id="home" class="page active">
+
+        <div class="profile">
+            <div class="avatar" id="avatar">N</div>
+
+            <div class="username" id="username">
+                Загрузка...
+            </div>
+
+            <div class="stats">
+                <div class="stat">
+                    <b id="nftCount">0</b>
+                    <span>NFT</span>
+                </div>
+
+                <div class="stat">
+                    <b id="wins">0</b>
+                    <span>ПОБЕД</span>
+                </div>
+
+                <div class="stat">
+                    <b id="power">0</b>
+                    <span>POWER</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="title">Быстрый старт</div>
+
+        <div class="card reward">
+            <div class="reward-icon">🎁</div>
+            <h2>Бесплатная награда</h2>
+            <p style="color:#858b98">
+                Получи случайный NFT из стартового набора.
+            </p>
+
+            <button class="btn" onclick="getReward()">
+                ПОЛУЧИТЬ NFT
+            </button>
+        </div>
+
+    </section>
+
+
+    <!-- COLLECTION -->
+    <section id="collection" class="page">
+
+        <div class="title">Коллекция</div>
+
+        <div id="nfts">
+            <div class="loading">Загрузка NFT...</div>
+        </div>
+
+    </section>
+
+
+    <!-- BATTLE -->
+    <section id="battle" class="page">
+
+        <div class="title">PvP Battle</div>
+
+        <div class="card">
+            <p style="color:#858b98">
+                Выбери своего NFT и сразись с соперником.
+            </p>
+
+            <div id="battleNfts" class="battle-select"></div>
+
+            <button class="btn" onclick="startBattle()">
+                ⚔️ НАЧАТЬ БОЙ
+            </button>
+
+            <div id="battleResult" class="result"></div>
+        </div>
+
+    </section>
+
+
+    <!-- LEADERBOARD -->
+    <section id="rating" class="page">
+
+        <div class="title">Рейтинг</div>
+
+        <div class="card" id="leaderboard">
+            <div class="loading">Загрузка рейтинга...</div>
+        </div>
+
+    </section>
+
+</div>
+
+
+<nav>
+
+    <button class="active" onclick="showPage('home', this)">
+        <span class="icon">⌂</span>
+        Главная
+    </button>
+
+    <button onclick="showPage('collection', this)">
+        <span class="icon">◈</span>
+        Коллекция
+    </button>
+
+    <button onclick="showPage('battle', this)">
+        <span class="icon">⚔</span>
+        Battle
+    </button>
+
+    <button onclick="showPage('rating', this)">
+        <span class="icon">♛</span>
+        Рейтинг
+    </button>
+
+</nav>
+
+
+<script>
+
+const tg = window.Telegram.WebApp;
+
+tg.ready();
+tg.expand();
+
+const initData = tg.initData;
+
+let userData = null;
+let selectedNFT = null;
+
+
+/* -------------------------
+   API
+------------------------- */
+
+async function api(url, options = {}) {
+
+    options.headers = {
+        "Content-Type": "application/json",
+        "X-Telegram-Init-Data": initData,
+        ...(options.headers || {})
+    };
+
+    const response = await fetch(url, options);
+
+    const data = await response.json();
+
+    if (!response.ok) {
+        throw new Error(data.error || "Ошибка сервера");
+    }
+
+    return data;
+}
+
+
+/* -------------------------
+   LOAD USER
+------------------------- */
+
+async function loadUser() {
+
+    try {
+
+        userData = await api("/api/me", {
+            method: "POST"
+        });
+
+        updateProfile();
+
+    } catch (error) {
+
+        console.error(error);
+
+        document.getElementById("username").textContent =
+            "Ошибка загрузки";
+
+    }
+
+}
+
+
+/* -------------------------
+   PROFILE
+------------------------- */
+
+function updateProfile() {
+
+    if (!userData) return;
+
+    document.getElementById("coins").textContent =
+        userData.coins ?? 0;
+
+    document.getElementById("username").textContent =
+        userData.username || "Игрок";
+
+    document.getElementById("avatar").textContent =
+        (userData.username || "N").charAt(0).toUpperCase();
+
+    const nfts = userData.nfts || [];
+
+    document.getElementById("nftCount").textContent =
+        nfts.length;
+
+    let totalPower = 0;
+
+    nfts.forEach(nft => {
+        totalPower += Number(nft.power || 0);
+    });
+
+    document.getElementById("power").textContent =
+        totalPower;
+
+    document.getElementById("wins").textContent =
+        userData.wins || 0;
+
+    renderNFTs();
+    renderBattleNFTs();
+}
+
+
+/* -------------------------
+   COLLECTION
+------------------------- */
+
+function renderNFTs() {
+
+    const container = document.getElementById("nfts");
+
+    if (!userData || !userData.nfts || userData.nfts.length === 0) {
+
+        container.innerHTML =
+            `<div class="card">Коллекция пока пуста.</div>`;
+
+        return;
+    }
+
+    container.innerHTML = "";
+
+    userData.nfts.forEach(nft => {
+
+        const card = document.createElement("div");
+
+        card.className = "card";
+
+        card.innerHTML = `
+            <div class="nft">
+
+                <div class="nft-icon">
+                    ${getNFTIcon(nft.name)}
+                </div>
+
+                <div class="nft-info">
+
+                    <div class="nft-name">
+                        ${escapeHTML(nft.name)}
+                    </div>
+
+                    <div class="rarity">
+                        ${escapeHTML(nft.rarity)}
+                        • Уровень ${nft.level}
+                    </div>
+
+                    <div class="power">
+                        POWER ${nft.power}
+                    </div>
+
+                </div>
+
+            </div>
+
+            <button class="btn secondary"
+                onclick="upgradeNFT(${nft.id})">
+                ⬆ УЛУЧШИТЬ
+            </button>
+        `;
+
+        container.appendChild(card);
+
+    });
+
+}
+
+
+/* -------------------------
+   BATTLE NFTS
+------------------------- */
+
+function renderBattleNFTs() {
+
+    const container =
+        document.getElementById("battleNfts");
+
+    container.innerHTML = "";
+
+    if (!userData || !userData.nfts) return;
+
+    userData.nfts.forEach(nft => {
+
+        const card =
+            document.createElement("div");
+
+        card.className = "select-card";
+
+        card.onclick = () => {
+
+            document
+                .querySelectorAll(".select-card")
+                .forEach(x =>
+                    x.classList.remove("selected")
+                );
+
+            card.classList.add("selected");
+
+            selectedNFT = nft.id;
+
+        };
+
+        card.innerHTML = `
+            <div class="big">
+                ${getNFTIcon(nft.name)}
+            </div>
+
+            <b>${escapeHTML(nft.name)}</b>
+
+            <small>
+                POWER ${nft.power}
+            </small>
+        `;
+
+        container.appendChild(card);
+
+    });
+
+}
+
+
+/* -------------------------
+   REWARD
+------------------------- */
+
+async function getReward() {
+
+    try {
+
+        const button =
+            document.querySelector(".reward .btn");
+
+        button.disabled = true;
+        button.textContent = "ПОЛУЧЕНИЕ...";
+
+        const result = await api(
+            "/api/nft/reward",
+            {
+                method: "POST"
+            }
+        );
+
+        userData = result;
+
+        updateProfile();
+
+        button.textContent = "✓ NFT ПОЛУЧЕН";
+
+        setTimeout(() => {
+            button.disabled = false;
+            button.textContent = "ПОЛУЧИТЬ NFT";
+        }, 2000);
+
+    } catch (error) {
+
+        alert(error.message);
+
+    }
+
+}
+
+
+/* -------------------------
+   UPGRADE
+------------------------- */
+
+async function upgradeNFT(id) {
+
+    try {
+
+        const result = await api(
+            "/api/upgrade",
+            {
+                method: "POST",
+
+                body: JSON.stringify({
+                    nft_id: id
+                })
+            }
+        );
+
+        userData = result;
+
+        updateProfile();
+
+    } catch (error) {
+
+        alert(error.message);
+
+    }
+
+}
+
+
+/* -------------------------
+   BATTLE
+------------------------- */
+
+async function startBattle() {
+
+    if (!selectedNFT) {
+
+        alert("Сначала выбери NFT");
+
+        return;
+    }
+
+    const resultBox =
+        document.getElementById("battleResult");
+
+    resultBox.style.display = "block";
+
+    resultBox.textContent =
+        "⚔️ Бой начинается...";
+
+    try {
+
+        const result = await api(
+            "/api/battle",
+            {
+                method: "POST",
+
+                body: JSON.stringify({
+                    nft_id: selectedNFT
+                })
+            }
+        );
+
+        userData = result.user;
+
+        updateProfile();
+
+        if (result.win) {
+
+            resultBox.textContent =
+                "🏆 ПОБЕДА! +50 🪙";
+
+        } else {
+
+            resultBox.textContent =
+                "💥 ПОРАЖЕНИЕ";
+
+        }
+
+    } catch (error) {
+
+        resultBox.textContent =
+            error.message;
+
+    }
+
+}
+
+
+/* -------------------------
+   LEADERBOARD
+------------------------- */
+
+async function loadLeaderboard() {
+
+    try {
+
+        const data =
+            await api("/api/leaderboard");
+
+        const container =
+            document.getElementById("leaderboard");
+
+        container.innerHTML = "";
+
+        data.forEach((player, index) => {
+
+            const row =
+                document.createElement("div");
+
+            row.className = "leader";
+
+            row.innerHTML = `
+                <div class="place">
+                    #${index + 1}
+                </div>
+
+                <div class="leader-name">
+                    ${escapeHTML(player.username)}
+                </div>
+
+                <div class="leader-power">
+                    ${player.power}
+                </div>
+            `;
+
+            container.appendChild(row);
+
+        });
+
+    } catch (error) {
+
+        console.error(error);
+
+    }
+
+}
+
+
+/* -------------------------
+   NAVIGATION
+------------------------- */
+
+function showPage(id, button) {
+
+    document
+        .querySelectorAll(".page")
+        .forEach(page =>
+            page.classList.remove("active")
+        );
+
+    document
+        .getElementById(id)
+        .classList.add("active");
+
+    document
+        .querySelectorAll("nav button")
+        .forEach(btn =>
+            btn.classList.remove("active")
+        );
+
+    button.classList.add("active");
+
+    if (id === "rating") {
+        loadLeaderboard();
+    }
+
+    if (id === "battle") {
+        renderBattleNFTs();
+    }
+
+}
+
+
+/* -------------------------
+   HELPERS
+------------------------- */
+
+function getNFTIcon(name) {
+
+    if (name.includes("Wolf")) return "🐺";
+    if (name.includes("Samurai")) return "⚔️";
+    if (name.includes("Knight")) return "🛡️";
+    if (name.includes("Guardian")) return "👾";
+
+    return "💠";
+}
+
+
+function escapeHTML(text) {
+
+    const div =
+        document.createElement("div");
+
+    div.textContent = text ?? "";
+
+    return div.innerHTML;
+
+}
+
+
+/* -------------------------
+   START
+------------------------- */
+
+loadUser();
+
+</script>
+
+</body>
+</html>
