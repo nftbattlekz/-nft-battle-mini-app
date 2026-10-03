@@ -1,8 +1,14 @@
 <!DOCTYPE html>
 <html lang="ru">
+
 <head>
+
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+
+<meta
+    name="viewport"
+    content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"
+>
 
 <title>NEXORA</title>
 
@@ -17,8 +23,10 @@
 
 body{
     margin:0;
-    background:#07080c;
-    color:#fff;
+    background:
+        radial-gradient(circle at 50% -10%,#35186b 0,#090a0f 35%),
+        #090a0f;
+    color:white;
     font-family:Arial,sans-serif;
 }
 
@@ -27,40 +35,41 @@ button{
 }
 
 .app{
-    max-width:620px;
+    max-width:700px;
     margin:auto;
-    padding-bottom:95px;
+    padding-bottom:105px;
 }
 
 header{
-    padding:18px;
+    position:sticky;
+    top:0;
+    z-index:50;
     display:flex;
     justify-content:space-between;
     align-items:center;
-    position:sticky;
-    top:0;
-    z-index:20;
-    background:rgba(7,8,12,.94);
-    backdrop-filter:blur(15px);
+    padding:16px;
+    background:rgba(8,9,14,.88);
+    backdrop-filter:blur(20px);
+    border-bottom:1px solid #20232d;
 }
 
 .logo{
-    font-size:25px;
-    font-weight:900;
+    font-size:24px;
+    font-weight:1000;
     letter-spacing:3px;
 }
 
 .balance{
-    background:#171a22;
-    border:1px solid #292e3b;
-    border-radius:14px;
-    padding:9px 12px;
+    padding:10px 14px;
+    border-radius:15px;
+    background:#151822;
+    border:1px solid #303442;
     font-weight:900;
 }
 
 .page{
     display:none;
-    padding:8px 16px;
+    padding:14px;
 }
 
 .page.active{
@@ -68,60 +77,78 @@ header{
 }
 
 .title{
-    font-size:28px;
-    font-weight:900;
-    margin:15px 0;
+    font-size:29px;
+    font-weight:1000;
+    margin:8px 0 16px;
+}
+
+.subtitle{
+    color:#858b9b;
+    font-size:13px;
+    margin-top:-10px;
+    margin-bottom:17px;
 }
 
 .card{
-    background:#11141b;
-    border:1px solid #272c37;
-    border-radius:22px;
+    background:rgba(17,19,28,.94);
+    border:1px solid #292d39;
+    border-radius:24px;
     padding:17px;
-    margin-bottom:12px;
+    margin-bottom:13px;
+    box-shadow:0 15px 45px #0004;
 }
 
+/* PROFILE */
+
 .profile{
+    position:relative;
+    overflow:hidden;
+    padding:21px;
     background:
-    radial-gradient(circle at 90% 10%,#5223a755,transparent 35%),
-    linear-gradient(145deg,#171421,#0d0f15);
+        radial-gradient(circle at 100% 0,#7c3aed55,transparent 42%),
+        linear-gradient(145deg,#191422,#0f1118);
 }
 
 .avatar{
-    width:68px;
-    height:68px;
-    border-radius:21px;
-    background:linear-gradient(135deg,#7c3aed,#db2777);
+    width:76px;
+    height:76px;
+    border-radius:24px;
     display:flex;
     align-items:center;
     justify-content:center;
-    font-size:29px;
-    font-weight:900;
+    font-size:32px;
+    font-weight:1000;
+    background:linear-gradient(
+        135deg,
+        #7138ee,
+        #d52882
+    );
+    box-shadow:0 10px 35px #7138ee55;
 }
 
 .name{
-    font-size:22px;
-    font-weight:900;
-    margin-top:12px;
+    font-size:23px;
+    font-weight:1000;
+    margin-top:14px;
 }
 
 .tgid{
-    color:#858c99;
-    margin-top:4px;
-    word-break:break-all;
+    color:#7e8492;
+    margin-top:5px;
+    font-size:13px;
 }
 
 .stats{
     display:grid;
     grid-template-columns:repeat(3,1fr);
     gap:8px;
-    margin-top:18px;
+    margin-top:20px;
 }
 
 .stat{
-    background:#090b10;
-    border-radius:15px;
-    padding:13px 4px;
+    background:#0b0d13;
+    border-radius:17px;
+    padding:14px 5px;
     text-align:center;
 }
 
@@ -131,250 +158,102 @@ header{
 }
 
 .stat span{
-    color:#777e8d;
+    color:#777d8b;
     font-size:10px;
-}
-
-.grid{
-    display:grid;
-    grid-template-columns:1fr 1fr;
-    gap:11px;
-}
-
-.case{
-    background:#12151d;
-    border:1px solid #292e39;
-    border-radius:20px;
-    padding:14px;
-    overflow:hidden;
-}
-
-.case-art{
-    height:130px;
-    border-radius:16px;
-    background:
-    radial-gradient(circle,#6336bc,#17121f 68%);
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    font-size:65px;
-    box-shadow:inset 0 0 35px #0005;
-}
-
-.case h3{
-    margin:12px 0 5px;
-    font-size:17px;
-}
-
-.muted{
-    color:#858c99;
-    font-size:12px;
-}
-
-.value{
-    font-weight:900;
-    margin-top:7px;
-}
-
-.btn{
-    width:100%;
-    padding:14px;
-    border:0;
-    border-radius:15px;
-    background:#7437e8;
-    color:#fff;
-    font-weight:900;
-    font-size:14px;
-    margin-top:10px;
-}
-
-.btn:active{
-    transform:scale(.97);
-}
-
-.btn.dark{
-    background:#20242e;
-}
-
-/* CASE OPENING */
-
-.case-modal{
-    position:fixed;
-    inset:0;
-    background:rgba(0,0,0,.82);
-    backdrop-filter:blur(12px);
-    display:none;
-    align-items:center;
-    justify-content:center;
-    z-index:100;
-    padding:18px;
-}
-
-.case-modal.show{
-    display:flex;
-}
-
-.modal-box{
-    width:100%;
-    max-width:580px;
-    background:#10131a;
-    border:1px solid #303541;
-    border-radius:25px;
-    padding:20px;
-    overflow:hidden;
-    box-shadow:0 0 70px #000;
-}
-
-.modal-title{
-    text-align:center;
-    font-size:22px;
-    font-weight:900;
-    margin-bottom:18px;
-}
-
-.roulette{
-    position:relative;
-    height:145px;
-    overflow:hidden;
-    border-radius:18px;
-    background:#080a0f;
-    border:1px solid #292e38;
-}
-
-.roulette::before{
-    content:"";
-    position:absolute;
-    top:0;
-    bottom:0;
-    left:50%;
-    width:3px;
-    transform:translateX(-50%);
-    background:#fff;
-    box-shadow:
-    0 0 12px #fff,
-    0 0 30px #8b5cf6;
-    z-index:10;
-}
-
-.roulette::after{
-    content:"";
-    position:absolute;
-    inset:0;
-    pointer-events:none;
-    background:
-    linear-gradient(
-        90deg,
-        #080a0f 0%,
-        transparent 15%,
-        transparent 85%,
-        #080a0f 100%
-    );
-    z-index:5;
-}
-
-.roulette-track{
-    height:100%;
-    display:flex;
-    align-items:center;
-    gap:10px;
-    transform:translateX(0);
-    will-change:transform;
-}
-
-.roll-card{
-    flex:0 0 110px;
-    height:112px;
-    border-radius:17px;
-    background:
-    linear-gradient(145deg,#202532,#10131a);
-    border:1px solid #343a49;
-    display:flex;
-    flex-direction:column;
-    align-items:center;
-    justify-content:center;
-    overflow:hidden;
-}
-
-.roll-icon{
-    font-size:43px;
-    margin-bottom:6px;
-}
-
-.roll-name{
-    font-size:10px;
-    text-align:center;
-    padding:0 4px;
-    font-weight:800;
-}
-
-.roll-rarity{
-    font-size:9px;
-    color:#a98cff;
-    margin-top:3px;
-}
-
-.open-result{
-    display:none;
-    text-align:center;
-    margin-top:20px;
-    animation:resultIn .55s ease;
-}
-
-.open-result.show{
+    margin-top:4px;
     display:block;
 }
 
-.result-icon{
-    width:100px;
-    height:100px;
-    margin:auto;
+/* CASES */
+
+.case-grid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:13px;
+}
+
+.case{
+    position:relative;
+    min-height:285px;
+    overflow:hidden;
     border-radius:25px;
+    padding:13px;
+    background:
+        linear-gradient(
+            145deg,
+            #181b27,
+            #0e1016
+        );
+    border:1px solid #303541;
+    box-shadow:0 15px 40px #0005;
+    transition:.25s;
+}
+
+.case:active{
+    transform:scale(.97);
+}
+
+.case-art{
+    height:155px;
+    border-radius:20px;
     display:flex;
     align-items:center;
     justify-content:center;
-    font-size:60px;
-    background:radial-gradient(circle,#6336bc,#17121f);
+    font-size:72px;
+    background:
+        radial-gradient(
+            circle at center,
+            #7138ee99,
+            #19132b 50%,
+            #0b0d12
+        );
     box-shadow:
-    0 0 25px #8b5cf688,
-    0 0 70px #8b5cf633;
-    animation:winPop .8s cubic-bezier(.2,1.6,.4,1);
+        inset 0 0 45px #000,
+        0 0 25px #7138ee22;
 }
 
-.result-name{
-    font-size:22px;
-    font-weight:900;
-    margin-top:12px;
+.case:nth-child(2n) .case-art{
+    background:
+        radial-gradient(
+            circle at center,
+            #db277799,
+            #261322 50%,
+            #0b0d12
+        );
 }
 
-.result-rarity{
-    color:#a98cff;
-    margin-top:5px;
+.case-name{
+    font-size:19px;
+    font-weight:1000;
+    margin-top:13px;
+}
+
+.case-sub{
+    color:#777e8e;
+    font-size:11px;
+    margin-top:4px;
+}
+
+.case-count{
+    color:#a78bfa;
+    font-size:11px;
+    margin-top:7px;
     font-weight:800;
 }
 
-@keyframes winPop{
-    0%{
-        transform:scale(.2) rotate(-15deg);
-        opacity:0;
-    }
-    70%{
-        transform:scale(1.12) rotate(3deg);
-    }
-    100%{
-        transform:scale(1);
-        opacity:1;
-    }
-}
-
-@keyframes resultIn{
-    from{
-        opacity:0;
-        transform:translateY(15px);
-    }
-    to{
-        opacity:1;
-        transform:translateY(0);
-    }
+.open-btn{
+    width:100%;
+    border:0;
+    padding:13px;
+    margin-top:11px;
+    border-radius:15px;
+    color:white;
+    background:linear-gradient(
+        135deg,
+        #7c3aed,
+        #9333ea
+    );
+    font-weight:1000;
 }
 
 /* INVENTORY */
@@ -385,83 +264,87 @@ header{
     gap:13px;
 }
 
-.nftart{
-    width:70px;
-    height:70px;
+.nft-art{
+    width:72px;
+    height:72px;
     flex:none;
-    border-radius:18px;
+    border-radius:20px;
     display:flex;
     align-items:center;
     justify-content:center;
-    font-size:36px;
+    font-size:38px;
     background:
-    radial-gradient(circle,#3d2c67,#12151c);
-    transition:.35s;
+        radial-gradient(
+            circle,
+            #4b3280,
+            #11141b
+        );
+    border:1px solid #373b49;
 }
 
-.nftinfo{
+.nft-info{
     flex:1;
 }
 
-.nftname{
-    font-weight:900;
+.nft-name{
     font-size:16px;
+    font-weight:1000;
 }
 
-.rarity{
-    color:#a98cff;
-    font-size:12px;
+.nft-rarity{
     margin-top:4px;
+    font-size:12px;
+    font-weight:900;
 }
 
-.nftvalue{
+.nft-value{
+    margin-top:6px;
     font-weight:900;
-    margin-top:5px;
+}
+
+.sell{
+    border:0;
+    border-radius:13px;
+    padding:10px 12px;
+    background:#222631;
+    color:white;
+    font-weight:900;
 }
 
 .sell-card{
     transition:
-    opacity .45s,
-    transform .45s,
-    max-height .45s,
-    margin .45s,
-    padding .45s;
-    max-height:220px;
-    overflow:hidden;
+        .5s ease;
 }
 
 .sell-card.selling{
     opacity:0;
     transform:
-    translateX(120px)
-    scale(.7)
-    rotate(7deg);
-    max-height:0;
-    margin:0;
-    padding-top:0;
-    padding-bottom:0;
+        translateX(130px)
+        scale(.65)
+        rotate(8deg);
 }
 
-.coin-fly{
-    position:fixed;
-    z-index:200;
-    font-size:25px;
-    pointer-events:none;
-    animation:coinFly .8s ease forwards;
+/* RARITY */
+
+.Common{
+    color:#b8becb;
 }
 
-@keyframes coinFly{
-    0%{
-        opacity:1;
-        transform:translate(0,0) scale(1);
-    }
-    100%{
-        opacity:0;
-        transform:translate(
-            calc(50vw - 30px),
-            calc(-50vh + 40px)
-        ) scale(.4);
-    }
+.Rare{
+    color:#38bdf8;
+}
+
+.Epic{
+    color:#a78bfa;
+}
+
+.Legendary{
+    color:#fbbf24;
+}
+
+.Mythic{
+    color:#fb7185;
+    text-shadow:0 0 12px #fb718566;
 }
 
 /* RATING */
@@ -470,81 +353,378 @@ header{
     display:grid;
     grid-template-columns:1fr 1fr;
     gap:8px;
-    margin-bottom:12px;
+    margin-bottom:13px;
 }
 
 .tab{
     border:0;
-    border-radius:14px;
-    padding:12px;
-    background:#171a22;
-    color:#858c99;
-    font-weight:900;
+    padding:13px;
+    border-radius:15px;
+    background:#171a23;
+    color:#858b99;
+    font-weight:1000;
 }
 
 .tab.active{
+    color:white;
     background:#7437e8;
-    color:#fff;
 }
 
 .leader{
     display:flex;
     align-items:center;
-    gap:10px;
-    padding:13px 0;
-    border-bottom:1px solid #252a34;
+    gap:11px;
+    padding:14px 0;
+    border-bottom:1px solid #252936;
 }
 
 .place{
     width:35px;
-    color:#777;
-    font-weight:900;
+    color:#737987;
+    font-weight:1000;
 }
 
 .lname{
     flex:1;
-    font-weight:800;
+    font-weight:900;
 }
 
 .lvalue{
-    color:#a98cff;
+    font-weight:1000;
+    color:#b497ff;
+}
+
+/* MODAL */
+
+.modal{
+    position:fixed;
+    inset:0;
+    z-index:200;
+    display:none;
+    align-items:center;
+    justify-content:center;
+    padding:14px;
+    background:#000c;
+    backdrop-filter:blur(16px);
+}
+
+.modal.show{
+    display:flex;
+}
+
+.modal-box{
+    position:relative;
+    width:100%;
+    max-width:640px;
+    border-radius:28px;
+    padding:18px;
+    background:
+        radial-gradient(
+            circle at 50% 0,
+            #402078,
+            #11131b 45%
+        );
+    border:1px solid #373b4a;
+    box-shadow:0 30px 100px #000;
+}
+
+.close{
+    position:absolute;
+    right:14px;
+    top:12px;
+    width:38px;
+    height:38px;
+    border:0;
+    border-radius:13px;
+    background:#252936;
+    color:white;
+    font-size:20px;
+    z-index:20;
+}
+
+.modal-title{
+    text-align:center;
+    font-size:23px;
+    font-weight:1000;
+    padding:5px 45px 18px;
+}
+
+.roulette{
+    position:relative;
+    height:160px;
+    overflow:hidden;
+    border-radius:20px;
+    background:#080a0f;
+    border:1px solid #343846;
+}
+
+.roulette:before{
+    content:"";
+    position:absolute;
+    left:50%;
+    top:0;
+    bottom:0;
+    width:3px;
+    transform:translateX(-50%);
+    z-index:10;
+    background:white;
+    box-shadow:
+        0 0 15px white,
+        0 0 35px #8b5cf6;
+}
+
+.roulette:after{
+    content:"";
+    position:absolute;
+    inset:0;
+    z-index:5;
+    pointer-events:none;
+    background:
+        linear-gradient(
+            90deg,
+            #080a0f 0%,
+            transparent 17%,
+            transparent 83%,
+            #080a0f 100%
+        );
+}
+
+.track{
+    display:flex;
+    align-items:center;
+    height:100%;
+    gap:10px;
+    will-change:transform;
+}
+
+.roll{
+    width:115px;
+    height:120px;
+    flex:0 0 115px;
+    border-radius:19px;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    background:#171a23;
+    border:1px solid #333846;
+}
+
+.roll-icon{
+    font-size:45px;
+}
+
+.roll-name{
+    margin-top:7px;
+    font-size:10px;
+    text-align:center;
     font-weight:900;
+}
+
+.roll-rarity{
+    margin-top:3px;
+    font-size:9px;
+    font-weight:900;
+}
+
+.result{
+    display:none;
+    text-align:center;
+    padding-top:22px;
+}
+
+.result.show{
+    display:block;
+}
+
+.result-art{
+    width:120px;
+    height:120px;
+    margin:auto;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    border-radius:30px;
+    font-size:70px;
+    background:
+        radial-gradient(
+            circle,
+            #7138ee,
+            #171321
+        );
+    box-shadow:
+        0 0 30px #8b5cf6aa,
+        0 0 80px #8b5cf633;
+    animation:
+        pop .8s
+        cubic-bezier(.2,1.6,.3,1);
+}
+
+.result-name{
+    font-size:24px;
+    font-weight:1000;
+    margin-top:13px;
+}
+
+.result-value{
+    margin-top:7px;
+    color:#aaa;
+    font-weight:900;
+}
+
+.done{
+    width:100%;
+    border:0;
+    padding:14px;
+    margin-top:17px;
+    border-radius:16px;
+    background:#7437e8;
+    color:white;
+    font-weight:1000;
+}
+
+@keyframes pop{
+
+    0%{
+        transform:scale(.1) rotate(-20deg);
+        opacity:0;
+    }
+
+    70%{
+        transform:scale(1.12) rotate(4deg);
+    }
+
+    100%{
+        transform:scale(1);
+        opacity:1;
+    }
+
+}
+
+/* COINS */
+
+.coin{
+    position:fixed;
+    z-index:500;
+    pointer-events:none;
+    font-size:24px;
+    animation:coin .9s ease forwards;
+}
+
+@keyframes coin{
+
+    0%{
+        opacity:1;
+        transform:translate(0,0) scale(1);
+    }
+
+    100%{
+        opacity:0;
+        transform:
+            translate(
+                0,
+                -260px
+            )
+            scale(.3);
+    }
+
+}
+
+/* BOTTOM NAV */
+
+nav{
+    position:fixed;
+    left:50%;
+    bottom:10px;
+    transform:translateX(-50%);
+    width:min(
+        calc(100% - 20px),
+        680px
+    );
+    z-index:100;
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:5px;
+    padding:7px;
+    border-radius:23px;
+    background:rgba(17,19,27,.94);
+    border:1px solid #303440;
+    backdrop-filter:blur(20px);
+    box-shadow:0 15px 50px #0009;
+}
+
+nav button{
+    border:0;
+    border-radius:17px;
+    padding:9px 4px;
+    background:transparent;
+    color:#747b8a;
+    font-size:10px;
+    font-weight:900;
+}
+
+nav button.active{
+    color:white;
+    background:#7437e8;
+}
+
+.ico{
+    display:block;
+    font-size:20px;
+    margin-bottom:3px;
 }
 
 .empty{
     text-align:center;
-    color:#777;
-    padding:25px;
+    padding:40px;
+    color:#777e8d;
 }
 
 .toast{
     position:fixed;
+    z-index:600;
     left:20px;
     right:20px;
-    bottom:90px;
-    z-index:300;
-    background:#252934;
-    border:1px solid #383e4b;
-    border-radius:15px;
+    bottom:95px;
     padding:14px;
+    border-radius:16px;
     text-align:center;
+    background:#252936;
+    border:1px solid #3b4050;
     display:none;
-    box-shadow:0 10px 40px #0008;
+    font-weight:800;
 }
 
-@media(max-width:390px){
+@media(max-width:430px){
 
-    .grid{
-        grid-template-columns:1fr;
+    .case-grid{
+        grid-template-columns:1fr 1fr;
+        gap:9px;
     }
 
-    .roll-card{
+    .case{
+        min-height:260px;
+        padding:10px;
+    }
+
+    .case-art{
+        height:130px;
+        font-size:60px;
+    }
+
+    .case-name{
+        font-size:16px;
+    }
+
+    .roll{
+        width:105px;
         flex-basis:105px;
     }
 
 }
 
 </style>
+
 </head>
 
 
@@ -559,7 +739,8 @@ header{
     </div>
 
     <div class="balance">
-        🪙 <span id="coins">0</span>
+        🪙
+        <span id="coins">0</span>
     </div>
 
 </header>
@@ -604,39 +785,18 @@ header{
         <div class="stats">
 
             <div class="stat">
-
-                <b id="nftCount">
-                    0
-                </b>
-
-                <span>
-                    NFT
-                </span>
-
+                <b id="nftCount">0</b>
+                <span>NFT</span>
             </div>
 
             <div class="stat">
-
-                <b id="collection">
-                    0
-                </b>
-
-                <span>
-                    КОЛЛЕКЦИЯ
-                </span>
-
+                <b id="collection">0</b>
+                <span>КОЛЛЕКЦИЯ</span>
             </div>
 
             <div class="stat">
-
-                <b id="received">
-                    0
-                </b>
-
-                <span>
-                    ПОЛУЧЕНО
-                </span>
-
+                <b id="received">0</b>
+                <span>ПОЛУЧЕНО</span>
             </div>
 
         </div>
@@ -645,15 +805,13 @@ header{
 
     <div class="card">
 
-        <b>
-            Добро пожаловать в NEXORA
-        </b>
+        <b>Добро пожаловать в NEXORA</b>
 
-        <p class="muted">
+        <p class="subtitle">
 
-            Собирай NFT, открывай кейсы,
-            продавай предметы и поднимайся
-            в рейтинге.
+            Открывай коллекции,
+            собирай редкие NFT
+            и развивай свой инвентарь.
 
         </p>
 
@@ -672,20 +830,15 @@ header{
         Кейсы
     </div>
 
-    <div class="card">
+    <div class="subtitle">
 
-        <span class="muted">
-
-            Выбирай кейс и запускай
-            красивую анимацию открытия.
-
-        </span>
+        10 коллекций • 60 уникальных NFT
 
     </div>
 
     <div
         id="caseGrid"
-        class="grid">
+        class="case-grid">
 
     </div>
 
@@ -723,8 +876,8 @@ header{
     <div class="tabs">
 
         <button
-            class="tab active"
             id="richTab"
+            class="tab active"
             onclick="showRating('rich')">
 
             💰 Богатые
@@ -732,8 +885,8 @@ header{
         </button>
 
         <button
-            class="tab"
             id="expTab"
+            class="tab"
             onclick="showRating('exp')">
 
             💎 NFT
@@ -753,51 +906,39 @@ header{
 </div>
 
 
-<!-- NAV -->
+<!-- BOTTOM -->
 
 <nav>
 
     <button
         class="active"
-        onclick="page('profile',this)">
+        onclick="go('profile',this)">
 
-        <span class="ico">
-            👤
-        </span>
-
+        <span class="ico">👤</span>
         Профиль
 
     </button>
 
     <button
-        onclick="page('cases',this)">
+        onclick="go('cases',this)">
 
-        <span class="ico">
-            📦
-        </span>
-
+        <span class="ico">📦</span>
         Кейсы
 
     </button>
 
     <button
-        onclick="page('inventory',this)">
+        onclick="go('inventory',this)">
 
-        <span class="ico">
-            🎒
-        </span>
-
+        <span class="ico">🎒</span>
         Инвентарь
 
     </button>
 
     <button
-        onclick="page('rating',this)">
+        onclick="go('rating',this)">
 
-        <span class="ico">
-            🏆
-        </span>
-
+        <span class="ico">🏆</span>
         Рейтинг
 
     </button>
@@ -808,37 +949,44 @@ header{
 <!-- CASE MODAL -->
 
 <div
-    id="caseModal"
-    class="case-modal">
+    id="modal"
+    class="modal">
 
     <div class="modal-box">
 
-        <div
-            class="modal-title"
-            id="modalTitle">
+        <button
+            class="close"
+            onclick="closeModal()">
 
-            Открытие кейса
+            ×
+
+        </button>
+
+        <div
+            id="modalTitle"
+            class="modal-title">
+
+            Открытие
 
         </div>
 
-        <div
-            class="roulette">
+        <div class="roulette">
 
             <div
-                id="rouletteTrack"
-                class="roulette-track">
+                id="track"
+                class="track">
 
             </div>
 
         </div>
 
         <div
-            id="openResult"
-            class="open-result">
+            id="result"
+            class="result">
 
             <div
-                id="resultIcon"
-                class="result-icon">
+                id="resultArt"
+                class="result-art">
 
             </div>
 
@@ -850,19 +998,19 @@ header{
 
             <div
                 id="resultRarity"
-                class="result-rarity">
+                class="nft-rarity">
 
             </div>
 
             <div
                 id="resultValue"
-                class="value">
+                class="result-value">
 
             </div>
 
             <button
-                class="btn"
-                onclick="closeCase()">
+                class="done"
+                onclick="closeModal()">
 
                 ЗАБРАТЬ NFT
 
@@ -896,13 +1044,14 @@ const initData =
 let user = null;
 let cases = [];
 let rankings = null;
+let rolling = false;
 
 
 /* API */
 
 async function api(
     url,
-    options = {}
+    options={}
 ){
 
     options.headers = {
@@ -940,9 +1089,51 @@ async function api(
 }
 
 
+/* NAV */
+
+function go(
+    id,
+    button
+){
+
+    document
+        .querySelectorAll(".page")
+        .forEach(
+            x =>
+                x.classList.remove(
+                    "active"
+                )
+        );
+
+    document
+        .getElementById(id)
+        .classList.add(
+            "active"
+        );
+
+    document
+        .querySelectorAll("nav button")
+        .forEach(
+            x =>
+                x.classList.remove(
+                    "active"
+                )
+        );
+
+    button.classList.add("active");
+
+    if(id === "rating"){
+        loadRating();
+    }
+
+}
+
+
 /* TOAST */
 
-function toast(message){
+function toast(
+    text
+){
 
     const el =
         document.getElementById(
@@ -950,7 +1141,7 @@ function toast(message){
         );
 
     el.textContent =
-        message;
+        text;
 
     el.style.display =
         "block";
@@ -962,51 +1153,6 @@ function toast(message){
         },
         2200
     );
-
-}
-
-
-/* NAVIGATION */
-
-function page(
-    id,
-    button
-){
-
-    document
-        .querySelectorAll(
-            ".page"
-        )
-        .forEach(
-            x =>
-                x.classList
-                 .remove("active")
-        );
-
-    document
-        .getElementById(id)
-        .classList
-        .add("active");
-
-    document
-        .querySelectorAll(
-            "nav button"
-        )
-        .forEach(
-            x =>
-                x.classList
-                 .remove("active")
-        );
-
-    button.classList.add(
-        "active"
-    );
-
-    if(id === "rating"){
-
-        loadRating();
-
-    }
 
 }
 
@@ -1030,16 +1176,12 @@ async function load(){
                 "/api/cases"
             );
 
-        renderAll();
+        render();
 
     }
-    catch(error){
+    catch(e){
 
-        console.error(error);
-
-        toast(
-            error.message
-        );
+        toast(e.message);
 
     }
 
@@ -1048,7 +1190,7 @@ async function load(){
 
 /* RENDER */
 
-function renderAll(){
+function render(){
 
     document.getElementById(
         "coins"
@@ -1059,7 +1201,7 @@ function renderAll(){
         "name"
     ).textContent =
         user.first_name ||
-        "Игрок";
+        "Player";
 
     document.getElementById(
         "avatar"
@@ -1067,22 +1209,19 @@ function renderAll(){
         (
             user.first_name ||
             "N"
-        )
-        .charAt(0)
-        .toUpperCase();
+        ).charAt(0).toUpperCase();
 
     document.getElementById(
         "tgid"
     ).textContent =
-
         (
             user.username
             ? "@"+user.username
             : "@username"
         )
-
         +
-        " • ID: " +
+        " • ID: "
+        +
         user.id;
 
     document.getElementById(
@@ -1090,17 +1229,17 @@ function renderAll(){
     ).textContent =
         user.nfts.length;
 
-    const total =
+    const collection =
         user.nfts.reduce(
             (sum,nft)=>
-                sum + nft.value,
+                sum+nft.value,
             0
         );
 
     document.getElementById(
         "collection"
     ).textContent =
-        total;
+        collection;
 
     document.getElementById(
         "received"
@@ -1113,70 +1252,49 @@ function renderAll(){
 }
 
 
-/* CASE CARDS */
+/* CASES */
 
 function renderCases(){
 
-    const container =
+    const grid =
         document.getElementById(
             "caseGrid"
         );
 
-    container.innerHTML = "";
+    grid.innerHTML = "";
 
     cases.forEach(
-        c => {
+        c=>{
 
-            container.innerHTML += `
+            grid.innerHTML += `
 
-            <div class="case">
+                <div class="case">
 
-                <div class="case-art">
+                    <div class="case-art">
+                        ${c.icon}
+                    </div>
 
-                    ${c.reward.icon}
+                    <div class="case-name">
+                        ${esc(c.name)}
+                    </div>
 
-                </div>
+                    <div class="case-sub">
+                        ${esc(c.subtitle)}
+                    </div>
 
-                <h3>
+                    <div class="case-count">
+                        💎 ${c.count} NFT
+                    </div>
 
-                    ${escapeHTML(
-                        c.name
-                    )}
+                    <button
+                        class="open-btn"
+                        onclick="openCase(${c.id})">
 
-                </h3>
+                        ОТКРЫТЬ
 
-                <div class="muted">
-
-                    Награда:
-                    ${escapeHTML(
-                        c.reward.name
-                    )}
-
-                </div>
-
-                <div class="rarity">
-
-                    ${escapeHTML(
-                        c.reward.rarity
-                    )}
+                    </button>
 
                 </div>
-
-                <div class="value">
-
-                    🪙 ${c.price}
-
-                </div>
-
-                <button
-                    class="btn"
-                    onclick="openCase(${c.id})">
-
-                    ОТКРЫТЬ
-
-                </button>
-
-            </div>
 
             `;
 
@@ -1186,68 +1304,57 @@ function renderCases(){
 }
 
 
-/* OPEN CASE */
+/* OPEN */
 
-async function openCase(id){
+async function openCase(
+    id
+){
+
+    if(rolling){
+        return;
+    }
 
     const selected =
         cases.find(
-            x => x.id === id
+            x=>x.id===id
         );
 
     if(!selected){
-
         return;
-
-    }
-
-    if(
-        !confirm(
-            "Открыть " +
-            selected.name +
-            " за " +
-            selected.price +
-            " 🪙?"
-        )
-    ){
-
-        return;
-
     }
 
     try{
 
-        /*
-         Получаем результат
-         от сервера ДО запуска
-         анимации.
-        */
+        rolling = true;
 
-        const newUser =
+        const before =
             await api(
                 "/api/cases/open",
                 {
                     method:"POST",
-
-                    body:
-                        JSON.stringify({
-                            case_id:id
-                        })
+                    body:JSON.stringify({
+                        case_id:id
+                    })
                 }
             );
 
-        user =
-            newUser;
+        user = before;
 
-        showCaseAnimation(
-            selected
+        const newest =
+            user.nfts[0];
+
+        showRoll(
+            selected,
+            newest
         );
 
     }
-    catch(error){
+    catch(e){
+
+        rolling=false;
 
         toast(
-            error.message
+            e.message
         );
 
     }
@@ -1255,53 +1362,79 @@ async function openCase(id){
 }
 
 
-/* CASE ANIMATION */
+/* ROLL */
 
-function showCaseAnimation(
-    selected
+function showRoll(
+    selected,
+    reward
 ){
 
     const modal =
         document.getElementById(
-            "caseModal"
+            "modal"
         );
 
     const track =
         document.getElementById(
-            "rouletteTrack"
+            "track"
         );
 
     const result =
         document.getElementById(
-            "openResult"
+            "result"
         );
 
-    const resultIcon =
-        document.getElementById(
-            "resultIcon"
-        );
-
-    const resultName =
-        document.getElementById(
-            "resultName"
-        );
-
-    const resultRarity =
-        document.getElementById(
-            "resultRarity"
-        );
-
-    const resultValue =
-        document.getElementById(
-            "resultValue"
-        );
+    result.classList.remove(
+        "show"
+    );
 
     document.getElementById(
         "modalTitle"
     ).textContent =
         selected.name;
 
-    result.classList.remove(
+    track.innerHTML = "";
+
+    /*
+      Много визуальных карточек
+      + в конце настоящий NFT.
+    */
+
+    const visualPool =
+        selected.pool;
+
+    for(
+        let i=0;
+        i<38;
+        i++
+    ){
+
+        const nft =
+            visualPool[
+                Math.floor(
+                    Math.random() *
+                    visualPool.length
+                )
+            ];
+
+        addRollCard(
+            track,
+            nft
+        );
+
+    }
+
+    /*
+      Реальный результат
+      всегда последним.
+    */
+
+    addRollCard(
+        track,
+        reward
+    );
+
+    modal.classList.add(
         "show"
     );
 
@@ -1311,111 +1444,36 @@ function showCaseAnimation(
     track.style.transform =
         "translateX(0)";
 
-    track.innerHTML = "";
-
-    /*
-       Создаём длинную ленту.
-       Последняя карточка —
-       фактическая награда.
-    */
-
-    const items = [];
-
-    for(
-        let i=0;
-        i<30;
-        i++
-    ){
-
-        items.push(
-            randomVisualNFT()
-        );
-
-    }
-
-    items.push(
-        selected.reward
-    );
-
-    items.forEach(
-        item => {
-
-            track.innerHTML += `
-
-            <div class="roll-card">
-
-                <div class="roll-icon">
-
-                    ${item.icon}
-
-                </div>
-
-                <div class="roll-name">
-
-                    ${escapeHTML(
-                        item.name
-                    )}
-
-                </div>
-
-                <div class="roll-rarity">
-
-                    ${escapeHTML(
-                        item.rarity
-                    )}
-
-                </div>
-
-            </div>
-
-            `;
-
-        }
-    );
-
-    modal.classList.add(
-        "show"
-    );
-
-    /*
-       Ждём рендер,
-       затем запускаем прокрутку.
-    */
-
     requestAnimationFrame(
         ()=>{
 
             const cards =
                 track.querySelectorAll(
-                    ".roll-card"
+                    ".roll"
                 );
 
             const last =
                 cards[cards.length-1];
 
             const viewport =
-                track.parentElement;
+                document.querySelector(
+                    ".roulette"
+                );
 
             const target =
                 last.offsetLeft
                 -
                 (
-                    viewport.clientWidth / 2
+                    viewport.clientWidth/2
                     -
-                    last.offsetWidth / 2
+                    last.offsetWidth/2
                 );
-
-            /*
-               Быстрый старт →
-               замедление →
-               остановка.
-            */
 
             setTimeout(
                 ()=>{
 
                     track.style.transition =
-                        "transform 5.8s cubic-bezier(.08,.72,.12,1)";
+                        "transform 6s cubic-bezier(.06,.72,.12,1)";
 
                     track.style.transform =
                         `translateX(-${target}px)`;
@@ -1427,18 +1485,33 @@ function showCaseAnimation(
             setTimeout(
                 ()=>{
 
-                    resultIcon.textContent =
-                        selected.reward.icon;
+                    document.getElementById(
+                        "resultArt"
+                    ).textContent =
+                        reward.icon;
 
-                    resultName.textContent =
-                        selected.reward.name;
+                    document.getElementById(
+                        "resultName"
+                    ).textContent =
+                        reward.name;
 
-                    resultRarity.textContent =
-                        selected.reward.rarity;
+                    const rarity =
+                        document.getElementById(
+                            "resultRarity"
+                        );
 
-                    resultValue.textContent =
+                    rarity.textContent =
+                        reward.rarity;
+
+                    rarity.className =
+                        "nft-rarity " +
+                        reward.rarity;
+
+                    document.getElementById(
+                        "resultValue"
+                    ).textContent =
                         "💎 " +
-                        selected.reward.value;
+                        reward.value;
 
                     result.classList.add(
                         "show"
@@ -1449,8 +1522,10 @@ function showCaseAnimation(
                           "success"
                       );
 
+                    rolling=false;
+
                 },
-                6200
+                6250
             );
 
         }
@@ -1459,116 +1534,99 @@ function showCaseAnimation(
 }
 
 
-/* RANDOM VISUAL CARD */
+/* ROLL CARD */
 
-function randomVisualNFT(){
+function addRollCard(
+    track,
+    nft
+){
 
-    const list = [
+    track.innerHTML += `
 
-        {
-            name:"Cyber Cat",
-            rarity:"Common",
-            icon:"🐱"
-        },
+        <div class="roll">
 
-        {
-            name:"Neon Samurai",
-            rarity:"Common",
-            icon:"⚔️"
-        },
+            <div class="roll-icon">
+                ${nft.icon}
+            </div>
 
-        {
-            name:"Shadow Wolf",
-            rarity:"Rare",
-            icon:"🐺"
-        },
+            <div class="roll-name">
+                ${esc(nft.name)}
+            </div>
 
-        {
-            name:"Chrome Rider",
-            rarity:"Rare",
-            icon:"🏍️"
-        },
+            <div
+                class="roll-rarity ${nft.rarity}">
 
-        {
-            name:"Cyber Knight",
-            rarity:"Epic",
-            icon:"🛡️"
-        },
+                ${nft.rarity}
 
-        {
-            name:"Void Guardian",
-            rarity:"Epic",
-            icon:"👾"
-        },
+            </div>
 
-        {
-            name:"Galaxy Dragon",
-            rarity:"Legendary",
-            icon:"🐉"
-        },
+        </div>
 
-        {
-            name:"Quantum Ghost",
-            rarity:"Legendary",
-            icon:"👻"
-        }
-
-    ];
-
-    return list[
-        Math.floor(
-            Math.random() *
-            list.length
-        )
-    ];
+    `;
 
 }
 
 
-/* CLOSE CASE */
+/* CLOSE */
 
-function closeCase(){
+function closeModal(){
+
+    if(rolling){
+        return;
+    }
 
     document
-        .getElementById(
-            "caseModal"
-        )
-        .classList
-        .remove("show");
+        .getElementById("modal")
+        .classList.remove(
+            "show"
+        );
 
-    renderAll();
-
-    toast(
-        "NFT добавлен в инвентарь"
-    );
+    render();
 
 }
+
+
+/*
+  Закрытие по нажатию
+  вне самого окна.
+*/
+
+document
+    .getElementById("modal")
+    .addEventListener(
+        "click",
+        function(e){
+
+            if(
+                e.target === this &&
+                !rolling
+            ){
+
+                closeModal();
+
+            }
+
+        }
+    );
 
 
 /* INVENTORY */
 
 function renderInventory(){
 
-    const container =
+    const box =
         document.getElementById(
             "inventoryList"
         );
 
-    container.innerHTML = "";
+    box.innerHTML = "";
 
-    if(
-        !user.nfts ||
-        user.nfts.length === 0
-    ){
+    if(!user.nfts.length){
 
-        container.innerHTML = `
-
+        box.innerHTML = `
             <div class="empty">
-
                 Инвентарь пуст
-
             </div>
-
         `;
 
         return;
@@ -1576,62 +1634,57 @@ function renderInventory(){
     }
 
     user.nfts.forEach(
-        nft => {
+        nft=>{
 
-            container.innerHTML += `
+            box.innerHTML += `
 
-            <div
-                class="card sell-card"
-                id="nft-${nft.id}">
+                <div
+                    class="card sell-card"
+                    id="nft-${nft.id}">
 
-                <div class="nft">
+                    <div class="nft">
 
-                    <div class="nftart">
+                        <div class="nft-art">
+                            ${nft.icon}
+                        </div>
 
-                        ${nft.icon}
+                        <div class="nft-info">
 
-                    </div>
+                            <div class="nft-name">
+                                ${esc(nft.name)}
+                            </div>
 
-                    <div class="nftinfo">
+                            <div
+                                class="nft-rarity ${nft.rarity}">
 
-                        <div class="nftname">
+                                ${nft.rarity}
 
-                            ${escapeHTML(
-                                nft.name
-                            )}
+                            </div>
+
+                            <div class="nft-value">
+
+                                💎 ${nft.value}
+
+                            </div>
 
                         </div>
 
-                        <div class="rarity">
+                        <button
+                            class="sell"
+                            onclick="
+                                sellNFT(
+                                    ${nft.id},
+                                    ${nft.value}
+                                )
+                            ">
 
-                            ${escapeHTML(
-                                nft.rarity
-                            )}
+                            ПРОДАТЬ
 
-                        </div>
-
-                        <div class="nftvalue">
-
-                            💎 ${nft.value}
-
-                        </div>
+                        </button>
 
                     </div>
 
                 </div>
-
-                <button
-                    class="btn dark"
-                    onclick="sellNFT(${nft.id},${nft.value})">
-
-                    ПРОДАТЬ
-                    ЗА
-                    ${nft.value}
-                    🪙
-
-                </button>
-
-            </div>
 
             `;
 
@@ -1641,7 +1694,7 @@ function renderInventory(){
 }
 
 
-/* SELL ANIMATION */
+/* SELL */
 
 async function sellNFT(
     id,
@@ -1654,52 +1707,27 @@ async function sellNFT(
         );
 
     if(!card){
-
         return;
-
-    }
-
-    if(
-        !confirm(
-            "Продать NFT за " +
-            value +
-            " 🪙?"
-        )
-    ){
-
-        return;
-
     }
 
     try{
-
-        /*
-           Сначала меняем сервер.
-        */
 
         user =
             await api(
                 "/api/sell",
                 {
                     method:"POST",
-
-                    body:
-                        JSON.stringify({
-                            nft_id:id
-                        })
+                    body:JSON.stringify({
+                        nft_id:id
+                    })
                 }
             );
-
-        /*
-           Запускаем визуальное
-           исчезновение карточки.
-        */
 
         card.classList.add(
             "selling"
         );
 
-        createCoins();
+        coinsEffect();
 
         tg.HapticFeedback
           ?.impactOccurred(
@@ -1708,24 +1736,21 @@ async function sellNFT(
 
         setTimeout(
             ()=>{
-
-                renderAll();
-
+                render();
                 toast(
                     "+" +
                     value +
                     " 🪙"
                 );
-
             },
             500
         );
 
     }
-    catch(error){
+    catch(e){
 
         toast(
-            error.message
+            e.message
         );
 
     }
@@ -1735,11 +1760,11 @@ async function sellNFT(
 
 /* COIN EFFECT */
 
-function createCoins(){
+function coinsEffect(){
 
     for(
         let i=0;
-        i<7;
+        i<8;
         i++
     ){
 
@@ -1749,7 +1774,7 @@ function createCoins(){
             );
 
         coin.className =
-            "coin-fly";
+            "coin";
 
         coin.textContent =
             "🪙";
@@ -1770,7 +1795,7 @@ function createCoins(){
 
         coin.style.animationDelay =
             (
-                Math.random()*.15
+                Math.random()*.2
             ) +
             "s";
 
@@ -1782,7 +1807,7 @@ function createCoins(){
             ()=>{
                 coin.remove();
             },
-            1000
+            1100
         );
 
     }
@@ -1806,10 +1831,10 @@ async function loadRating(){
         );
 
     }
-    catch(error){
+    catch(e){
 
         toast(
-            error.message
+            e.message
         );
 
     }
@@ -1817,72 +1842,77 @@ async function loadRating(){
 }
 
 
-function showRating(type){
+function showRating(
+    type
+){
 
     if(!rankings){
+        return;
+    }
+
+    document
+        .getElementById("richTab")
+        .classList.toggle(
+            "active",
+            type==="rich"
+        );
+
+    document
+        .getElementById("expTab")
+        .classList.toggle(
+            "active",
+            type==="exp"
+        );
+
+    const list =
+        type==="rich"
+        ? rankings.richest
+        : rankings.expensive;
+
+    const box =
+        document.getElementById(
+            "ratingList"
+        );
+
+    box.innerHTML = "";
+
+    if(!list.length){
+
+        box.innerHTML =
+            `<div class="empty">
+                Пока пусто
+            </div>`;
 
         return;
 
     }
 
-    document
-        .getElementById(
-            "richTab"
-        )
-        .classList
-        .toggle(
-            "active",
-            type === "rich"
-        );
-
-    document
-        .getElementById(
-            "expTab"
-        )
-        .classList
-        .toggle(
-            "active",
-            type === "exp"
-        );
-
-    const list =
-        type === "rich"
-        ? rankings.richest
-        : rankings.expensive;
-
-    const container =
-        document.getElementById(
-            "ratingList"
-        );
-
-    container.innerHTML = "";
-
     list.forEach(
-        (player,index)=>{
+        (p,index)=>{
 
-            const username =
-                player.username
-                ? "@"+player.username
+            const name =
+                p.username
+                ? "@"+p.username
                 : (
-                    player.first_name ||
-                    "Игрок"
+                    p.first_name ||
+                    "Player"
                 );
 
             let value;
-            let subtitle;
+            let sub;
 
             if(
-                type === "rich"
+                type==="rich"
             ){
 
                 value =
                     "🪙 " +
                     (
-                        player.coins +
-                        player.collection_value
+                        p.coins +
+                        p.collection_value
                     );
 
-                subtitle =
+                sub =
                     "Баланс + коллекция";
 
             }
@@ -1890,54 +1920,40 @@ function showRating(type){
 
                 value =
                     "💎 " +
-                    player.value;
+                    p.value;
 
-                subtitle =
-                    escapeHTML(
-                        player.name
-                    )
-                    +
-                    " • "
-                    +
-                    escapeHTML(
-                        player.rarity
-                    );
+                sub =
+                    p.name +
+                    " • " +
+                    p.rarity;
 
             }
 
-            container.innerHTML += `
+            box.innerHTML += `
 
-            <div class="leader">
+                <div class="leader">
 
-                <div class="place">
+                    <div class="place">
+                        #${index+1}
+                    </div>
 
-                    #${index+1}
+                    <div class="lname">
 
-                </div>
+                        ${esc(name)}
 
-                <div class="lname">
+                        <br>
 
-                    ${escapeHTML(
-                        username
-                    )}
+                        <span class="subtitle">
+                            ${esc(sub)}
+                        </span>
 
-                    <br>
+                    </div>
 
-                    <span class="muted">
-
-                        ${subtitle}
-
-                    </span>
-
-                </div>
-
-                <div class="lvalue">
-
-                    ${value}
+                    <div class="lvalue">
+                        ${value}
+                    </div>
 
                 </div>
-
-            </div>
 
             `;
 
@@ -1949,19 +1965,19 @@ function showRating(type){
 
 /* ESCAPE */
 
-function escapeHTML(
-    text
+function esc(
+text
 ){
 
-    const div =
+    const d =
         document.createElement(
             "div"
         );
 
-    div.textContent =
+    d.textContent =
         text ?? "";
 
-    return div.innerHTML;
+    return d.innerHTML;
 
 }
 
@@ -1973,4 +1989,5 @@ load();
 </script>
 
 </body>
+
 </html>
