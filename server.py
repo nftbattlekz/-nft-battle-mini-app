@@ -103,7 +103,7 @@ JOBS={
 'magnate':{'name':'Магнат','level':45,'reward':3200,'xp':160,'cooldown':40,'world':1,'taps':38},
 'corporate_manager':{'name':'Корпоративный менеджер','level':100,'reward':7000,'xp':250,'cooldown':45,'world':2,'taps':45},
 'investment_banker':{'name':'Инвестиционный банкир','level':110,'reward':11000,'xp':160,'cooldown':48,'world':2,'taps':50},
-'tech_ceo':{'name':'CEO технологической компании','level':125,'reward':17000,'xp':420,'cooldown':50,'world':2,'taps':55},
+'tech_ceo':{'name':'CEO технологической компании','level':125,'reward':17000,'xp':420,'cooldown':150,'world':2,'taps':55},
 'global_trader':{'name':'Глобальный трейдер','level':145,'reward':26000,'xp':550,'cooldown':55,'world':2,'taps':60},
 'corporation_owner':{'name':'Владелец корпорации','level':170,'reward':40000,'xp':700,'cooldown':60,'world':2,'taps':65},
 'ceo_empire':{'name':'CEO империи','level':200,'reward':65000,'xp':900,'cooldown':65,'world':3,'taps':75},
@@ -254,7 +254,10 @@ def health():
         return jsonify({'ok':False,'error':str(exc)}),500
 
 @app.get('/')
-def index():return send_from_directory('web','index.html')
+def index():return send_from_directory('web','index.html', max_age=60)
+
+@app.get('/index.html')
+def index_html():return send_from_directory('web','index.html', max_age=60)
 
 @app.get('/api/bootstrap')
 @require_user
@@ -274,7 +277,7 @@ def bootstrap(u):
     for r in con.execute('SELECT quest_key,progress,completed,claimed FROM quests WHERE user_id=?',(u['id'],)).fetchall():
         if r['quest_key'] in QUESTS:quests.append({'key':r['quest_key'],**QUESTS[r['quest_key']],'progress':r['progress'],'completed':bool(r['completed']),'claimed':bool(r['claimed'])})
     sr=con.execute('SELECT * FROM skills WHERE user_id=?',(u['id'],)).fetchone();skills=dict(sr) if sr else {}
-    con.commit();con.close()
+    con.close()
     return jsonify({'ok':True,'user':data,'jobs':[{'key':k,**v,'world_name':WORLDS[v['world']]['name'],'world_unlocked':world_unlocked(u['level'],v['world'])} for k,v in JOBS.items()],'worlds':[{'key':k,**v,'unlocked':world_unlocked(u['level'],k)} for k,v in WORLDS.items()],'items':ITEMS,'businesses':businesses,'properties':properties,'quests':quests,'skills':skills,'market':market,'business_market':bm,'promo_codes':['START','BETA TEST','GO'],'creator':is_creator(u),'assistant':is_assistant(u),'admin':is_creator(u) or is_assistant(u)})
 
 # WORLD SWITCH
@@ -686,14 +689,6 @@ def admin_wipe(actor):
 @require_user
 def history(u):
     con=db();r=[dict(x) for x in con.execute('SELECT amount,reason,created_at FROM transactions WHERE user_id=? ORDER BY id DESC LIMIT 50',(u['id'],)).fetchall()];con.close();return jsonify({'ok':True,'history':r})
-
-@app.get('/')
-def index():
-    return send_from_directory(app.static_folder, 'index.html')
-
-@app.get('/index.html')
-def index_html():
-    return send_from_directory(app.static_folder, 'index.html')
 
 @app.errorhandler(404)
 def not_found(e):return jsonify({'ok':False,'error':'Маршрут не найден'}),404
