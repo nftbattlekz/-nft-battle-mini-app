@@ -15,7 +15,7 @@ def db():
 
 def init_db():
     con=db(); con.executescript('''
-    CREATE TABLE IF NOT EXISTS users(id INTEGER PRIMARY KEY AUTOINCREMENT,telegram_id TEXT UNIQUE NOT NULL,username TEXT DEFAULT '',first_name TEXT DEFAULT '',last_name TEXT DEFAULT '',photo_url TEXT DEFAULT '',coins INTEGER DEFAULT 1000,xp INTEGER DEFAULT 0,level INTEGER DEFAULT 1,energy INTEGER DEFAULT 100,energy_updated INTEGER DEFAULT 0,rating INTEGER DEFAULT 0,bank INTEGER DEFAULT 0,created_at INTEGER DEFAULT 0,last_daily INTEGER DEFAULT 0,role TEXT DEFAULT 'player');
+    CREATE TABLE IF NOT EXISTS users(id INTEGER PRIMARY KEY AUTOINCREMENT,telegram_id TEXT UNIQUE NOT NULL,username TEXT DEFAULT '',first_name TEXT DEFAULT '',last_name TEXT DEFAULT '',photo_url TEXT DEFAULT '',coins INTEGER DEFAULT 1000,xp INTEGER DEFAULT 0,level INTEGER DEFAULT 1,energy INTEGER DEFAULT 100,energy_updated INTEGER DEFAULT 0,rating INTEGER DEFAULT 0,bank INTEGER DEFAULT 0,created_at INTEGER DEFAULT 0,last_daily INTEGER DEFAULT 0,role TEXT DEFAULT 'player',world INTEGER DEFAULT 1);
     CREATE TABLE IF NOT EXISTS inventory(id INTEGER PRIMARY KEY AUTOINCREMENT,user_id INTEGER NOT NULL,item_key TEXT NOT NULL,quantity INTEGER DEFAULT 0,UNIQUE(user_id,item_key));
     CREATE TABLE IF NOT EXISTS cooldowns(user_id INTEGER NOT NULL,action TEXT NOT NULL,last_used INTEGER DEFAULT 0,PRIMARY KEY(user_id,action));
     CREATE TABLE IF NOT EXISTS businesses(id INTEGER PRIMARY KEY AUTOINCREMENT,user_id INTEGER NOT NULL,business_key TEXT NOT NULL,level INTEGER DEFAULT 1,last_collect INTEGER DEFAULT 0,UNIQUE(user_id,business_key));
@@ -43,6 +43,8 @@ init_db()
 def migrate_database():
     con=db(); cols={r['name'] for r in con.execute('PRAGMA table_info(users)').fetchall()}
     if 'role' not in cols: con.execute("ALTER TABLE users ADD COLUMN role TEXT DEFAULT 'player'")
+    if 'world' not in cols: con.execute("ALTER TABLE users ADD COLUMN world INTEGER DEFAULT 1")
+    con.execute("UPDATE users SET world=1 WHERE world IS NULL OR world<1")
     con.execute("UPDATE users SET role='creator' WHERE telegram_id=?",(str(CREATOR_TELEGRAM_ID),))
     con.execute("UPDATE users SET role='player' WHERE role IS NULL OR role='' ")
     con.commit(); con.close()
@@ -92,6 +94,11 @@ def world_for_level(level):
         if level>=w['level']: current=wid
     return current
 def world_unlocked(level,wid): return level>=WORLDS.get(wid,{'level':10**9})['level']
+def current_world(u):
+    try: wid=int(u['world'] or 1)
+    except: wid=1
+    if wid not in WORLDS: wid=1
+    return wid
 
 def level_from_xp(xp):
     level=1; need=100
@@ -114,9 +121,13 @@ def add_xp(con,user_id,amount):
     old=u['level']; new_xp=u['xp']+amount; new_level=level_from_xp(new_xp); rating_add=max(1,amount//5)
     con.execute('UPDATE users SET xp=?,level=?,rating=rating+? WHERE id=?',(new_xp,new_level,rating_add,user_id))
     if new_level>old:
-        if world_for_level(new_level)>world_for_level(old):
-            wid=world_for_level(new_level); add_notification(con,user_id,f'🌎 Открыт {WORLDS[wid]["name"]}',f'Ты достиг {new_level} уровня. Новый мир и новые работы доступны без покупки.','world')
-        else: add_notification(con,user_id,'📈 Новый уровень',f'Ты достиг уровня {new_level}.','level')
+        row=con.execute('SELECT world FROM users WHERE id=?',(user_id,)).fetchone()
+        current=int(row['world'] or 1) if row else 1
+        unlocked=[wid for wid,w in WORLDS.items() if wid>current and new_level>=w['level']]
+        if unlocked:
+            wid=min(unlocked); add_notification(con,user_id,f'🌎 Доступен {WORLDS[wid]["name"]}',f'Ты достиг {new_level} уровня. Теперь в разделе «Мир» можно перейти в новый мир и начать его экономику заново.','world')
+        else:
+            add_notification(con,user_id,'📈 Новый уровень',f'Ты достиг уровня {new_level}.','level')
 
 def add_coins(con,user_id,amount,reason=''):
     con.execute('UPDATE users SET coins=coins+? WHERE id=?',(amount,user_id)); con.execute('INSERT INTO transactions(user_id,amount,reason,created_at) VALUES(?,?,?,?)',(user_id,amount,reason,now()))
@@ -211,7 +222,7 @@ def user_json(u,con):
     for r in inv:
         if r['item_key'] in ITEMS: inventory.append({'key':r['item_key'],'name':ITEMS[r['item_key']]['name'],'icon':ITEMS[r['item_key']]['icon'],'quantity':r['quantity'],'price':ITEMS[r['item_key']]['base_price']})
     unread=con.execute('SELECT COUNT(*) c FROM notifications WHERE user_id=? AND is_read=0',(u['id'],)).fetchone()['c']
-    return {'id':u['id'],'telegram_id':u['telegram_id'],'username':u['username'],'first_name':u['first_name'],'last_name':u['last_name'],'photo_url':u['photo_url'],'coins':u['coins'],'bank':u['bank'],'xp':u['xp'],'level':u['level'],'energy':e,'max_energy':MAX_ENERGY,'rating':u['rating'],'prefix':role_display(u),'role':role_name(u),'role_display':role_display(u),'creator':is_creator(u),'assistant':is_assistant(u),'world':world_for_level(u['level']),'world_name':WORLDS[world_for_level(u['level'])]['name'],'inventory':inventory,'unread_notifications':unread}
+    return {'id':u['id'],'telegram_id':u['telegram_id'],'username':u['username'],'first_name':u['first_name'],'last_name':u['last_name'],'photo_url':u['photo_url'],'coins':u['coins'],'bank':u['bank'],'xp':u['xp'],'level':u['level'],'energy':e,'max_energy':MAX_ENERGY,'rating':u['rating'],'prefix':role_display(u),'role':role_name(u),'role_display':role_display(u),'creator':is_creator(u),'assistant':is_assistant(u),'world':current_world(u),'world_name':WORLDS[current_world(u)]['name'],'inventory':inventory,'unread_notifications':unread}
 
 @app.get('/')
 def index():return send_from_directory('web','index.html')
@@ -240,12 +251,44 @@ def bootstrap(u):
     con.commit();con.close()
     return jsonify({'ok':True,'user':data,'jobs':[{'key':k,**v,'world_name':WORLDS[v['world']]['name'],'world_unlocked':world_unlocked(u['level'],v['world'])} for k,v in JOBS.items()],'worlds':[{'key':k,**v,'unlocked':world_unlocked(u['level'],k)} for k,v in WORLDS.items()],'items':ITEMS,'businesses':businesses,'properties':properties,'pets':pets,'planets':[{'key':k,**v} for k,v in PLANETS.items()],'quests':quests,'skills':skills,'market':market,'business_market':bm,'events':events,'promo_codes':['START','BETA TEST','GO'],'creator':is_creator(u),'assistant':is_assistant(u),'admin':is_creator(u) or is_assistant(u)})
 
+# WORLD SWITCH
+@app.post('/api/world/switch')
+@require_user
+def world_switch(u):
+    data=request.get_json(silent=True) or {}
+    try: wid=int(data.get('world',0))
+    except: wid=0
+    if wid not in WORLDS:
+        return jsonify({'ok':False,'error':'Мир не найден'}),400
+    if wid<=current_world(u):
+        return jsonify({'ok':False,'error':'Можно перейти только в следующий мир'}),400
+    if u['level']<WORLDS[wid]['level']:
+        return jsonify({'ok':False,'error':f'Нужен уровень {WORLDS[wid]["level"]}'}),400
+    con=db()
+    # Новый мир получает отдельную экономику. Уровень/XP и общий рейтинг сохраняются.
+    uid=u['id']
+    # Отменяем старые торговые объявления, чтобы после сброса экономики не возникало дубликатов.
+    for r in con.execute("SELECT item_key,quantity FROM market WHERE seller_id=? AND status='active'",(uid,)).fetchall():
+        add_item(con,uid,r['item_key'],r['quantity'])
+    con.execute("UPDATE market SET status='cancelled' WHERE seller_id=? AND status='active'",(uid,))
+    con.execute("UPDATE business_market SET status='cancelled' WHERE seller_id=? AND status='active'",(uid,))
+    for table in ('inventory','businesses','properties','pets','cooldowns'):
+        con.execute(f'DELETE FROM {table} WHERE user_id=?',(uid,))
+    con.execute('DELETE FROM work_sessions WHERE user_id=?',(uid,))
+    con.execute('UPDATE users SET world=?,coins=1000,bank=0,energy=100,energy_updated=? WHERE id=?',(wid,now(),uid))
+    con.execute('INSERT INTO transactions(user_id,amount,reason,created_at) VALUES(?,?,?,?)',(uid,1000,f'Стартовая экономика: {WORLDS[wid]["name"]}',now()))
+    add_notification(con,uid,'🌍 Новый мир',f'Ты перешёл в {WORLDS[wid]["name"]}. Экономика нового мира начата с 1000 💎.','world')
+    con.commit(); fresh=con.execute('SELECT * FROM users WHERE id=?',(uid,)).fetchone(); con.close()
+    return jsonify({'ok':True,'world':wid,'world_name':WORLDS[wid]['name'],'user':{'coins':fresh['coins'],'bank':fresh['bank'],'world':wid,'world_name':WORLDS[wid]['name']}})
+
 # WORK TAP SYSTEM
 @app.post('/api/work/start')
 @require_user
 def work_start(u):
     data=request.get_json(silent=True) or {};key=data.get('job');job=JOBS.get(key)
     if not job:return jsonify({'ok':False,'error':'Работа не найдена'}),400
+    if job['world'] != current_world(u):
+        return jsonify({'ok':False,'error':f'Работа доступна только в {WORLDS[job["world"]]["name"]}'}),400
     if not world_unlocked(u['level'],job['world']):return jsonify({'ok':False,'error':f'Открой {WORLDS[job["world"]]["name"]} на {WORLDS[job["world"]]["level"]} уровне'}),400
     if u['level']<job['level']:return jsonify({'ok':False,'error':f'Нужен уровень {job["level"]}'}),400
     con=db();rem=cooldown_remaining(con,u['id'],'job_'+key,job['cooldown'])
