@@ -1,8 +1,8 @@
 import os
 import time
-import json
 import hmac
 import hashlib
+import json
 import random
 import sqlite3
 from urllib.parse import parse_qsl
@@ -12,18 +12,13 @@ from flask import Flask, jsonify, request, send_from_directory
 app = Flask(__name__, static_folder="web")
 
 BOT_TOKEN = os.environ.get("BOT_TOKEN", "")
-
-# ID СОЗДАТЕЛЯ NEXORA
 CREATOR_TELEGRAM_ID = "8518976778"
-
 DB_PATH = "nexora.db"
 
 
-# =========================================================
+# =========================
 # NFT
-# =========================================================
-
-NFTS = []
+# =========================
 
 RARITIES = [
     ("Common", 1, 12, 40, 90),
@@ -34,209 +29,164 @@ RARITIES = [
 ]
 
 NFT_NAMES = [
-    "Neon Core",
-    "Red Pulse",
-    "Dark Byte",
-    "Cyber Eye",
-    "Void Chip",
-    "Nova Gear",
-    "Chrome Soul",
-    "Pixel Flame",
-    "Shadow Key",
-    "Digital Fang",
-    "Quantum Coin",
-    "Nexus Spark",
+    "Neon Core", "Red Pulse", "Dark Byte", "Cyber Eye",
+    "Void Chip", "Nova Gear", "Chrome Soul", "Pixel Flame",
+    "Shadow Key", "Digital Fang", "Quantum Coin", "Nexus Spark",
 
-    "Blood Circuit",
-    "Night Runner",
-    "Cyber Wolf",
-    "Neon Phantom",
-    "Red Protocol",
-    "Dark Matrix",
-    "Ghost Drive",
-    "Chrome Beast",
-    "Zero Signal",
-    "Black Nova",
-    "Cyber Fang",
-    "Pulse Hunter",
+    "Blood Circuit", "Night Runner", "Cyber Wolf", "Neon Phantom",
+    "Red Protocol", "Dark Matrix", "Ghost Drive", "Chrome Beast",
+    "Zero Signal", "Black Nova", "Cyber Fang", "Pulse Hunter",
 
-    "Omega Core",
-    "Void Walker",
-    "Neon Samurai",
-    "Quantum Beast",
-    "Dark Emperor",
-    "Cyber Dragon",
-    "Red Horizon",
-    "Phantom X",
-    "Night Protocol",
-    "Digital Demon",
-    "Nexus King",
-    "Infinity Gear",
+    "Omega Core", "Void Walker", "Neon Samurai", "Quantum Beast",
+    "Dark Emperor", "Cyber Dragon", "Red Horizon", "Phantom X",
+    "Night Protocol", "Digital Demon", "Nexus King", "Infinity Gear",
 
-    "Galaxy Hunter",
-    "Shadow Emperor",
-    "Neon Titan",
-    "Quantum Lord",
-    "Cyber God",
-    "Void Master",
-    "Red Titan",
-    "Dark Phoenix",
-    "Chrome Legend",
-    "Omega Dragon",
-    "Night King",
-    "Nexus Prime",
+    "Galaxy Hunter", "Shadow Emperor", "Neon Titan", "Quantum Lord",
+    "Cyber God", "Void Master", "Red Titan", "Dark Phoenix",
+    "Chrome Legend", "Omega Dragon", "Night King", "Nexus Prime",
 
-    "Mythic Core",
-    "Absolute Zero",
-    "Black Universe",
-    "Neon Overlord",
-    "Quantum Emperor",
-    "Void King",
-    "Cyber Overlord",
-    "Infinity Soul",
-    "Dark Universe",
-    "NEXORA One",
-    "Eternal Nexus",
-    "Genesis",
+    "Mythic Core", "Absolute Zero", "Black Universe", "Neon Overlord",
+    "Quantum Emperor", "Void King", "Cyber Overlord", "Infinity Soul",
+    "Dark Universe", "NEXORA One", "Eternal Nexus", "Genesis"
 ]
 
-for rarity, start_id, end_id, min_value, max_value in RARITIES:
+NFTS = []
+
+for rarity, start_id, end_id, minimum, maximum in RARITIES:
     for nft_id in range(start_id, end_id + 1):
-
-        index = nft_id - start_id
-
-        value = min_value + int(
-            (max_value - min_value)
-            * (index / max(1, end_id - start_id))
-        )
+        position = (nft_id - start_id) / max(1, end_id - start_id)
 
         NFTS.append({
             "id": nft_id,
             "name": NFT_NAMES[nft_id - 1],
             "rarity": rarity,
-            "value": value
+            "value": int(
+                minimum + (maximum - minimum) * position
+            )
         })
 
-NFT_BY_ID = {
-    nft["id"]: nft
-    for nft in NFTS
-}
+NFT_BY_ID = {nft["id"]: nft for nft in NFTS}
 
 
-# =========================================================
+# =========================
 # CASES
-# =========================================================
+# =========================
 
 CASES = [
     {
         "id": 1,
         "name": "STARTER",
         "subtitle": "Первый шаг",
-        "pool": list(range(1, 13)),
-        "accent": "blue"
+        "accent": "blue",
+        "pool": list(range(1, 13))
     },
     {
         "id": 2,
         "name": "NEON",
         "subtitle": "Неоновая серия",
-        "pool": list(range(4, 25)),
-        "accent": "pink"
+        "accent": "pink",
+        "pool": list(range(4, 25))
     },
     {
         "id": 3,
         "name": "SHADOW",
         "subtitle": "Тёмная коллекция",
-        "pool": list(range(13, 37)),
-        "accent": "purple"
+        "accent": "purple",
+        "pool": list(range(13, 37))
     },
     {
         "id": 4,
         "name": "CYBER",
         "subtitle": "Киберсерия",
-        "pool": list(range(13, 49)),
-        "accent": "red"
+        "accent": "red",
+        "pool": list(range(13, 49))
     },
     {
         "id": 5,
         "name": "GALAXY",
         "subtitle": "Галактический дроп",
-        "pool": list(range(25, 49)),
-        "accent": "violet"
+        "accent": "violet",
+        "pool": list(range(25, 49))
     },
     {
         "id": 6,
         "name": "QUANTUM",
         "subtitle": "Квантовая серия",
-        "pool": list(range(29, 55)),
-        "accent": "cyan"
+        "accent": "cyan",
+        "pool": list(range(29, 55))
     },
     {
         "id": 7,
         "name": "OMEGA",
         "subtitle": "Омега уровень",
-        "pool": list(range(37, 61)),
-        "accent": "orange"
+        "accent": "orange",
+        "pool": list(range(37, 61))
     },
     {
         "id": 8,
         "name": "LEGEND",
         "subtitle": "Легендарный дроп",
-        "pool": list(range(37, 61)),
-        "accent": "gold"
+        "accent": "gold",
+        "pool": list(range(37, 61))
     },
     {
         "id": 9,
         "name": "MYTHIC",
         "subtitle": "Мифическая серия",
-        "pool": list(range(49, 61)),
-        "accent": "mythic"
+        "accent": "mythic",
+        "pool": list(range(49, 61))
     },
     {
         "id": 10,
         "name": "NEXORA",
         "subtitle": "Вся коллекция",
-        "pool": list(range(1, 61)),
-        "accent": "nexora"
+        "accent": "nexora",
+        "pool": list(range(1, 61))
     }
 ]
 
 
-# =========================================================
+# =========================
 # PREFIXES
-# =========================================================
+# =========================
 
 PREFIXES = [
-    {"id": 1, "name": "Новичок", "display": "⚡ Новичок", "price": 1000},
-    {"id": 2, "name": "Охотник", "display": "🎯 Охотник", "price": 2500},
-    {"id": 3, "name": "Кибер", "display": "🤖 Кибер", "price": 5000},
-    {"id": 4, "name": "Неон", "display": "💠 Неон", "price": 7500},
-    {"id": 5, "name": "Призрак", "display": "👻 Призрак", "price": 10000},
-    {"id": 6, "name": "Ворон", "display": "🐦‍⬛ Ворон", "price": 15000},
-    {"id": 7, "name": "Самурай", "display": "⚔️ Самурай", "price": 22000},
-    {"id": 8, "name": "Титан", "display": "🗿 Титан", "price": 30000},
-    {"id": 9, "name": "Император", "display": "👑 Император", "price": 40000},
-    {"id": 10, "name": "Повелитель", "display": "🔥 Повелитель", "price": 55000},
-    {"id": 11, "name": "Владыка", "display": "🌑 Владыка", "price": 70000},
-    {"id": 12, "name": "Нексус", "display": "🔮 Нексус", "price": 90000},
-    {"id": 13, "name": "Омега", "display": "Ω Омега", "price": 115000},
-    {"id": 14, "name": "Легенда", "display": "🏆 Легенда", "price": 145000},
-    {"id": 15, "name": "Мифик", "display": "💎 Мифик", "price": 180000},
-    {"id": 16, "name": "Бессмертный", "display": "♾️ Бессмертный", "price": 220000},
-    {"id": 17, "name": "Архитектор", "display": "🧬 Архитектор", "price": 275000},
-    {"id": 18, "name": "Создатель", "display": "🛠️ Создатель", "price": 350000},
-    {"id": 19, "name": "Абсолют", "display": "✦ Абсолют", "price": 450000},
-    {"id": 20, "name": "NEXORA ELITE", "display": "✧ NEXORA ELITE", "price": 600000},
+    (1, "Новичок", "⚡ Новичок", 1000),
+    (2, "Охотник", "🎯 Охотник", 2500),
+    (3, "Кибер", "🤖 Кибер", 5000),
+    (4, "Неон", "💠 Неон", 7500),
+    (5, "Призрак", "👻 Призрак", 10000),
+    (6, "Ворон", "🐦‍⬛ Ворон", 15000),
+    (7, "Самурай", "⚔️ Самурай", 22000),
+    (8, "Титан", "🗿 Титан", 30000),
+    (9, "Император", "👑 Император", 40000),
+    (10, "Повелитель", "🔥 Повелитель", 55000),
+    (11, "Владыка", "🌑 Владыка", 70000),
+    (12, "Нексус", "🔮 Нексус", 90000),
+    (13, "Омега", "Ω Омега", 115000),
+    (14, "Легенда", "🏆 Легенда", 145000),
+    (15, "Мифик", "💎 Мифик", 180000),
+    (16, "Бессмертный", "♾️ Бессмертный", 220000),
+    (17, "Архитектор", "🧬 Архитектор", 275000),
+    (18, "Создатель", "🛠️ Создатель", 350000),
+    (19, "Абсолют", "✦ Абсолют", 450000),
+    (20, "NEXORA ELITE", "✧ NEXORA ELITE", 600000)
 ]
 
 PREFIX_BY_ID = {
-    prefix["id"]: prefix
-    for prefix in PREFIXES
+    p[0]: {
+        "id": p[0],
+        "name": p[1],
+        "display": p[2],
+        "price": p[3]
+    }
+    for p in PREFIXES
 }
 
 
-# =========================================================
+# =========================
 # DATABASE
-# =========================================================
+# =========================
 
 def get_db():
     conn = sqlite3.connect(DB_PATH)
@@ -269,19 +219,13 @@ def init_db():
         )
     """)
 
-    columns = [
-        row["name"]
-        for row in conn.execute(
-            "PRAGMA table_info(users)"
-        ).fetchall()
-    ]
-
-    if "prefix_id" not in columns:
-
-        conn.execute("""
-            ALTER TABLE users
-            ADD COLUMN prefix_id INTEGER DEFAULT 0
-        """)
+    conn.execute("""
+        CREATE TABLE IF NOT EXISTS user_prefixes (
+            telegram_id TEXT NOT NULL,
+            prefix_id INTEGER NOT NULL,
+            PRIMARY KEY (telegram_id, prefix_id)
+        )
+    """)
 
     conn.commit()
     conn.close()
@@ -290,94 +234,81 @@ def init_db():
 init_db()
 
 
-# =========================================================
+# =========================
 # TELEGRAM AUTH
-# =========================================================
+# =========================
 
-def validate_telegram_data(init_data):
-
-    if not init_data or not BOT_TOKEN:
-        return None
-
-    try:
-
-        pairs = dict(
-            parse_qsl(
-                init_data,
-                keep_blank_values=True
-            )
-        )
-
-        received_hash = pairs.pop("hash", None)
-
-        if not received_hash:
-            return None
-
-        auth_date = int(
-            pairs.get("auth_date", "0")
-        )
-
-        if time.time() - auth_date > 86400:
-            return None
-
-        data_check_string = "\n".join(
-            f"{key}={pairs[key]}"
-            for key in sorted(pairs)
-        )
-
-        secret_key = hmac.new(
-            b"WebAppData",
-            BOT_TOKEN.encode(),
-            hashlib.sha256
-        ).digest()
-
-        calculated_hash = hmac.new(
-            secret_key,
-            data_check_string.encode(),
-            hashlib.sha256
-        ).hexdigest()
-
-        if not hmac.compare_digest(
-            calculated_hash,
-            received_hash
-        ):
-            return None
-
-        user_data = json.loads(
-            pairs.get("user", "{}")
-        )
-
-        if not user_data.get("id"):
-            return None
-
-        return user_data
-
-    except Exception:
-        return None
-
-
-def get_current_user_data():
+def get_telegram_user():
 
     init_data = request.headers.get(
         "X-Telegram-Init-Data",
         ""
     )
 
-    user = validate_telegram_data(init_data)
+    if init_data and BOT_TOKEN:
 
-    if user:
+        try:
 
-        return {
-            "id": str(user["id"]),
-            "username": user.get(
-                "username",
-                ""
-            ),
-            "first_name": user.get(
-                "first_name",
-                "Player"
+            params = dict(
+                parse_qsl(
+                    init_data,
+                    keep_blank_values=True
+                )
             )
-        }
+
+            received_hash = params.pop("hash", None)
+
+            if not received_hash:
+                raise ValueError()
+
+            auth_date = int(
+                params.get("auth_date", "0")
+            )
+
+            if time.time() - auth_date > 86400:
+                raise ValueError()
+
+            data_check_string = "\n".join(
+                f"{key}={params[key]}"
+                for key in sorted(params)
+            )
+
+            secret_key = hmac.new(
+                b"WebAppData",
+                BOT_TOKEN.encode(),
+                hashlib.sha256
+            ).digest()
+
+            calculated_hash = hmac.new(
+                secret_key,
+                data_check_string.encode(),
+                hashlib.sha256
+            ).hexdigest()
+
+            if not hmac.compare_digest(
+                calculated_hash,
+                received_hash
+            ):
+                raise ValueError()
+
+            user = json.loads(
+                params.get("user", "{}")
+            )
+
+            return {
+                "id": str(user["id"]),
+                "username": user.get(
+                    "username",
+                    ""
+                ),
+                "first_name": user.get(
+                    "first_name",
+                    "Player"
+                )
+            }
+
+        except Exception:
+            pass
 
     return {
         "id": "demo_user",
@@ -386,20 +317,15 @@ def get_current_user_data():
     }
 
 
-def is_creator(telegram_id):
-
-    return str(telegram_id) == CREATOR_TELEGRAM_ID
-
-
-# =========================================================
-# USER
-# =========================================================
+# =========================
+# USERS
+# =========================
 
 def ensure_user(user):
 
     conn = get_db()
 
-    existing = conn.execute("""
+    row = conn.execute("""
         SELECT *
         FROM users
         WHERE telegram_id = ?
@@ -407,7 +333,7 @@ def ensure_user(user):
         user["id"],
     )).fetchone()
 
-    if not existing:
+    if not row:
 
         conn.execute("""
             INSERT INTO users (
@@ -454,7 +380,7 @@ def ensure_user(user):
     return row
 
 
-def collection_value(telegram_id):
+def get_collection_value(user_id):
 
     conn = get_db()
 
@@ -463,7 +389,7 @@ def collection_value(telegram_id):
         FROM nfts
         WHERE telegram_id = ?
     """, (
-        telegram_id,
+        user_id,
     )).fetchall()
 
     conn.close()
@@ -484,10 +410,8 @@ def collection_value(telegram_id):
 
 def serialize_user(row):
 
-    prefix_id = row["prefix_id"] or 0
-
     prefix = PREFIX_BY_ID.get(
-        prefix_id
+        row["prefix_id"] or 0
     )
 
     return {
@@ -496,32 +420,30 @@ def serialize_user(row):
         "first_name": row["first_name"],
         "coins": row["coins"],
         "total_opened": row["total_opened"],
-        "total_received_value":
-            row["total_received_value"],
         "collection_value":
-            collection_value(
+            get_collection_value(
                 row["telegram_id"]
             ),
-        "prefix_id": prefix_id,
+        "prefix_id":
+            row["prefix_id"] or 0,
         "prefix":
             prefix["display"]
             if prefix
             else "",
         "creator":
-            is_creator(
-                row["telegram_id"]
-            )
+            row["telegram_id"]
+            == CREATOR_TELEGRAM_ID
     }
 
 
-# =========================================================
-# ME
-# =========================================================
+# =========================
+# PROFILE
+# =========================
 
-@app.route("/api/me")
-def api_me():
+@app.get("/api/me")
+def me():
 
-    user = get_current_user_data()
+    user = get_telegram_user()
 
     row = ensure_user(user)
 
@@ -531,12 +453,12 @@ def api_me():
     })
 
 
-# =========================================================
+# =========================
 # CASES
-# =========================================================
+# =========================
 
-@app.route("/api/cases")
-def api_cases():
+@app.get("/api/cases")
+def get_cases():
 
     result = []
 
@@ -556,17 +478,14 @@ def api_cases():
     })
 
 
-# =========================================================
+# =========================
 # OPEN CASE
-# =========================================================
+# =========================
 
-@app.route(
-    "/api/cases/open",
-    methods=["POST"]
-)
+@app.post("/api/cases/open")
 def open_case():
 
-    user = get_current_user_data()
+    user = get_telegram_user()
 
     ensure_user(user)
 
@@ -613,7 +532,7 @@ def open_case():
         VALUES (?, ?, ?)
     """, (
         user["id"],
-        nft_id,
+        nft["id"],
         int(time.time())
     ))
 
@@ -648,24 +567,21 @@ def open_case():
     })
 
 
-# =========================================================
+# =========================
 # INVENTORY
-# =========================================================
+# =========================
 
-@app.route("/api/inventory")
-def api_inventory():
+@app.get("/api/inventory")
+def inventory():
 
-    user = get_current_user_data()
+    user = get_telegram_user()
 
     ensure_user(user)
 
     conn = get_db()
 
     rows = conn.execute("""
-        SELECT
-            id,
-            nft_id,
-            created_at
+        SELECT id, nft_id, created_at
         FROM nfts
         WHERE telegram_id = ?
         ORDER BY id DESC
@@ -675,7 +591,7 @@ def api_inventory():
 
     conn.close()
 
-    inventory = []
+    result = []
 
     for row in rows:
 
@@ -685,38 +601,29 @@ def api_inventory():
 
         if nft:
 
-            inventory.append({
-                "instance_id":
-                    row["id"],
-                "id":
-                    nft["id"],
-                "name":
-                    nft["name"],
-                "rarity":
-                    nft["rarity"],
-                "value":
-                    nft["value"],
-                "created_at":
-                    row["created_at"]
+            result.append({
+                "instance_id": row["id"],
+                "id": nft["id"],
+                "name": nft["name"],
+                "rarity": nft["rarity"],
+                "value": nft["value"],
+                "created_at": row["created_at"]
             })
 
     return jsonify({
         "ok": True,
-        "inventory": inventory
+        "inventory": result
     })
 
 
-# =========================================================
-# SELL NFT
-# =========================================================
+# =========================
+# SELL
+# =========================
 
-@app.route(
-    "/api/sell",
-    methods=["POST"]
-)
+@app.post("/api/sell")
 def sell_nft():
 
-    user = get_current_user_data()
+    user = get_telegram_user()
 
     ensure_user(user)
 
@@ -733,8 +640,8 @@ def sell_nft():
 
     conn = get_db()
 
-    nft_row = conn.execute("""
-        SELECT id, nft_id
+    row = conn.execute("""
+        SELECT *
         FROM nfts
         WHERE id = ?
         AND telegram_id = ?
@@ -743,7 +650,7 @@ def sell_nft():
         user["id"]
     )).fetchone()
 
-    if not nft_row:
+    if not row:
 
         conn.close()
 
@@ -753,7 +660,7 @@ def sell_nft():
         }), 404
 
     nft = NFT_BY_ID.get(
-        nft_row["nft_id"]
+        row["nft_id"]
     )
 
     if not nft:
@@ -783,7 +690,7 @@ def sell_nft():
 
     conn.commit()
 
-    row = conn.execute("""
+    updated = conn.execute("""
         SELECT *
         FROM users
         WHERE telegram_id = ?
@@ -796,56 +703,69 @@ def sell_nft():
     return jsonify({
         "ok": True,
         "sold": nft,
-        "user": serialize_user(row)
+        "user": serialize_user(updated)
     })
 
 
-# =========================================================
+# =========================
 # PREFIXES
-# =========================================================
+# =========================
 
-@app.route("/api/prefixes")
-def api_prefixes():
+@app.get("/api/prefixes")
+def get_prefixes():
 
-    user = get_current_user_data()
+    user = get_telegram_user()
 
     row = ensure_user(user)
 
-    current_id = row["prefix_id"] or 0
+    conn = get_db()
+
+    owned_rows = conn.execute("""
+        SELECT prefix_id
+        FROM user_prefixes
+        WHERE telegram_id = ?
+    """, (
+        user["id"],
+    )).fetchall()
+
+    conn.close()
+
+    owned = {
+        r["prefix_id"]
+        for r in owned_rows
+    }
+
+    current = row["prefix_id"] or 0
 
     result = []
 
-    for prefix in PREFIXES:
+    for prefix in PREFIX_BY_ID.values():
 
         result.append({
             **prefix,
             "owned":
-                prefix["id"] == current_id,
+                prefix["id"] in owned,
             "equipped":
-                prefix["id"] == current_id
+                prefix["id"] == current
         })
 
     return jsonify({
         "ok": True,
-        "prefixes": result,
-        "current_prefix_id":
-            current_id
+        "current_prefix_id": current,
+        "prefixes": result
     })
 
 
-# =========================================================
+# =========================
 # BUY PREFIX
-# =========================================================
+# =========================
 
-@app.route(
-    "/api/prefixes/buy",
-    methods=["POST"]
-)
+@app.post("/api/prefixes/buy")
 def buy_prefix():
 
-    user = get_current_user_data()
+    user = get_telegram_user()
 
-    ensure_user(user)
+    row = ensure_user(user)
 
     data = request.get_json(
         silent=True
@@ -871,33 +791,33 @@ def buy_prefix():
 
     conn = get_db()
 
-    current = conn.execute("""
-        SELECT coins, prefix_id
-        FROM users
+    owned = conn.execute("""
+        SELECT 1
+        FROM user_prefixes
         WHERE telegram_id = ?
+        AND prefix_id = ?
     """, (
         user["id"],
+        prefix_id
     )).fetchone()
 
-    if current["prefix_id"] == prefix_id:
+    if owned:
 
         conn.close()
 
         return jsonify({
             "ok": False,
-            "error":
-                "Этот префикс уже установлен"
-        }), 400
+            "error": "Префикс уже куплен"
+        })
 
-    if current["coins"] < prefix["price"]:
+    if row["coins"] < prefix["price"]:
 
         conn.close()
 
         return jsonify({
             "ok": False,
-            "error":
-                "Недостаточно 💎"
-        }), 400
+            "error": "Недостаточно 💎"
+        })
 
     conn.execute("""
         UPDATE users
@@ -908,6 +828,17 @@ def buy_prefix():
         prefix["price"],
         prefix_id,
         user["id"]
+    ))
+
+    conn.execute("""
+        INSERT INTO user_prefixes (
+            telegram_id,
+            prefix_id
+        )
+        VALUES (?, ?)
+    """, (
+        user["id"],
+        prefix_id
     ))
 
     conn.commit()
@@ -925,22 +856,18 @@ def buy_prefix():
     return jsonify({
         "ok": True,
         "prefix": prefix,
-        "user":
-            serialize_user(updated)
+        "user": serialize_user(updated)
     })
 
 
-# =========================================================
-# REMOVE PREFIX
-# =========================================================
+# =========================
+# EQUIP PREFIX
+# =========================
 
-@app.route(
-    "/api/prefixes/equip",
-    methods=["POST"]
-)
+@app.post("/api/prefixes/equip")
 def equip_prefix():
 
-    user = get_current_user_data()
+    user = get_telegram_user()
 
     ensure_user(user)
 
@@ -955,18 +882,29 @@ def equip_prefix():
     except:
         prefix_id = 0
 
-    if (
-        prefix_id != 0
-        and prefix_id not in PREFIX_BY_ID
-    ):
-
-        return jsonify({
-            "ok": False,
-            "error":
-                "Префикс не найден"
-        }), 404
-
     conn = get_db()
+
+    if prefix_id != 0:
+
+        owned = conn.execute("""
+            SELECT 1
+            FROM user_prefixes
+            WHERE telegram_id = ?
+            AND prefix_id = ?
+        """, (
+            user["id"],
+            prefix_id
+        )).fetchone()
+
+        if not owned:
+
+            conn.close()
+
+            return jsonify({
+                "ok": False,
+                "error":
+                    "Сначала купи этот префикс"
+            })
 
     conn.execute("""
         UPDATE users
@@ -991,86 +929,62 @@ def equip_prefix():
 
     return jsonify({
         "ok": True,
-        "user":
-            serialize_user(row)
+        "user": serialize_user(row)
     })
 
 
-# =========================================================
-# RATING
-# =========================================================
+# =========================
+# LEADERBOARD
+# =========================
 
-@app.route("/api/leaderboard")
+@app.get("/api/leaderboard")
 def leaderboard():
 
     conn = get_db()
 
     users = conn.execute("""
-        SELECT
-            telegram_id,
-            username,
-            first_name,
-            coins,
-            total_opened,
-            prefix_id
+        SELECT *
         FROM users
     """).fetchall()
 
     nft_rows = conn.execute("""
-        SELECT
-            telegram_id,
-            nft_id
+        SELECT telegram_id, nft_id
         FROM nfts
     """).fetchall()
 
     conn.close()
 
-    # =====================================================
-    # СЧИТАЕМ СТОИМОСТЬ ВСЕХ NFT
-    # =====================================================
+    nft_values = {}
 
-    collection_by_user = {}
-
-    for nft_row in nft_rows:
+    for row in nft_rows:
 
         nft = NFT_BY_ID.get(
-            nft_row["nft_id"]
+            row["nft_id"]
         )
 
         if not nft:
             continue
 
-        telegram_id = nft_row["telegram_id"]
+        uid = row["telegram_id"]
 
-        collection_by_user[
-            telegram_id
-        ] = (
-            collection_by_user.get(
-                telegram_id,
-                0
-            )
+        nft_values[uid] = (
+            nft_values.get(uid, 0)
             + nft["value"]
         )
-
 
     players = []
 
     for row in users:
 
-        collection =
-            collection_by_user.get(
-                row["telegram_id"],
-                0
-            )
-
-        prefix_id = row["prefix_id"] or 0
-
-        prefix = PREFIX_BY_ID.get(
-            prefix_id
+        collection = nft_values.get(
+            row["telegram_id"],
+            0
         )
 
-        # Рейтинг =
-        # текущие 💎 + стоимость NFT
+        prefix = PREFIX_BY_ID.get(
+            row["prefix_id"] or 0
+        )
+
         score = (
             row["coins"]
             + collection
@@ -1079,42 +993,31 @@ def leaderboard():
         players.append({
             "telegram_id":
                 row["telegram_id"],
-
             "username":
                 row["username"],
-
             "first_name":
                 row["first_name"],
-
             "coins":
                 row["coins"],
-
             "total_opened":
                 row["total_opened"],
-
             "collection_value":
                 collection,
-
             "score":
                 score,
-
             "prefix":
                 prefix["display"]
                 if prefix
                 else "",
-
             "creator":
-                is_creator(
-                    row["telegram_id"]
-                )
+                row["telegram_id"]
+                == CREATOR_TELEGRAM_ID
         })
-
 
     players.sort(
         key=lambda x: x["score"],
         reverse=True
     )
-
 
     for index, player in enumerate(
         players,
@@ -1122,38 +1025,31 @@ def leaderboard():
     ):
         player["rank"] = index
 
-
     return jsonify({
         "ok": True,
         "players": players[:50]
     })
 
 
-# =========================================================
+# =========================
 # FRONTEND
-# =========================================================
+# =========================
 
-@app.route("/")
+@app.get("/")
 def index():
-
     return send_from_directory(
         "web",
         "index.html"
     )
 
 
-@app.route("/<path:path>")
-def static_files(path):
-
+@app.get("/<path:path>")
+def files(path):
     return send_from_directory(
         "web",
         path
     )
 
-
-# =========================================================
-# START
-# =========================================================
 
 if __name__ == "__main__":
 
