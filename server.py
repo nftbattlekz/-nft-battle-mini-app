@@ -8,6 +8,8 @@ app=Flask(__name__,static_folder='web',static_url_path='')
 DB_PATH=os.getenv('DB_PATH','nexora.db'); BOT_TOKEN=os.getenv('BOT_TOKEN','')
 CREATOR_TELEGRAM_ID=os.getenv('CREATOR_TELEGRAM_ID','8518976778')
 app.config['JSON_AS_ASCII']=False
+XP_PER_LEVEL=100
+MAX_LEVEL=300
 
 def db():
     con=sqlite3.connect(DB_PATH); con.row_factory=sqlite3.Row; return con
@@ -62,6 +64,16 @@ def migrate_database():
     con.execute("UPDATE users SET world=1 WHERE world IS NULL OR world<1")
     con.execute("UPDATE users SET role='creator' WHERE telegram_id=?",(str(CREATOR_TELEGRAM_ID),))
     con.execute("UPDATE users SET role='player' WHERE role IS NULL OR role='' ")
+    rows=con.execute('SELECT id,level,xp FROM users').fetchall()
+    for r in rows:
+        lvl=max(1,min(MAX_LEVEL,int(r['level'] or 1)))
+        raw=max(0,int(r['xp'] or 0))
+        if raw>=XP_PER_LEVEL:
+            total=(lvl-1)*XP_PER_LEVEL+raw
+            total=min(total,(MAX_LEVEL-1)*XP_PER_LEVEL+(XP_PER_LEVEL-1))
+            lvl=min(MAX_LEVEL,1+total//XP_PER_LEVEL)
+            raw=total-((lvl-1)*XP_PER_LEVEL)
+        con.execute('UPDATE users SET level=?,xp=? WHERE id=?',(lvl,raw,r['id']))
     con.commit(); con.close()
 try:
     migrate_database()
@@ -98,7 +110,8 @@ JOBS={
 'industrial_tycoon':{'name':'Промышленный магнат','level':225,'reward':95000,'xp':1100,'cooldown':680,'world':3,'taps':82},
 'global_empire':{'name':'Глобальный император','level':250,'reward':140000,'xp':1400,'cooldown':750,'world':3,'taps':90}}
 ITEMS={'iron':{'name':'Железо','icon':'⛓️','base_price':35},'coal':{'name':'Уголь','icon':'⬛','base_price':25},'gold':{'name':'Золото','icon':'🪙','base_price':120},'wood':{'name':'Древесина','icon':'🪵','base_price':30},'wheat':{'name':'Пшеница','icon':'🌾','base_price':20},'apple':{'name':'Яблоко','icon':'🍎','base_price':25},'fish':{'name':'Рыба','icon':'🐟','base_price':70},'rare_fish':{'name':'Редкая рыба','icon':'🐠','base_price':250},'steel':{'name':'Сталь','icon':'🔩','base_price':180},'energy_core':{'name':'Энергокристалл','icon':'🔷','base_price':500},'microchip':{'name':'Микрочип','icon':'💾','base_price':750},'quantum':{'name':'Квантовый модуль','icon':'🧬','base_price':1800}}
-BUSINESS_LIMITS={'farm':100,'mine':75,'factory':50,'tech':25,'space':10}; PROPERTY_LIMITS={'room':500,'apartment':250,'penthouse':50,'mansion':10}; BUSINESS_UPGRADE_MULTIPLIER=1.55
+BUSINESS_LIMITS={'farm':5,'mine':5,'factory':5,'tech':5,'space':5}; BUSINESS_REQUIRED_LEVEL=3
+PROPERTY_LIMITS={'room':500,'apartment':250,'penthouse':50,'mansion':10}; BUSINESS_UPGRADE_MULTIPLIER=1.55
 BUSINESSES={'farm':{'name':'Ферма','price':5000,'income':300,'interval':3600},'mine':{'name':'Шахта','price':15000,'income':900,'interval':3600},'factory':{'name':'Завод','price':50000,'income':3200,'interval':3600},'tech':{'name':'IT-компания','price':150000,'income':10000,'interval':3600},'space':{'name':'Космическая корпорация','price':500000,'income':38000,'interval':3600}}
 PROPERTIES={'room':{'name':'Комната','price':2500,'rating':5},'apartment':{'name':'Квартира','price':25000,'rating':30},'penthouse':{'name':'Пентхаус','price':150000,'rating':100},'mansion':{'name':'Особняк','price':750000,'rating':300}}
 QUESTS={'work3':{'name':'Рабочая смена','description':'Выполнить 3 работы','target':3,'reward':500},'mine10':{'name':'Шахтёр','description':'Добыть 10 ресурсов','target':10,'reward':1000},'market1':{'name':'Торговец','description':'Продать предмет на рынке','target':1,'reward':1500}}
@@ -122,16 +135,11 @@ def current_world(u):
     return wid
 
 def level_from_xp(xp):
-    level=1; need=100
-    # Level is no longer capped at 100: level 100 opens world 2 and later worlds continue.
-    while xp>=need and level<300:
-        xp-=need; level+=1; need=int(100*(1.18**(level-1)))
-    return level
+    xp=max(0,int(xp))
+    return min(MAX_LEVEL,1+xp//XP_PER_LEVEL)
 
 def xp_for_level(level):
-    xp=0
-    for lv in range(1,max(1,min(level,300))): xp+=int(100*(1.18**(lv-1)))
-    return xp
+    return 0
 
 def add_notification(con,user_id,title,message,kind='info'):
     con.execute('INSERT INTO notifications(user_id,title,message,type,is_read,created_at) VALUES(?,?,?,?,0,?)',(user_id,title,message,kind,now()))
@@ -142,16 +150,18 @@ def add_notification_all(con,title,message,kind='info'):
 def add_xp(con,user_id,amount):
     u=con.execute('SELECT xp,level,rating FROM users WHERE id=?',(user_id,)).fetchone()
     if not u:return
-    old=u['level']; new_xp=u['xp']+amount; new_level=level_from_xp(new_xp); rating_add=max(1,amount//5)
+    amount=max(0,int(amount)); old=max(1,min(MAX_LEVEL,int(u['level'] or 1))); progress=max(0,min(99,int(u['xp'] or 0)))
+    total=(old-1)*XP_PER_LEVEL+progress+amount
+    total=min(total,(MAX_LEVEL-1)*XP_PER_LEVEL+99)
+    new_level=min(MAX_LEVEL,1+total//XP_PER_LEVEL); new_xp=total-((new_level-1)*XP_PER_LEVEL)
+    rating_add=max(1,amount//5) if amount else 0
     con.execute('UPDATE users SET xp=?,level=?,rating=rating+? WHERE id=?',(new_xp,new_level,rating_add,user_id))
     if new_level>old:
-        row=con.execute('SELECT world FROM users WHERE id=?',(user_id,)).fetchone()
-        current=int(row['world'] or 1) if row else 1
+        row=con.execute('SELECT world FROM users WHERE id=?',(user_id,)).fetchone(); current=int(row['world'] or 1) if row else 1
         unlocked=[wid for wid,w in WORLDS.items() if wid>current and new_level>=w['level']]
         if unlocked:
             wid=min(unlocked); add_notification(con,user_id,f'🌎 Доступен {WORLDS[wid]["name"]}',f'Ты достиг {new_level} уровня. Теперь в разделе «Мир» можно перейти в новый мир и начать его экономику заново.','world')
-        else:
-            add_notification(con,user_id,'📈 Новый уровень',f'Ты достиг уровня {new_level}.','level')
+        else:add_notification(con,user_id,'📈 Новый уровень',f'Ты достиг уровня {new_level}.','level')
 
 def add_coins(con,user_id,amount,reason=''):
     con.execute('UPDATE users SET coins=coins+? WHERE id=?',(amount,user_id)); con.execute('INSERT INTO transactions(user_id,amount,reason,created_at) VALUES(?,?,?,?)',(user_id,amount,reason,now()))
@@ -391,9 +401,10 @@ def fishing(u):
 def buy_business(u):
     data=request.get_json(silent=True) or {};k=data.get('key');b=BUSINESSES.get(k)
     if not b:return jsonify({'ok':False,'error':'Предприятие не найдено'}),400
+    if int(u['level'])<BUSINESS_REQUIRED_LEVEL:return jsonify({'ok':False,'error':f'Предприятия доступны с {BUSINESS_REQUIRED_LEVEL} уровня'}),400
     con=db()
     if con.execute('SELECT id FROM businesses WHERE user_id=? AND business_key=?',(u['id'],k)).fetchone():con.close();return jsonify({'ok':False,'error':'Предприятие уже куплено'}),400
-    cnt=con.execute('SELECT COUNT(*) c FROM businesses WHERE business_key=?',(k,)).fetchone()['c'];limit=BUSINESS_LIMITS.get(k,10**9)
+    cnt=con.execute('SELECT COUNT(*) c FROM businesses WHERE business_key=?',(k,)).fetchone()['c'];limit=BUSINESS_LIMITS.get(k,5)
     if cnt>=limit:con.close();return jsonify({'ok':False,'error':f'Лимит предприятия достигнут: {limit} шт.'}),400
     price=discounted_price(con,'business_discount',b['price'])
     if u['coins']<price:con.close();return jsonify({'ok':False,'error':'Недостаточно 💎'}),400
@@ -442,8 +453,12 @@ def buy_business_market(u):
     d=request.get_json(silent=True) or {};lid=int(d.get('id',0));con=db();l=con.execute("SELECT * FROM business_market WHERE id=? AND status='active'",(lid,)).fetchone()
     if not l:con.close();return jsonify({'ok':False,'error':'Предприятие уже продано'}),404
     if l['seller_id']==u['id']:con.close();return jsonify({'ok':False,'error':'Нельзя купить своё предприятие'}),400
+    if int(u['level'])<BUSINESS_REQUIRED_LEVEL:con.close();return jsonify({'ok':False,'error':f'Предприятия доступны с {BUSINESS_REQUIRED_LEVEL} уровня'}),400
     if u['coins']<l['price']:con.close();return jsonify({'ok':False,'error':'Недостаточно 💎'}),400
     if con.execute('SELECT id FROM businesses WHERE user_id=? AND business_key=?',(u['id'],l['business_key'])).fetchone():con.close();return jsonify({'ok':False,'error':'У тебя уже есть это предприятие'}),400
+    total_owned=con.execute('SELECT COUNT(*) c FROM businesses WHERE business_key=?',(l['business_key'],)).fetchone()['c']
+    limit=BUSINESS_LIMITS.get(l['business_key'],5)
+    if total_owned>=limit:con.close();return jsonify({'ok':False,'error':f'Лимит этого предприятия уже заполнен: {limit} шт.'}),400
     add_coins(con,u['id'],-l['price'],'Покупка предприятия на рынке');add_coins(con,l['seller_id'],l['price'],'Продажа предприятия на рынке');con.execute('UPDATE businesses SET user_id=? WHERE id=?',(u['id'],l['business_id']));con.execute("UPDATE business_market SET status='sold' WHERE id=?",(lid,));add_xp(con,u['id'],300);add_xp(con,l['seller_id'],300);add_notification(con,l['seller_id'],'🏢 Предприятие продано',f'Игрок {u["username"] or u["first_name"] or "Игрок"} купил твой бизнес «{l["title"]}» за 💎 {l["price"]:,}.'.replace(',',' '),'market');con.commit();con.close();return jsonify({'ok':True,'price':l['price']})
 @app.post('/api/businesses/market/cancel')
 @require_user
@@ -586,7 +601,9 @@ def admin_xp(actor):
     con=db();t=con.execute('SELECT * FROM users WHERE telegram_id=?',(tid,)).fetchone()
     if not t:con.close();return jsonify({'ok':False,'error':'Игрок не найден'}),404
     if action=='take':
-        new=max(0,t['xp']-amount);lvl=level_from_xp(new);con.execute('UPDATE users SET xp=?,level=? WHERE id=?',(new,lvl,t['id']));actual=t['xp']-new;title='⚠️ XP изъяты';msg=f'У тебя изъято {actual} XP. Причина: {reason}'
+        current_total=(max(1,min(MAX_LEVEL,int(t['level'] or 1)))-1)*XP_PER_LEVEL+max(0,min(99,int(t['xp'] or 0)))
+        new_total=max(0,current_total-amount);new_level=min(MAX_LEVEL,1+new_total//XP_PER_LEVEL);new_xp=new_total-((new_level-1)*XP_PER_LEVEL)
+        actual=current_total-new_total;con.execute('UPDATE users SET xp=?,level=? WHERE id=?',(new_xp,new_level,t['id']));title='⚠️ XP изъяты';msg=f'У тебя изъято {actual} XP. Причина: {reason}'
     else:
         add_xp(con,t['id'],amount);actual=amount;title='📈 XP выданы';msg=f'Тебе выдано +{amount} XP. Причина: {reason}'
     add_notification(con,t['id'],title,msg,'admin');log_admin(con,actor['telegram_id'],f'xp_{action}',tid,f'amount={actual}; reason={reason}');con.commit();fresh=con.execute('SELECT xp,level FROM users WHERE id=?',(t['id'],)).fetchone();con.close();return jsonify({'ok':True,'xp':fresh['xp'],'level':fresh['level'],'amount':actual})
@@ -661,7 +678,22 @@ def admin_event(actor):
     if et.endswith('_discount') and not(0<mult<=90):return jsonify({'ok':False,'error':'Скидка 1-90%'}),400
     if not et.endswith('_discount') and not(1<=mult<=10):return jsonify({'ok':False,'error':'Множитель x1-x10'}),400
     if not(1<=mins<=10080):return jsonify({'ok':False,'error':'Неверная длительность'}),400
-    con=db();cleanup_events(con);con.execute('UPDATE events SET active=0 WHERE active=1 AND event_type=?',(et,));end=now()+mins*60;con.execute('INSERT INTO events(creator_id,event_type,multiplier,ends_at,title,description,active,created_at) VALUES(?,?,?,?,?,?,1,?)',(actor['telegram_id'],et,mult,end,title,desc,now())); add_notification_all(con,'⚡ Новое событие NEXORA',f'{title} — {desc} · {('-'+str(mult)+'%') if et.endswith('_discount') else ('x'+str(mult))} · на {mins} мин.','event'); log_admin(con,actor['telegram_id'],'event_create','',f'type={et}; value={mult}; duration={mins}m');con.commit();con.close();return jsonify({'ok':True,'ends_at':end,'multiplier':mult,'title':title,'description':desc,'event_type':et,'duration_minutes':mins})
+    con=db()
+    try:
+        cleanup_events(con)
+        con.execute('UPDATE events SET active=0 WHERE active=1 AND event_type=?',(et,))
+        end=now()+mins*60
+        con.execute('INSERT INTO events(creator_id,event_type,multiplier,ends_at,title,description,active,created_at) VALUES(?,?,?,?,?,?,1,?)',(actor['telegram_id'],et,mult,end,title,desc,now()))
+        event_id=con.execute('SELECT last_insert_rowid()').fetchone()[0]
+        value_text=f'-{mult:g}%' if et.endswith('_discount') else f'x{mult:g}'
+        add_notification_all(con,'⚡ Новое событие NEXORA',f'{title} — {desc} · {value_text} · на {mins} мин.','event')
+        log_admin(con,actor['telegram_id'],'event_create','',f'id={event_id}; type={et}; value={mult}; duration={mins}m')
+        con.commit()
+        return jsonify({'ok':True,'id':event_id,'ends_at':end,'multiplier':mult,'title':title,'description':desc,'event_type':et,'duration_minutes':mins})
+    except Exception as exc:
+        con.rollback();return jsonify({'ok':False,'error':f'Не удалось запустить событие: {exc}'}),500
+    finally:
+        con.close()
 @app.get('/api/admin/events')
 @require_admin
 def admin_events(actor):
