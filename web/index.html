@@ -1502,15 +1502,6 @@ input:focus,select:focus{
     </div>
 </div>
 
-<div class="modal" id="dailyModal">
-    <div class="modal-card">
-        <div class="section-title" style="margin-top:0">🎁 Ежедневный бонус</div>
-        <div class="small" id="dailySummary">Награда получена</div>
-        <div class="daily-grid" id="dailyGrid"></div>
-        <button class="btn" style="margin-top:12px" onclick="closeDailyBonus()">Продолжить</button>
-    </div>
-</div>
-
 <!-- TOASTS -->
 
 <div class="toast-container"
@@ -1547,21 +1538,6 @@ function setLoading(show,text="Загрузка NEXORA..."){
     if(screen) screen.classList.toggle("hidden",!show);
 }
 
-function closeDailyBonus(){
-    document.getElementById("dailyModal")?.classList.remove("show");
-}
-
-function renderDailyBonus(daily){
-    if(!daily?.claimed) return;
-    const rewards=[500,750,1000,1500,2500,5000];
-    const grid=document.getElementById("dailyGrid");
-    const summary=document.getElementById("dailySummary");
-    if(!grid) return;
-    const day=Math.max(1,Math.min(6,Number(daily.day||daily.streak||1)));
-    if(summary) summary.textContent=`День ${day}/6 — сегодня получено 💎 ${format(Number(daily.reward||0))}`;
-    grid.innerHTML=rewards.map((reward,i)=>`<div class="daily-day ${i+1===day?"current":""} ${i+1<day?"claimed":""}"><b>День ${i+1}</b><span>💎 ${format(reward)}</span>${i+1<day?"<div class=\"small\">✓</div>":""}</div>`).join("");
-    document.getElementById("dailyModal")?.classList.add("show");
-}
 
 
 /* ============================================
@@ -1639,7 +1615,6 @@ async function load(){
         const wait=Math.max(0,500-(Date.now()-started));
         if(wait) await new Promise(resolve=>setTimeout(resolve,wait));
         setLoading(false);
-        renderDailyBonus(state.daily);
 
     }catch(e){
         setLoading(false);
