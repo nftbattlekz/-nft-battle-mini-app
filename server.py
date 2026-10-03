@@ -91,24 +91,24 @@ except Exception as exc:
 
 WORLDS={1:{'name':'Мир бизнеса','level':1,'description':'Стартовый мир NEXORA'},2:{'name':'Мир корпораций','level':100,'description':'Новый мир открывается на 100 уровне'},3:{'name':'Мир мегакорпораций','level':200,'description':'Третий мир открывается на 200 уровне'}}
 JOBS={
-'courier':{'name':'Курьер','level':1,'reward':80,'xp':10,'cooldown':45,'world':1,'taps':12},
-'loader':{'name':'Грузчик','level':2,'reward':140,'xp':15,'cooldown':60,'world':1,'taps':15},
-'fisher':{'name':'Рыбак','level':4,'reward':230,'xp':22,'cooldown':90,'world':1,'taps':18},
-'miner':{'name':'Шахтёр','level':6,'reward':360,'xp':32,'cooldown':110,'world':1,'taps':20},
-'driver':{'name':'Водитель','level':9,'reward':520,'xp':42,'cooldown':130,'world':1,'taps':22},
-'programmer':{'name':'Программист','level':13,'reward':750,'xp':55,'cooldown':160,'world':1,'taps':25},
-'trader':{'name':'Трейдер','level':18,'reward':1050,'xp':72,'cooldown':190,'world':1,'taps':28},
-'engineer':{'name':'Инженер','level':24,'reward':1450,'xp':92,'cooldown':220,'world':1,'taps':30},
-'director':{'name':'Директор','level':32,'reward':2100,'xp':120,'cooldown':260,'world':1,'taps':34},
-'magnate':{'name':'Магнат','level':45,'reward':3200,'xp':160,'cooldown':320,'world':1,'taps':38},
-'corporate_manager':{'name':'Корпоративный менеджер','level':100,'reward':7000,'xp':250,'cooldown':360,'world':2,'taps':45},
-'investment_banker':{'name':'Инвестиционный банкир','level':110,'reward':11000,'xp':160,'cooldown':400,'world':2,'taps':50},
-'tech_ceo':{'name':'CEO технологической компании','level':125,'reward':17000,'xp':420,'cooldown':450,'world':2,'taps':55},
-'global_trader':{'name':'Глобальный трейдер','level':145,'reward':26000,'xp':550,'cooldown':500,'world':2,'taps':60},
-'corporation_owner':{'name':'Владелец корпорации','level':170,'reward':40000,'xp':700,'cooldown':560,'world':2,'taps':65},
-'ceo_empire':{'name':'CEO империи','level':200,'reward':65000,'xp':900,'cooldown':620,'world':3,'taps':75},
-'industrial_tycoon':{'name':'Промышленный магнат','level':225,'reward':95000,'xp':1100,'cooldown':680,'world':3,'taps':82},
-'global_empire':{'name':'Глобальный император','level':250,'reward':140000,'xp':1400,'cooldown':750,'world':3,'taps':90}}
+'courier':{'name':'Курьер','level':1,'reward':80,'xp':10,'cooldown':15,'world':1,'taps':12},
+'loader':{'name':'Грузчик','level':2,'reward':140,'xp':15,'cooldown':18,'world':1,'taps':15},
+'fisher':{'name':'Рыбак','level':4,'reward':230,'xp':22,'cooldown':20,'world':1,'taps':18},
+'miner':{'name':'Шахтёр','level':6,'reward':360,'xp':32,'cooldown':22,'world':1,'taps':20},
+'driver':{'name':'Водитель','level':9,'reward':520,'xp':42,'cooldown':25,'world':1,'taps':22},
+'programmer':{'name':'Программист','level':13,'reward':750,'xp':55,'cooldown':28,'world':1,'taps':25},
+'trader':{'name':'Трейдер','level':18,'reward':1050,'xp':72,'cooldown':30,'world':1,'taps':28},
+'engineer':{'name':'Инженер','level':24,'reward':1450,'xp':92,'cooldown':32,'world':1,'taps':30},
+'director':{'name':'Директор','level':32,'reward':2100,'xp':120,'cooldown':35,'world':1,'taps':34},
+'magnate':{'name':'Магнат','level':45,'reward':3200,'xp':160,'cooldown':40,'world':1,'taps':38},
+'corporate_manager':{'name':'Корпоративный менеджер','level':100,'reward':7000,'xp':250,'cooldown':45,'world':2,'taps':45},
+'investment_banker':{'name':'Инвестиционный банкир','level':110,'reward':11000,'xp':160,'cooldown':48,'world':2,'taps':50},
+'tech_ceo':{'name':'CEO технологической компании','level':125,'reward':17000,'xp':420,'cooldown':50,'world':2,'taps':55},
+'global_trader':{'name':'Глобальный трейдер','level':145,'reward':26000,'xp':550,'cooldown':55,'world':2,'taps':60},
+'corporation_owner':{'name':'Владелец корпорации','level':170,'reward':40000,'xp':700,'cooldown':60,'world':2,'taps':65},
+'ceo_empire':{'name':'CEO империи','level':200,'reward':65000,'xp':900,'cooldown':65,'world':3,'taps':75},
+'industrial_tycoon':{'name':'Промышленный магнат','level':225,'reward':95000,'xp':1100,'cooldown':70,'world':3,'taps':82},
+'global_empire':{'name':'Глобальный император','level':250,'reward':140000,'xp':1400,'cooldown':75,'world':3,'taps':90}}
 ITEMS={'iron':{'name':'Железо','icon':'⛓️','base_price':35},'coal':{'name':'Уголь','icon':'⬛','base_price':25},'gold':{'name':'Золото','icon':'🪙','base_price':120},'wood':{'name':'Древесина','icon':'🪵','base_price':30},'wheat':{'name':'Пшеница','icon':'🌾','base_price':20},'apple':{'name':'Яблоко','icon':'🍎','base_price':25},'fish':{'name':'Рыба','icon':'🐟','base_price':70},'rare_fish':{'name':'Редкая рыба','icon':'🐠','base_price':250},'steel':{'name':'Сталь','icon':'🔩','base_price':180},'energy_core':{'name':'Энергокристалл','icon':'🔷','base_price':500},'microchip':{'name':'Микрочип','icon':'💾','base_price':750},'quantum':{'name':'Квантовый модуль','icon':'🧬','base_price':1800}}
 BUSINESS_LIMITS={'farm':5,'mine':5,'factory':5,'tech':2,'space':1}; BUSINESS_REQUIRED_LEVEL=3
 PROPERTY_LIMITS={'room':500,'apartment':250,'penthouse':50,'mansion':10}; BUSINESS_UPGRADE_MULTIPLIER=1.55
@@ -686,6 +686,14 @@ def admin_wipe(actor):
 @require_user
 def history(u):
     con=db();r=[dict(x) for x in con.execute('SELECT amount,reason,created_at FROM transactions WHERE user_id=? ORDER BY id DESC LIMIT 50',(u['id'],)).fetchall()];con.close();return jsonify({'ok':True,'history':r})
+
+@app.get('/')
+def index():
+    return send_from_directory(app.static_folder, 'index.html')
+
+@app.get('/index.html')
+def index_html():
+    return send_from_directory(app.static_folder, 'index.html')
 
 @app.errorhandler(404)
 def not_found(e):return jsonify({'ok':False,'error':'Маршрут не найден'}),404
