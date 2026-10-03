@@ -52,7 +52,8 @@ def init_db():
         rating INTEGER DEFAULT 0,
         bank INTEGER DEFAULT 0,
         created_at INTEGER DEFAULT 0,
-        last_daily INTEGER DEFAULT 0
+        last_daily INTEGER DEFAULT 0,
+        role TEXT DEFAULT 'player'
     );
 
     CREATE TABLE IF NOT EXISTS inventory (
@@ -217,6 +218,20 @@ def init_db():
 
 
 init_db()
+
+
+def migrate_database():
+    """Safely add columns introduced by newer NEXORA versions."""
+    con = db()
+    columns = {row["name"] for row in con.execute("PRAGMA table_info(users)").fetchall()}
+    if "role" not in columns:
+        con.execute("ALTER TABLE users ADD COLUMN role TEXT DEFAULT 'player'")
+    con.execute("UPDATE users SET role='creator' WHERE telegram_id=?", (str(CREATOR_TELEGRAM_ID),))
+    con.execute("UPDATE users SET role='player' WHERE role IS NULL OR role=''")
+    con.commit()
+    con.close()
+
+migrate_database()
 
 # Permanent promo codes. Each account can redeem each code only once.
 def seed_promo_codes():
@@ -528,6 +543,19 @@ def now():
 def is_creator(user):
     return str(user["telegram_id"]) == str(CREATOR_TELEGRAM_ID)
 
+def is_assistant(user):
+    return not is_creator(user) and str(user["role"] if "role" in user.keys() else "player") == "assistant"
+
+def role_name(user):
+    if is_creator(user):
+        return "creator"
+    if is_assistant(user):
+        return "assistant"
+    return "player"
+
+def role_display(user):
+    return {"creator":"Создатель", "assistant":"Помощник создателя", "player":"Игрок"}.get(role_name(user), "Игрок")
+
 
 def level_from_xp(xp):
     level = 1
@@ -574,37 +602,25 @@ def add_coins(con, user_id, amount, reason=""):
     """, (user_id, amount, reason, now()))
 
 
+def cleanup_events(con):
+    con.execute("UPDATE events SET active=0 WHERE active=1 AND ends_at<=?", (now(),))
+
 def get_multiplier(con, event_type):
-    active = con.execute("""
-        SELECT multiplier
-        FROM events
-        WHERE active=1
-        AND ends_at>?
-        AND (event_type=? OR event_type='all')
-        ORDER BY multiplier DESC
-        LIMIT 1
-    """, (now(), event_type)).fetchone()
-
-    if active:
-        return float(active["multiplier"])
-
-    return 1.0
-
+    cleanup_events(con)
+    rows = con.execute("""SELECT multiplier FROM events WHERE active=1 AND ends_at>? AND (event_type=? OR event_type='all')""", (now(), event_type)).fetchall()
+    result = 1.0
+    for row in rows:
+        result *= max(1.0, float(row["multiplier"]))
+    return min(10.0, result)
 
 def get_discount(con, event_type):
-    """Return the largest active percentage discount (0..0.90)."""
-    row = con.execute("""
-        SELECT multiplier
-        FROM events
-        WHERE active=1
-          AND ends_at>?
-          AND (event_type=? OR event_type='all')
-        ORDER BY multiplier DESC
-        LIMIT 1
-    """, (now(), event_type)).fetchone()
-    if row:
-        return max(0.0, min(0.90, float(row["multiplier"]) / 100.0))
-    return 0.0
+    cleanup_events(con)
+    rows = con.execute("""SELECT multiplier FROM events WHERE active=1 AND ends_at>? AND (event_type=? OR event_type='all') AND event_type LIKE '%_discount'""", (now(), event_type)).fetchall()
+    remaining = 1.0
+    for row in rows:
+        discount = max(0.0, min(0.90, float(row["multiplier"]) / 100.0))
+        remaining *= 1.0 - discount
+    return min(0.90, 1.0 - remaining)
 
 
 def discounted_price(con, event_type, base_price):
@@ -736,9 +752,10 @@ def ensure_user(telegram_user):
                 level,
                 energy,
                 energy_updated,
-                created_at
+                created_at,
+                role
             )
-            VALUES (?, ?, ?, ?, ?, 1000, 0, 1, 100, ?, ?)
+            VALUES (?, ?, ?, ?, ?, 1000, 0, 1, 100, ?, ?, ?)
         """, (
             tg_id,
             telegram_user.get("username", ""),
@@ -746,7 +763,8 @@ def ensure_user(telegram_user):
             telegram_user.get("last_name", ""),
             telegram_user.get("photo_url", ""),
             now(),
-            now()
+            now(),
+            "creator" if tg_id == str(CREATOR_TELEGRAM_ID) else "player"
         ))
 
         con.commit()
@@ -773,6 +791,9 @@ def ensure_user(telegram_user):
         ))
 
         con.commit()
+
+    if tg_id == str(CREATOR_TELEGRAM_ID):
+        con.execute("UPDATE users SET role='creator' WHERE telegram_id=?", (tg_id,))
 
     # Creator always gets special prefix.
     if tg_id == str(CREATOR_TELEGRAM_ID):
@@ -923,10 +944,12 @@ def require_creator(fn):
 def user_json(user, con):
     energy = restore_energy(con, user)
 
-    prefix = "Игрок"
+    prefix = role_display(user)
 
     if is_creator(user):
         prefix = "Создатель"
+    elif is_assistant(user):
+        prefix = "Помощник создателя"
 
     inv = con.execute("""
         SELECT item_key, quantity
@@ -964,7 +987,10 @@ def user_json(user, con):
         "max_energy": MAX_ENERGY,
         "rating": user["rating"],
         "prefix": prefix,
+        "role": role_name(user),
+        "role_display": role_display(user),
         "creator": is_creator(user),
+        "assistant": is_assistant(user),
         "inventory": inventory
     }
 
@@ -982,6 +1008,7 @@ def index():
 @require_user
 def bootstrap(user):
     con = db()
+    cleanup_events(con)
 
     data = user_json(user, con)
 
@@ -1289,13 +1316,6 @@ def work(user):
 def mining(user):
     con = db()
 
-    if not use_energy(con, user["id"], 15):
-        con.close()
-        return jsonify({
-            "ok": False,
-            "error": "Недостаточно энергии"
-        }), 400
-
     remaining = cooldown_remaining(
         con,
         user["id"],
@@ -1308,6 +1328,13 @@ def mining(user):
         return jsonify({
             "ok": False,
             "error": f"Шахта перезаряжается: {remaining} сек."
+        }), 400
+
+    if not use_energy(con, user["id"], 15):
+        con.close()
+        return jsonify({
+            "ok": False,
+            "error": "Недостаточно энергии"
         }), 400
 
     skill = con.execute("""
@@ -1363,13 +1390,6 @@ def mining(user):
 def farm(user):
     con = db()
 
-    if not use_energy(con, user["id"], 12):
-        con.close()
-        return jsonify({
-            "ok": False,
-            "error": "Недостаточно энергии"
-        }), 400
-
     remaining = cooldown_remaining(
         con,
         user["id"],
@@ -1382,6 +1402,13 @@ def farm(user):
         return jsonify({
             "ok": False,
             "error": f"Ферма готовится: {remaining} сек."
+        }), 400
+
+    if not use_energy(con, user["id"], 12):
+        con.close()
+        return jsonify({
+            "ok": False,
+            "error": "Недостаточно энергии"
         }), 400
 
     skill = con.execute("""
@@ -1421,13 +1448,6 @@ def farm(user):
 def fishing(user):
     con = db()
 
-    if not use_energy(con, user["id"], 10):
-        con.close()
-        return jsonify({
-            "ok": False,
-            "error": "Недостаточно энергии"
-        }), 400
-
     remaining = cooldown_remaining(
         con,
         user["id"],
@@ -1440,6 +1460,13 @@ def fishing(user):
         return jsonify({
             "ok": False,
             "error": f"Рыбалка недоступна ещё {remaining} сек."
+        }), 400
+
+    if not use_energy(con, user["id"], 10):
+        con.close()
+        return jsonify({
+            "ok": False,
+            "error": "Недостаточно энергии"
         }), 400
 
     skill = con.execute("""
@@ -2436,43 +2463,21 @@ def bank(user):
 @require_user
 def leaderboard(user):
     con = db()
-
     rows = con.execute("""
-        SELECT
-            telegram_id,
-            username,
-            first_name,
-            photo_url,
-            level,
-            rating,
-            coins
+        SELECT telegram_id, username, first_name, photo_url, level, rating, coins, xp, role
         FROM users
-        ORDER BY rating DESC, level DESC
-        LIMIT 50
+        ORDER BY rating DESC, level DESC, xp DESC, id ASC
     """).fetchall()
-
-    result = []
-
-    for i, row in enumerate(rows, 1):
-        result.append({
-            "place": i,
-            "telegram_id": row["telegram_id"],
-            "username": row["username"],
-            "name": row["first_name"] or row["username"] or "Игрок",
-            "photo_url": row["photo_url"],
-            "level": row["level"],
-            "rating": row["rating"],
-            "coins": row["coins"],
-            "creator": str(row["telegram_id"]) == str(CREATOR_TELEGRAM_ID)
-        })
-
+    result=[]
+    my_place=None
+    role_labels={"creator":"Создатель","assistant":"Помощник создателя","player":"Игрок"}
+    for i,row in enumerate(rows,1):
+        r="creator" if str(row["telegram_id"])==str(CREATOR_TELEGRAM_ID) else (row["role"] or "player")
+        if r not in role_labels: r="player"
+        result.append({"place":i,"telegram_id":row["telegram_id"],"username":row["username"],"name":row["first_name"] or row["username"] or "Игрок","photo_url":row["photo_url"],"level":row["level"],"rating":row["rating"],"coins":row["coins"],"role":r,"role_display":role_labels[r],"creator":r=="creator","assistant":r=="assistant"})
+        if str(row["telegram_id"])==str(user["telegram_id"]): my_place=i
     con.close()
-
-    return jsonify({
-        "ok": True,
-        "players": result
-    })
-
+    return jsonify({"ok":True,"players":result[:100],"my_place":my_place})
 
 
 # =========================================================
@@ -2672,7 +2677,7 @@ def admin_players(user):
         rows = con.execute("""
             SELECT
                 id, telegram_id, username, first_name, last_name,
-                coins, bank, level, xp, rating
+                coins, bank, level, xp, rating, role
             FROM users
             WHERE telegram_id LIKE ? OR username LIKE ? OR first_name LIKE ?
             ORDER BY id DESC
@@ -2682,13 +2687,19 @@ def admin_players(user):
         rows = con.execute("""
             SELECT
                 id, telegram_id, username, first_name, last_name,
-                coins, bank, level, xp, rating
+                coins, bank, level, xp, rating, role
             FROM users
             ORDER BY id DESC
             LIMIT 200
         """).fetchall()
 
-    players = [dict(x) for x in rows]
+    players = []
+    for row in rows:
+        item = dict(row)
+        if str(item.get("telegram_id")) == str(CREATOR_TELEGRAM_ID):
+            item["role"] = "creator"
+        item["role_display"] = {"creator":"Создатель","assistant":"Помощник создателя","player":"Игрок"}.get(item.get("role"), "Игрок")
+        players.append(item)
 
     con.close()
 
@@ -2696,6 +2707,25 @@ def admin_players(user):
         "ok": True,
         "players": players
     })
+
+
+@app.post("/api/admin/role")
+@require_creator
+def admin_role(user):
+    data=request.get_json(silent=True) or {}
+    target_tg_id=str(data.get("telegram_id","")).strip()
+    role=str(data.get("role","player")).strip().lower()
+    if role not in ("assistant","player"): return jsonify({"ok":False,"error":"Неверная роль"}),400
+    if not target_tg_id: return jsonify({"ok":False,"error":"Не указан Telegram ID"}),400
+    if target_tg_id==str(CREATOR_TELEGRAM_ID): return jsonify({"ok":False,"error":"Нельзя изменить роль создателя"}),400
+    con=db()
+    target=con.execute("SELECT id FROM users WHERE telegram_id=?",(target_tg_id,)).fetchone()
+    if not target:
+        con.close(); return jsonify({"ok":False,"error":"Игрок не найден"}),404
+    con.execute("UPDATE users SET role=? WHERE id=?",(role,target["id"]))
+    log_admin(con,user["telegram_id"],"set_role",target_tg_id,f"role={role}")
+    con.commit(); con.close()
+    return jsonify({"ok":True,"telegram_id":target_tg_id,"role":role,"role_display":"Помощник создателя" if role=="assistant" else "Игрок"})
 
 
 @app.post("/api/admin/money")
@@ -2812,6 +2842,7 @@ def admin_event(user):
         return jsonify({"ok": False, "error": "Неверная длительность"}), 400
 
     con = db()
+    cleanup_events(con)
     con.execute("UPDATE events SET active=0 WHERE active=1 AND event_type=?", (event_type,))
     ends_at = now() + duration_minutes * 60
 
@@ -2839,6 +2870,8 @@ def admin_event(user):
 @require_creator
 def admin_events(user):
     con = db()
+    cleanup_events(con)
+    con.commit()
 
     rows = con.execute("""
         SELECT *
