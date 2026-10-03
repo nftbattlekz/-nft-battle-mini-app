@@ -3,11 +3,13 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+
 <title>NEXORA</title>
 
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 
 <style>
+
 *{
     box-sizing:border-box;
     -webkit-tap-highlight-color:transparent;
@@ -18,6 +20,10 @@ body{
     background:#07080c;
     color:#fff;
     font-family:Arial,sans-serif;
+}
+
+button{
+    font-family:inherit;
 }
 
 .app{
@@ -33,9 +39,9 @@ header{
     align-items:center;
     position:sticky;
     top:0;
-    background:#07080cee;
-    backdrop-filter:blur(14px);
-    z-index:5;
+    z-index:20;
+    background:rgba(7,8,12,.94);
+    backdrop-filter:blur(15px);
 }
 
 .logo{
@@ -49,7 +55,7 @@ header{
     border:1px solid #292e3b;
     border-radius:14px;
     padding:9px 12px;
-    font-weight:800;
+    font-weight:900;
 }
 
 .page{
@@ -62,7 +68,7 @@ header{
 }
 
 .title{
-    font-size:27px;
+    font-size:28px;
     font-weight:900;
     margin:15px 0;
 }
@@ -76,18 +82,20 @@ header{
 }
 
 .profile{
-    background:linear-gradient(145deg,#171421,#0e1016);
+    background:
+    radial-gradient(circle at 90% 10%,#5223a755,transparent 35%),
+    linear-gradient(145deg,#171421,#0d0f15);
 }
 
 .avatar{
-    width:66px;
-    height:66px;
-    border-radius:20px;
+    width:68px;
+    height:68px;
+    border-radius:21px;
     background:linear-gradient(135deg,#7c3aed,#db2777);
     display:flex;
     align-items:center;
     justify-content:center;
-    font-size:28px;
+    font-size:29px;
     font-weight:900;
 }
 
@@ -98,7 +106,7 @@ header{
 }
 
 .tgid{
-    color:#8c92a0;
+    color:#858c99;
     margin-top:4px;
     word-break:break-all;
 }
@@ -107,7 +115,7 @@ header{
     display:grid;
     grid-template-columns:repeat(3,1fr);
     gap:8px;
-    margin-top:17px;
+    margin-top:18px;
 }
 
 .stat{
@@ -118,13 +126,13 @@ header{
 }
 
 .stat b{
-    font-size:18px;
     display:block;
+    font-size:18px;
 }
 
 .stat span{
-    font-size:11px;
     color:#777e8d;
+    font-size:10px;
 }
 
 .grid{
@@ -137,23 +145,24 @@ header{
     background:#12151d;
     border:1px solid #292e39;
     border-radius:20px;
-    padding:15px;
+    padding:14px;
     overflow:hidden;
 }
 
 .case-art{
     height:130px;
     border-radius:16px;
-    background:radial-gradient(circle at 50% 40%,#5631a5,#17121f 65%);
+    background:
+    radial-gradient(circle,#6336bc,#17121f 68%);
     display:flex;
     align-items:center;
     justify-content:center;
     font-size:65px;
-    margin-bottom:12px;
+    box-shadow:inset 0 0 35px #0005;
 }
 
 .case h3{
-    margin:0 0 5px;
+    margin:12px 0 5px;
     font-size:17px;
 }
 
@@ -162,45 +171,232 @@ header{
     font-size:12px;
 }
 
+.value{
+    font-weight:900;
+    margin-top:7px;
+}
+
 .btn{
     width:100%;
     padding:14px;
     border:0;
     border-radius:15px;
     background:#7437e8;
-    color:white;
+    color:#fff;
     font-weight:900;
     font-size:14px;
     margin-top:10px;
 }
 
 .btn:active{
-    transform:scale(.98);
-}
-
-.btn:disabled{
-    opacity:.5;
+    transform:scale(.97);
 }
 
 .btn.dark{
     background:#20242e;
 }
 
+/* CASE OPENING */
+
+.case-modal{
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,.82);
+    backdrop-filter:blur(12px);
+    display:none;
+    align-items:center;
+    justify-content:center;
+    z-index:100;
+    padding:18px;
+}
+
+.case-modal.show{
+    display:flex;
+}
+
+.modal-box{
+    width:100%;
+    max-width:580px;
+    background:#10131a;
+    border:1px solid #303541;
+    border-radius:25px;
+    padding:20px;
+    overflow:hidden;
+    box-shadow:0 0 70px #000;
+}
+
+.modal-title{
+    text-align:center;
+    font-size:22px;
+    font-weight:900;
+    margin-bottom:18px;
+}
+
+.roulette{
+    position:relative;
+    height:145px;
+    overflow:hidden;
+    border-radius:18px;
+    background:#080a0f;
+    border:1px solid #292e38;
+}
+
+.roulette::before{
+    content:"";
+    position:absolute;
+    top:0;
+    bottom:0;
+    left:50%;
+    width:3px;
+    transform:translateX(-50%);
+    background:#fff;
+    box-shadow:
+    0 0 12px #fff,
+    0 0 30px #8b5cf6;
+    z-index:10;
+}
+
+.roulette::after{
+    content:"";
+    position:absolute;
+    inset:0;
+    pointer-events:none;
+    background:
+    linear-gradient(
+        90deg,
+        #080a0f 0%,
+        transparent 15%,
+        transparent 85%,
+        #080a0f 100%
+    );
+    z-index:5;
+}
+
+.roulette-track{
+    height:100%;
+    display:flex;
+    align-items:center;
+    gap:10px;
+    transform:translateX(0);
+    will-change:transform;
+}
+
+.roll-card{
+    flex:0 0 110px;
+    height:112px;
+    border-radius:17px;
+    background:
+    linear-gradient(145deg,#202532,#10131a);
+    border:1px solid #343a49;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    overflow:hidden;
+}
+
+.roll-icon{
+    font-size:43px;
+    margin-bottom:6px;
+}
+
+.roll-name{
+    font-size:10px;
+    text-align:center;
+    padding:0 4px;
+    font-weight:800;
+}
+
+.roll-rarity{
+    font-size:9px;
+    color:#a98cff;
+    margin-top:3px;
+}
+
+.open-result{
+    display:none;
+    text-align:center;
+    margin-top:20px;
+    animation:resultIn .55s ease;
+}
+
+.open-result.show{
+    display:block;
+}
+
+.result-icon{
+    width:100px;
+    height:100px;
+    margin:auto;
+    border-radius:25px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:60px;
+    background:radial-gradient(circle,#6336bc,#17121f);
+    box-shadow:
+    0 0 25px #8b5cf688,
+    0 0 70px #8b5cf633;
+    animation:winPop .8s cubic-bezier(.2,1.6,.4,1);
+}
+
+.result-name{
+    font-size:22px;
+    font-weight:900;
+    margin-top:12px;
+}
+
+.result-rarity{
+    color:#a98cff;
+    margin-top:5px;
+    font-weight:800;
+}
+
+@keyframes winPop{
+    0%{
+        transform:scale(.2) rotate(-15deg);
+        opacity:0;
+    }
+    70%{
+        transform:scale(1.12) rotate(3deg);
+    }
+    100%{
+        transform:scale(1);
+        opacity:1;
+    }
+}
+
+@keyframes resultIn{
+    from{
+        opacity:0;
+        transform:translateY(15px);
+    }
+    to{
+        opacity:1;
+        transform:translateY(0);
+    }
+}
+
+/* INVENTORY */
+
 .nft{
     display:flex;
-    gap:13px;
     align-items:center;
+    gap:13px;
 }
 
 .nftart{
     width:70px;
     height:70px;
-    border-radius:17px;
-    background:linear-gradient(145deg,#292d3b,#12151c);
+    flex:none;
+    border-radius:18px;
     display:flex;
     align-items:center;
     justify-content:center;
-    font-size:35px;
+    font-size:36px;
+    background:
+    radial-gradient(circle,#3d2c67,#12151c);
+    transition:.35s;
 }
 
 .nftinfo{
@@ -213,62 +409,62 @@ header{
 }
 
 .rarity{
+    color:#a98cff;
     font-size:12px;
-    color:#9c85ff;
     margin-top:4px;
 }
 
-.value{
+.nftvalue{
     font-weight:900;
     margin-top:5px;
 }
 
-.upgrade-circle{
-    width:205px;
-    height:205px;
-    margin:15px auto;
-    border-radius:50%;
-    background:conic-gradient(#7c3aed,#e43f9a,#7c3aed);
-    padding:7px;
-    animation:spin 8s linear infinite;
+.sell-card{
+    transition:
+    opacity .45s,
+    transform .45s,
+    max-height .45s,
+    margin .45s,
+    padding .45s;
+    max-height:220px;
+    overflow:hidden;
 }
 
-.upgrade-inner{
-    width:100%;
-    height:100%;
-    border-radius:50%;
-    background:#0b0d12;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    font-size:60px;
+.sell-card.selling{
+    opacity:0;
+    transform:
+    translateX(120px)
+    scale(.7)
+    rotate(7deg);
+    max-height:0;
+    margin:0;
+    padding-top:0;
+    padding-bottom:0;
 }
 
-@keyframes spin{
-    to{
-        transform:rotate(360deg);
+.coin-fly{
+    position:fixed;
+    z-index:200;
+    font-size:25px;
+    pointer-events:none;
+    animation:coinFly .8s ease forwards;
+}
+
+@keyframes coinFly{
+    0%{
+        opacity:1;
+        transform:translate(0,0) scale(1);
+    }
+    100%{
+        opacity:0;
+        transform:translate(
+            calc(50vw - 30px),
+            calc(-50vh + 40px)
+        ) scale(.4);
     }
 }
 
-.select{
-    display:flex;
-    gap:8px;
-    overflow-x:auto;
-    padding-bottom:5px;
-}
-
-.select button{
-    min-width:120px;
-    background:#171a22;
-    color:white;
-    border:1px solid #292e39;
-    border-radius:15px;
-    padding:10px;
-}
-
-.select button.sel{
-    border-color:#8b5cf6;
-}
+/* RATING */
 
 .tabs{
     display:grid;
@@ -278,17 +474,17 @@ header{
 }
 
 .tab{
-    padding:12px;
-    border-radius:13px;
-    background:#171a22;
-    color:#888;
     border:0;
-    font-weight:800;
+    border-radius:14px;
+    padding:12px;
+    background:#171a22;
+    color:#858c99;
+    font-weight:900;
 }
 
 .tab.active{
     background:#7437e8;
-    color:white;
+    color:#fff;
 }
 
 .leader{
@@ -300,8 +496,8 @@ header{
 }
 
 .place{
-    width:34px;
-    color:#888;
+    width:35px;
+    color:#777;
     font-weight:900;
 }
 
@@ -311,8 +507,8 @@ header{
 }
 
 .lvalue{
-    font-weight:900;
     color:#a98cff;
+    font-weight:900;
 }
 
 .empty{
@@ -321,70 +517,59 @@ header{
     padding:25px;
 }
 
-nav{
-    position:fixed;
-    bottom:0;
-    left:0;
-    right:0;
-    max-width:620px;
-    margin:auto;
-    background:#090a0fee;
-    border-top:1px solid #272c37;
-    display:grid;
-    grid-template-columns:repeat(5,1fr);
-    padding:8px 4px calc(8px + env(safe-area-inset-bottom));
-    z-index:10;
-}
-
-nav button{
-    background:transparent;
-    border:0;
-    color:#707786;
-    font-size:10px;
-    font-weight:700;
-}
-
-nav button.active{
-    color:white;
-}
-
-.ico{
-    font-size:21px;
-    display:block;
-    margin-bottom:4px;
-}
-
 .toast{
     position:fixed;
     left:20px;
     right:20px;
     bottom:90px;
+    z-index:300;
     background:#252934;
+    border:1px solid #383e4b;
+    border-radius:15px;
     padding:14px;
-    border-radius:14px;
     text-align:center;
     display:none;
-    z-index:20;
+    box-shadow:0 10px 40px #0008;
 }
+
+@media(max-width:390px){
+
+    .grid{
+        grid-template-columns:1fr;
+    }
+
+    .roll-card{
+        flex-basis:105px;
+    }
+
+}
+
 </style>
 </head>
+
 
 <body>
 
 <div class="app">
 
 <header>
-    <div class="logo">NEXORA</div>
+
+    <div class="logo">
+        NEXORA
+    </div>
 
     <div class="balance">
         🪙 <span id="coins">0</span>
     </div>
+
 </header>
 
 
 <!-- PROFILE -->
 
-<section id="profile" class="page active">
+<section
+    id="profile"
+    class="page active">
 
     <div class="title">
         Профиль
@@ -392,33 +577,66 @@ nav button.active{
 
     <div class="card profile">
 
-        <div class="avatar" id="avatar">
+        <div
+            class="avatar"
+            id="avatar">
+
             N
+
         </div>
 
-        <div class="name" id="name">
+        <div
+            class="name"
+            id="name">
+
             Загрузка...
+
         </div>
 
-        <div class="tgid" id="tgid">
+        <div
+            class="tgid"
+            id="tgid">
+
             @username • ID: —
+
         </div>
 
         <div class="stats">
 
             <div class="stat">
-                <b id="nftCount">0</b>
-                <span>NFT</span>
+
+                <b id="nftCount">
+                    0
+                </b>
+
+                <span>
+                    NFT
+                </span>
+
             </div>
 
             <div class="stat">
-                <b id="collection">0</b>
-                <span>СТОИМОСТЬ</span>
+
+                <b id="collection">
+                    0
+                </b>
+
+                <span>
+                    КОЛЛЕКЦИЯ
+                </span>
+
             </div>
 
             <div class="stat">
-                <b id="received">0</b>
-                <span>ПОЛУЧЕНО</span>
+
+                <b id="received">
+                    0
+                </b>
+
+                <span>
+                    ПОЛУЧЕНО
+                </span>
+
             </div>
 
         </div>
@@ -427,12 +645,16 @@ nav button.active{
 
     <div class="card">
 
-        <b>Добро пожаловать в NEXORA</b>
+        <b>
+            Добро пожаловать в NEXORA
+        </b>
 
         <p class="muted">
+
             Собирай NFT, открывай кейсы,
-            улучшай коллекцию и поднимайся
+            продавай предметы и поднимайся
             в рейтинге.
+
         </p>
 
     </div>
@@ -442,7 +664,9 @@ nav button.active{
 
 <!-- CASES -->
 
-<section id="cases" class="page">
+<section
+    id="cases"
+    class="page">
 
     <div class="title">
         Кейсы
@@ -451,58 +675,17 @@ nav button.active{
     <div class="card">
 
         <span class="muted">
-            Выбирай кейс и получай его заранее
-            определённую коллекционную награду.
+
+            Выбирай кейс и запускай
+            красивую анимацию открытия.
+
         </span>
 
     </div>
 
-    <div id="caseGrid" class="grid"></div>
-
-</section>
-
-
-<!-- UPGRADER -->
-
-<section id="upgrader" class="page">
-
-    <div class="title">
-        Upgrader
-    </div>
-
-    <div class="card">
-
-        <div class="upgrade-circle">
-
-            <div class="upgrade-inner">
-                ⬆️
-            </div>
-
-        </div>
-
-        <p class="muted" style="text-align:center">
-
-            Выбери NFT для улучшения.
-
-        </p>
-
-        <div
-            id="upgradeSelect"
-            class="select">
-        </div>
-
-        <div
-            id="upgradeInfo"
-            style="text-align:center;margin-top:10px">
-        </div>
-
-        <button
-            class="btn"
-            onclick="upgrade()">
-
-            УЛУЧШИТЬ NFT
-
-        </button>
+    <div
+        id="caseGrid"
+        class="grid">
 
     </div>
 
@@ -511,20 +694,27 @@ nav button.active{
 
 <!-- INVENTORY -->
 
-<section id="inventory" class="page">
+<section
+    id="inventory"
+    class="page">
 
     <div class="title">
         Инвентарь
     </div>
 
-    <div id="inventoryList"></div>
+    <div
+        id="inventoryList">
+
+    </div>
 
 </section>
 
 
 <!-- RATING -->
 
-<section id="rating" class="page">
+<section
+    id="rating"
+    class="page">
 
     <div class="title">
         Рейтинг
@@ -563,7 +753,7 @@ nav button.active{
 </div>
 
 
-<!-- NAVIGATION -->
+<!-- NAV -->
 
 <nav>
 
@@ -571,7 +761,10 @@ nav button.active{
         class="active"
         onclick="page('profile',this)">
 
-        <span class="ico">👤</span>
+        <span class="ico">
+            👤
+        </span>
+
         Профиль
 
     </button>
@@ -579,23 +772,21 @@ nav button.active{
     <button
         onclick="page('cases',this)">
 
-        <span class="ico">📦</span>
+        <span class="ico">
+            📦
+        </span>
+
         Кейсы
-
-    </button>
-
-    <button
-        onclick="page('upgrader',this)">
-
-        <span class="ico">⬆️</span>
-        Upgrader
 
     </button>
 
     <button
         onclick="page('inventory',this)">
 
-        <span class="ico">🎒</span>
+        <span class="ico">
+            🎒
+        </span>
+
         Инвентарь
 
     </button>
@@ -603,7 +794,10 @@ nav button.active{
     <button
         onclick="page('rating',this)">
 
-        <span class="ico">🏆</span>
+        <span class="ico">
+            🏆
+        </span>
+
         Рейтинг
 
     </button>
@@ -611,9 +805,80 @@ nav button.active{
 </nav>
 
 
+<!-- CASE MODAL -->
+
+<div
+    id="caseModal"
+    class="case-modal">
+
+    <div class="modal-box">
+
+        <div
+            class="modal-title"
+            id="modalTitle">
+
+            Открытие кейса
+
+        </div>
+
+        <div
+            class="roulette">
+
+            <div
+                id="rouletteTrack"
+                class="roulette-track">
+
+            </div>
+
+        </div>
+
+        <div
+            id="openResult"
+            class="open-result">
+
+            <div
+                id="resultIcon"
+                class="result-icon">
+
+            </div>
+
+            <div
+                id="resultName"
+                class="result-name">
+
+            </div>
+
+            <div
+                id="resultRarity"
+                class="result-rarity">
+
+            </div>
+
+            <div
+                id="resultValue"
+                class="value">
+
+            </div>
+
+            <button
+                class="btn"
+                onclick="closeCase()">
+
+                ЗАБРАТЬ NFT
+
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+
 <div
     id="toast"
     class="toast">
+
 </div>
 
 
@@ -630,13 +895,15 @@ const initData =
 
 let user = null;
 let cases = [];
-let selected = null;
 let rankings = null;
 
 
 /* API */
 
-async function api(url, options = {}) {
+async function api(
+    url,
+    options = {}
+){
 
     options.headers = {
 
@@ -651,120 +918,137 @@ async function api(url, options = {}) {
     };
 
     const response =
-        await fetch(url, options);
+        await fetch(
+            url,
+            options
+        );
 
     const data =
         await response.json();
 
-    if (!response.ok) {
+    if(!response.ok){
 
         throw new Error(
-            data.error || "Ошибка сервера"
+            data.error ||
+            "Ошибка сервера"
         );
 
     }
 
     return data;
+
 }
 
 
 /* TOAST */
 
-function toast(message) {
+function toast(message){
 
-    const element =
-        document.getElementById("toast");
+    const el =
+        document.getElementById(
+            "toast"
+        );
 
-    element.textContent =
+    el.textContent =
         message;
 
-    element.style.display =
+    el.style.display =
         "block";
 
-    setTimeout(() => {
-
-        element.style.display =
-            "none";
-
-    }, 2200);
+    setTimeout(
+        ()=>{
+            el.style.display =
+                "none";
+        },
+        2200
+    );
 
 }
 
 
 /* NAVIGATION */
 
-function page(id, button) {
+function page(
+    id,
+    button
+){
 
     document
-        .querySelectorAll(".page")
-        .forEach(x =>
-            x.classList.remove("active")
+        .querySelectorAll(
+            ".page"
+        )
+        .forEach(
+            x =>
+                x.classList
+                 .remove("active")
         );
 
     document
         .getElementById(id)
-        .classList.add("active");
+        .classList
+        .add("active");
 
     document
-        .querySelectorAll("nav button")
-        .forEach(x =>
-            x.classList.remove("active")
+        .querySelectorAll(
+            "nav button"
+        )
+        .forEach(
+            x =>
+                x.classList
+                 .remove("active")
         );
 
-    button.classList.add("active");
+    button.classList.add(
+        "active"
+    );
 
-    if (id === "cases") {
-        renderCases();
-    }
+    if(id === "rating"){
 
-    if (id === "upgrader") {
-        renderUpgrade();
-    }
-
-    if (id === "inventory") {
-        renderInventory();
-    }
-
-    if (id === "rating") {
         loadRating();
+
     }
 
 }
 
 
-/* LOAD USER */
+/* LOAD */
 
-async function load() {
+async function load(){
 
-    try {
+    try{
 
         user =
             await api(
                 "/api/me",
                 {
-                    method: "POST"
+                    method:"POST"
                 }
             );
 
         cases =
-            await api("/api/cases");
+            await api(
+                "/api/cases"
+            );
 
         renderAll();
 
-    } catch (error) {
+    }
+    catch(error){
 
         console.error(error);
 
-        toast(error.message);
+        toast(
+            error.message
+        );
 
     }
 
 }
 
 
-/* RENDER ALL */
+/* RENDER */
 
-function renderAll() {
+function renderAll(){
 
     document.getElementById(
         "coins"
@@ -774,12 +1058,16 @@ function renderAll() {
     document.getElementById(
         "name"
     ).textContent =
-        user.first_name || "Игрок";
+        user.first_name ||
+        "Игрок";
 
     document.getElementById(
         "avatar"
     ).textContent =
-        (user.first_name || "N")
+        (
+            user.first_name ||
+            "N"
+        )
         .charAt(0)
         .toUpperCase();
 
@@ -787,13 +1075,15 @@ function renderAll() {
         "tgid"
     ).textContent =
 
-        (user.username
-            ? "@" + user.username
-            : "@username")
+        (
+            user.username
+            ? "@"+user.username
+            : "@username"
+        )
 
-        + " • ID: "
-
-        + user.id;
+        +
+        " • ID: " +
+        user.id;
 
     document.getElementById(
         "nftCount"
@@ -802,7 +1092,7 @@ function renderAll() {
 
     const total =
         user.nfts.reduce(
-            (sum, nft) =>
+            (sum,nft)=>
                 sum + nft.value,
             0
         );
@@ -819,14 +1109,13 @@ function renderAll() {
 
     renderCases();
     renderInventory();
-    renderUpgrade();
 
 }
 
 
-/* CASES */
+/* CASE CARDS */
 
-function renderCases() {
+function renderCases(){
 
     const container =
         document.getElementById(
@@ -835,406 +1124,127 @@ function renderCases() {
 
     container.innerHTML = "";
 
-    cases.forEach(c => {
+    cases.forEach(
+        c => {
 
-        container.innerHTML += `
+            container.innerHTML += `
 
-        <div class="case">
+            <div class="case">
 
-            <div class="case-art">
+                <div class="case-art">
 
-                ${c.reward.icon}
+                    ${c.reward.icon}
+
+                </div>
+
+                <h3>
+
+                    ${escapeHTML(
+                        c.name
+                    )}
+
+                </h3>
+
+                <div class="muted">
+
+                    Награда:
+                    ${escapeHTML(
+                        c.reward.name
+                    )}
+
+                </div>
+
+                <div class="rarity">
+
+                    ${escapeHTML(
+                        c.reward.rarity
+                    )}
+
+                </div>
+
+                <div class="value">
+
+                    🪙 ${c.price}
+
+                </div>
+
+                <button
+                    class="btn"
+                    onclick="openCase(${c.id})">
+
+                    ОТКРЫТЬ
+
+                </button>
 
             </div>
 
-            <h3>
-                ${escapeHTML(c.name)}
-            </h3>
+            `;
 
-            <div class="muted">
-
-                ${escapeHTML(c.reward.rarity)}
-                •
-                ${escapeHTML(c.reward.name)}
-
-            </div>
-
-            <div class="value">
-
-                🪙 ${c.price}
-
-            </div>
-
-            <button
-                class="btn"
-                onclick="openCase(${c.id})">
-
-                ОТКРЫТЬ
-
-            </button>
-
-        </div>
-
-        `;
-
-    });
+        }
+    );
 
 }
 
 
 /* OPEN CASE */
 
-async function openCase(id) {
+async function openCase(id){
 
-    const selectedCase =
+    const selected =
         cases.find(
             x => x.id === id
         );
 
-    if (!selectedCase) {
+    if(!selected){
+
         return;
+
     }
 
-    if (
+    if(
         !confirm(
             "Открыть " +
-            selectedCase.name +
+            selected.name +
             " за " +
-            selectedCase.price +
-            " монет?"
+            selected.price +
+            " 🪙?"
         )
-    ) {
+    ){
+
         return;
+
     }
 
-    try {
+    try{
 
-        user =
+        /*
+         Получаем результат
+         от сервера ДО запуска
+         анимации.
+        */
+
+        const newUser =
             await api(
                 "/api/cases/open",
                 {
-                    method: "POST",
+                    method:"POST",
 
                     body:
                         JSON.stringify({
-                            case_id: id
+                            case_id:id
                         })
                 }
             );
-
-        renderAll();
-
-        toast(
-            "🎉 Получен NFT: " +
-            selectedCase.reward.name
-        );
-
-    } catch (error) {
-
-        toast(error.message);
-
-    }
-
-}
-
-
-/* INVENTORY */
-
-function renderInventory() {
-
-    const container =
-        document.getElementById(
-            "inventoryList"
-        );
-
-    container.innerHTML = "";
-
-    if (
-        !user ||
-        !user.nfts ||
-        user.nfts.length === 0
-    ) {
-
-        container.innerHTML = `
-            <div class="empty">
-                Инвентарь пуст
-            </div>
-        `;
-
-        return;
-    }
-
-    user.nfts.forEach(nft => {
-
-        container.innerHTML += `
-
-        <div class="card">
-
-            <div class="nft">
-
-                <div class="nftart">
-
-                    ${nft.icon}
-
-                </div>
-
-                <div class="nftinfo">
-
-                    <div class="nftname">
-
-                        ${escapeHTML(
-                            nft.name
-                        )}
-
-                    </div>
-
-                    <div class="rarity">
-
-                        ${escapeHTML(
-                            nft.rarity
-                        )}
-
-                    </div>
-
-                    <div class="value">
-
-                        💎 ${nft.value}
-
-                    </div>
-
-                </div>
-
-            </div>
-
-            <button
-                class="btn dark"
-                onclick="sell(${nft.id})">
-
-                ПРОДАТЬ ЗА
-                ${nft.value} 🪙
-
-            </button>
-
-        </div>
-
-        `;
-
-    });
-
-}
-
-
-/* SELL */
-
-async function sell(id) {
-
-    if (
-        !confirm(
-            "Продать этот NFT?"
-        )
-    ) {
-        return;
-    }
-
-    try {
 
         user =
-            await api(
-                "/api/sell",
-                {
-                    method: "POST",
+            newUser;
 
-                    body:
-                        JSON.stringify({
-                            nft_id: id
-                        })
-                }
-            );
-
-        renderAll();
-
-        toast(
-            "NFT продан"
+        showCaseAnimation(
+            selected
         );
-
-    } catch (error) {
-
-        toast(error.message);
 
     }
-
-}
-
-
-/* UPGRADER */
-
-function renderUpgrade() {
-
-    const container =
-        document.getElementById(
-            "upgradeSelect"
-        );
-
-    container.innerHTML = "";
-
-    if (
-        !user ||
-        !user.nfts.length
-    ) {
-
-        container.innerHTML = `
-            <div class="empty">
-                Нет NFT для улучшения
-            </div>
-        `;
-
-        return;
-    }
-
-    user.nfts.forEach(nft => {
-
-        const button =
-            document.createElement(
-                "button"
-            );
-
-        button.innerHTML =
-            nft.icon +
-            "<br>" +
-            escapeHTML(
-                nft.name
-            );
-
-        button.onclick = () => {
-
-            selected =
-                nft.id;
-
-            document
-                .querySelectorAll(
-                    ".select button"
-                )
-                .forEach(
-                    x =>
-                        x.classList
-                         .remove("sel")
-                );
-
-            button.classList.add(
-                "sel"
-            );
-
-            showUpgradeInfo(
-                nft
-            );
-
-        };
-
-        container.appendChild(
-            button
-        );
-
-    });
-
-}
-
-
-/* UPGRADE INFO */
-
-function showUpgradeInfo(nft) {
-
-    const next = {
-
-        Common: "Rare",
-        Rare: "Epic",
-        Epic: "Legendary",
-        Legendary: "Mythic"
-
-    }[nft.rarity];
-
-    const cost =
-        Math.max(
-            100,
-            Math.floor(
-                nft.value * 0.35
-            )
-        );
-
-    const element =
-        document.getElementById(
-            "upgradeInfo"
-        );
-
-    if (!next) {
-
-        element.innerHTML =
-            "🏆 Максимальная редкость";
-
-        return;
-
-    }
-
-    element.innerHTML = `
-
-        <b>
-            ${escapeHTML(
-                nft.rarity
-            )}
-            →
-            ${next}
-        </b>
-
-        <br>
-
-        <span class="muted">
-
-            Стоимость:
-            ${cost} 🪙
-
-        </span>
-
-    `;
-
-}
-
-
-/* UPGRADE */
-
-async function upgrade() {
-
-    if (!selected) {
-
-        toast(
-            "Сначала выбери NFT"
-        );
-
-        return;
-
-    }
-
-    try {
-
-        user =
-            await api(
-                "/api/upgrade",
-                {
-                    method: "POST",
-
-                    body:
-                        JSON.stringify({
-                            nft_id:
-                                selected
-                        })
-                }
-            );
-
-        renderAll();
-
-        toast(
-            "⬆️ NFT улучшен"
-        );
-
-    } catch (error) {
+    catch(error){
 
         toast(
             error.message
@@ -1245,11 +1255,546 @@ async function upgrade() {
 }
 
 
+/* CASE ANIMATION */
+
+function showCaseAnimation(
+    selected
+){
+
+    const modal =
+        document.getElementById(
+            "caseModal"
+        );
+
+    const track =
+        document.getElementById(
+            "rouletteTrack"
+        );
+
+    const result =
+        document.getElementById(
+            "openResult"
+        );
+
+    const resultIcon =
+        document.getElementById(
+            "resultIcon"
+        );
+
+    const resultName =
+        document.getElementById(
+            "resultName"
+        );
+
+    const resultRarity =
+        document.getElementById(
+            "resultRarity"
+        );
+
+    const resultValue =
+        document.getElementById(
+            "resultValue"
+        );
+
+    document.getElementById(
+        "modalTitle"
+    ).textContent =
+        selected.name;
+
+    result.classList.remove(
+        "show"
+    );
+
+    track.style.transition =
+        "none";
+
+    track.style.transform =
+        "translateX(0)";
+
+    track.innerHTML = "";
+
+    /*
+       Создаём длинную ленту.
+       Последняя карточка —
+       фактическая награда.
+    */
+
+    const items = [];
+
+    for(
+        let i=0;
+        i<30;
+        i++
+    ){
+
+        items.push(
+            randomVisualNFT()
+        );
+
+    }
+
+    items.push(
+        selected.reward
+    );
+
+    items.forEach(
+        item => {
+
+            track.innerHTML += `
+
+            <div class="roll-card">
+
+                <div class="roll-icon">
+
+                    ${item.icon}
+
+                </div>
+
+                <div class="roll-name">
+
+                    ${escapeHTML(
+                        item.name
+                    )}
+
+                </div>
+
+                <div class="roll-rarity">
+
+                    ${escapeHTML(
+                        item.rarity
+                    )}
+
+                </div>
+
+            </div>
+
+            `;
+
+        }
+    );
+
+    modal.classList.add(
+        "show"
+    );
+
+    /*
+       Ждём рендер,
+       затем запускаем прокрутку.
+    */
+
+    requestAnimationFrame(
+        ()=>{
+
+            const cards =
+                track.querySelectorAll(
+                    ".roll-card"
+                );
+
+            const last =
+                cards[cards.length-1];
+
+            const viewport =
+                track.parentElement;
+
+            const target =
+                last.offsetLeft
+                -
+                (
+                    viewport.clientWidth / 2
+                    -
+                    last.offsetWidth / 2
+                );
+
+            /*
+               Быстрый старт →
+               замедление →
+               остановка.
+            */
+
+            setTimeout(
+                ()=>{
+
+                    track.style.transition =
+                        "transform 5.8s cubic-bezier(.08,.72,.12,1)";
+
+                    track.style.transform =
+                        `translateX(-${target}px)`;
+
+                },
+                100
+            );
+
+            setTimeout(
+                ()=>{
+
+                    resultIcon.textContent =
+                        selected.reward.icon;
+
+                    resultName.textContent =
+                        selected.reward.name;
+
+                    resultRarity.textContent =
+                        selected.reward.rarity;
+
+                    resultValue.textContent =
+                        "💎 " +
+                        selected.reward.value;
+
+                    result.classList.add(
+                        "show"
+                    );
+
+                    tg.HapticFeedback
+                      ?.notificationOccurred(
+                          "success"
+                      );
+
+                },
+                6200
+            );
+
+        }
+    );
+
+}
+
+
+/* RANDOM VISUAL CARD */
+
+function randomVisualNFT(){
+
+    const list = [
+
+        {
+            name:"Cyber Cat",
+            rarity:"Common",
+            icon:"🐱"
+        },
+
+        {
+            name:"Neon Samurai",
+            rarity:"Common",
+            icon:"⚔️"
+        },
+
+        {
+            name:"Shadow Wolf",
+            rarity:"Rare",
+            icon:"🐺"
+        },
+
+        {
+            name:"Chrome Rider",
+            rarity:"Rare",
+            icon:"🏍️"
+        },
+
+        {
+            name:"Cyber Knight",
+            rarity:"Epic",
+            icon:"🛡️"
+        },
+
+        {
+            name:"Void Guardian",
+            rarity:"Epic",
+            icon:"👾"
+        },
+
+        {
+            name:"Galaxy Dragon",
+            rarity:"Legendary",
+            icon:"🐉"
+        },
+
+        {
+            name:"Quantum Ghost",
+            rarity:"Legendary",
+            icon:"👻"
+        }
+
+    ];
+
+    return list[
+        Math.floor(
+            Math.random() *
+            list.length
+        )
+    ];
+
+}
+
+
+/* CLOSE CASE */
+
+function closeCase(){
+
+    document
+        .getElementById(
+            "caseModal"
+        )
+        .classList
+        .remove("show");
+
+    renderAll();
+
+    toast(
+        "NFT добавлен в инвентарь"
+    );
+
+}
+
+
+/* INVENTORY */
+
+function renderInventory(){
+
+    const container =
+        document.getElementById(
+            "inventoryList"
+        );
+
+    container.innerHTML = "";
+
+    if(
+        !user.nfts ||
+        user.nfts.length === 0
+    ){
+
+        container.innerHTML = `
+
+            <div class="empty">
+
+                Инвентарь пуст
+
+            </div>
+
+        `;
+
+        return;
+
+    }
+
+    user.nfts.forEach(
+        nft => {
+
+            container.innerHTML += `
+
+            <div
+                class="card sell-card"
+                id="nft-${nft.id}">
+
+                <div class="nft">
+
+                    <div class="nftart">
+
+                        ${nft.icon}
+
+                    </div>
+
+                    <div class="nftinfo">
+
+                        <div class="nftname">
+
+                            ${escapeHTML(
+                                nft.name
+                            )}
+
+                        </div>
+
+                        <div class="rarity">
+
+                            ${escapeHTML(
+                                nft.rarity
+                            )}
+
+                        </div>
+
+                        <div class="nftvalue">
+
+                            💎 ${nft.value}
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <button
+                    class="btn dark"
+                    onclick="sellNFT(${nft.id},${nft.value})">
+
+                    ПРОДАТЬ
+                    ЗА
+                    ${nft.value}
+                    🪙
+
+                </button>
+
+            </div>
+
+            `;
+
+        }
+    );
+
+}
+
+
+/* SELL ANIMATION */
+
+async function sellNFT(
+    id,
+    value
+){
+
+    const card =
+        document.getElementById(
+            "nft-"+id
+        );
+
+    if(!card){
+
+        return;
+
+    }
+
+    if(
+        !confirm(
+            "Продать NFT за " +
+            value +
+            " 🪙?"
+        )
+    ){
+
+        return;
+
+    }
+
+    try{
+
+        /*
+           Сначала меняем сервер.
+        */
+
+        user =
+            await api(
+                "/api/sell",
+                {
+                    method:"POST",
+
+                    body:
+                        JSON.stringify({
+                            nft_id:id
+                        })
+                }
+            );
+
+        /*
+           Запускаем визуальное
+           исчезновение карточки.
+        */
+
+        card.classList.add(
+            "selling"
+        );
+
+        createCoins();
+
+        tg.HapticFeedback
+          ?.impactOccurred(
+              "medium"
+          );
+
+        setTimeout(
+            ()=>{
+
+                renderAll();
+
+                toast(
+                    "+" +
+                    value +
+                    " 🪙"
+                );
+
+            },
+            500
+        );
+
+    }
+    catch(error){
+
+        toast(
+            error.message
+        );
+
+    }
+
+}
+
+
+/* COIN EFFECT */
+
+function createCoins(){
+
+    for(
+        let i=0;
+        i<7;
+        i++
+    ){
+
+        const coin =
+            document.createElement(
+                "div"
+            );
+
+        coin.className =
+            "coin-fly";
+
+        coin.textContent =
+            "🪙";
+
+        coin.style.left =
+            (
+                30 +
+                Math.random()*40
+            ) +
+            "%";
+
+        coin.style.top =
+            (
+                45 +
+                Math.random()*20
+            ) +
+            "%";
+
+        coin.style.animationDelay =
+            (
+                Math.random()*.15
+            ) +
+            "s";
+
+        document.body.appendChild(
+            coin
+        );
+
+        setTimeout(
+            ()=>{
+                coin.remove();
+            },
+            1000
+        );
+
+    }
+
+}
+
+
 /* RATING */
 
-async function loadRating() {
+async function loadRating(){
 
-    try {
+    try{
 
         rankings =
             await api(
@@ -1260,7 +1805,8 @@ async function loadRating() {
             "rich"
         );
 
-    } catch (error) {
+    }
+    catch(error){
 
         toast(
             error.message
@@ -1271,14 +1817,18 @@ async function loadRating() {
 }
 
 
-function showRating(type) {
+function showRating(type){
 
-    if (!rankings) {
+    if(!rankings){
+
         return;
+
     }
 
     document
-        .getElementById("richTab")
+        .getElementById(
+            "richTab"
+        )
         .classList
         .toggle(
             "active",
@@ -1286,7 +1836,9 @@ function showRating(type) {
         );
 
     document
-        .getElementById("expTab")
+        .getElementById(
+            "expTab"
+        )
         .classList
         .toggle(
             "active",
@@ -1295,8 +1847,8 @@ function showRating(type) {
 
     const list =
         type === "rich"
-            ? rankings.richest
-            : rankings.expensive;
+        ? rankings.richest
+        : rankings.expensive;
 
     const container =
         document.getElementById(
@@ -1306,20 +1858,22 @@ function showRating(type) {
     container.innerHTML = "";
 
     list.forEach(
-        (player, index) => {
+        (player,index)=>{
 
             const username =
                 player.username
-                    ? "@" +
-                      player.username
-                    : (
-                        player.first_name ||
-                        "Игрок"
-                    );
+                ? "@"+player.username
+                : (
+                    player.first_name ||
+                    "Игрок"
+                );
 
             let value;
+            let subtitle;
 
-            if (type === "rich") {
+            if(
+                type === "rich"
+            ){
 
                 value =
                     "🪙 " +
@@ -1328,26 +1882,28 @@ function showRating(type) {
                         player.collection_value
                     );
 
-            } else {
+                subtitle =
+                    "Баланс + коллекция";
+
+            }
+            else{
 
                 value =
                     "💎 " +
                     player.value;
 
-            }
-
-            const subtitle =
-                type === "rich"
-
-                    ? "Баланс + коллекция"
-
-                    : escapeHTML(
+                subtitle =
+                    escapeHTML(
                         player.name
-                    ) +
-                      " • " +
-                      escapeHTML(
+                    )
+                    +
+                    " • "
+                    +
+                    escapeHTML(
                         player.rarity
-                      );
+                    );
+
+            }
 
             container.innerHTML += `
 
@@ -1355,7 +1911,7 @@ function showRating(type) {
 
                 <div class="place">
 
-                    #${index + 1}
+                    #${index+1}
 
                 </div>
 
@@ -1391,9 +1947,11 @@ function showRating(type) {
 }
 
 
-/* ESCAPE HTML */
+/* ESCAPE */
 
-function escapeHTML(text) {
+function escapeHTML(
+    text
+){
 
     const div =
         document.createElement(
