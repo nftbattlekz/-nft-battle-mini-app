@@ -1530,6 +1530,7 @@ let state = null;
 let loading = false;
 let marketMode = "items";
 let toastId = 0;
+let lastNotificationId = 0;
 
 function setLoading(show,text="Загрузка NEXORA..."){
     const screen=document.getElementById("loadingScreen");
@@ -2076,15 +2077,19 @@ function renderInventory(){
 
                     </div>
 
-                    <div>
+                    <div style="text-align:right">
 
                         <div class="price">
                             💎 ${format(item.price)}
                         </div>
 
                         <div class="small">
-                            базовая цена
+                            за 1 шт.
                         </div>
+
+                        <button class="btn green" style="margin-top:7px;padding:8px 10px" onclick="sellToState('${escapeAttr(item.key)}')">
+                            🏛 Продать государству
+                        </button>
 
                     </div>
 
@@ -2110,6 +2115,18 @@ function renderInventory(){
 
     }
 
+}
+
+
+async function sellToState(itemKey){
+    try{
+        const data=await api("/api/inventory/sell",{method:"POST",body:JSON.stringify({item_key:itemKey})});
+        toast(`🏛 Продано ${data.icon||"📦"} ${data.item} ×${data.quantity} за 💎 ${format(data.total)}`,"success");
+        await load();
+        showScreen("inventory");
+    }catch(e){
+        toast(e.message,"error");
+    }
 }
 
 
@@ -2954,7 +2971,8 @@ async function startWork(job){
             expires_at:data.expires_at||0,
             name:meta?.name||"Рабочая смена",
             reward:meta?.reward||0,
-            xp:meta?.xp||0
+            xp:meta?.xp||0,
+            world:data.world||meta?.world||state?.user?.world||1
         };
 
         renderWorkModal();
@@ -3060,6 +3078,7 @@ async function completeWork(){
 
         activeWork=null;
         await load();
+        showScreen("jobs");
 
     }catch(e){
         toast(e.message,"error");
@@ -3357,6 +3376,18 @@ async function buyProperty(key){
 
         toast(e.message,"error");
 
+    }
+}
+
+
+async function sellToState(itemKey){
+    try{
+        const data=await api("/api/inventory/sell",{method:"POST",body:JSON.stringify({item_key:itemKey})});
+        toast(`🏛 Продано ${data.icon||"📦"} ${data.item} ×${data.quantity} за 💎 ${format(data.total)}`,"success");
+        await load();
+        showScreen("inventory");
+    }catch(e){
+        toast(e.message,"error");
     }
 }
 
@@ -3947,8 +3978,9 @@ async function createEvent(){
         });
 
         toast(
-            "⚡ Событие запущено",
-            "success"
+            `⚡ ${data.title||title}\n${data.description||description}`,
+            "success",
+            5000
         );
 
         await load();
@@ -4737,7 +4769,14 @@ async function loadNotifications(){
     try{
         const data=await api("/api/notifications");
 
-        state.notifications=data.notifications||[];
+        const incoming=data.notifications||[];
+        if(lastNotificationId>0){
+            incoming.filter(n=>Number(n.id)>lastNotificationId && String(n.type||"")==="event")
+                .sort((a,b)=>Number(a.id)-Number(b.id))
+                .forEach(n=>toast(`${n.title||"⚡ Событие NEXORA"}\n${n.message||""}`,"success",5000));
+        }
+        if(incoming.length){ lastNotificationId=Math.max(lastNotificationId,...incoming.map(n=>Number(n.id)||0)); }
+        state.notifications=incoming;
         state.user.unread_notifications=Number(data.unread||0);
 
         updateNotificationBadge(state.user.unread_notifications);
@@ -4881,7 +4920,7 @@ function detectToastType(message){
 }
 
 
-function toast(message,type=null){
+function toast(message,type=null,duration=3000){
 
     const container=
         document.getElementById("toastContainer");
@@ -4925,7 +4964,7 @@ function toast(message,type=null){
 
         },200);
 
-    },3000);
+    },duration);
 
 }
 
