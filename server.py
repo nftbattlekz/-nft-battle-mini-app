@@ -1,229 +1,139 @@
 import os
-import time
-import hmac
-import hashlib
-import json
 import random
 import sqlite3
-from urllib.parse import parse_qsl
-
+import time
 from flask import Flask, jsonify, request, send_from_directory
 
-app = Flask(__name__, static_folder="web")
+app = Flask(__name__, static_folder="web", static_url_path="")
 
-BOT_TOKEN = os.environ.get("BOT_TOKEN", "")
-CREATOR_TELEGRAM_ID = "8518976778"
-DB_PATH = "nexora.db"
+DB = "nexora.db"
 
+BOT_TOKEN = os.getenv("BOT_TOKEN", "")
 
-# =========================
-# NFT
-# =========================
+# Твой Telegram ID
+CREATOR_ID = 8518976778
 
-RARITIES = [
-    ("Common", 1, 12, 40, 90),
-    ("Rare", 13, 24, 120, 250),
-    ("Epic", 25, 36, 350, 700),
-    ("Legendary", 37, 48, 1000, 2300),
-    ("Mythic", 49, 60, 3000, 8500),
-]
-
-NFT_NAMES = [
-    "Neon Core", "Red Pulse", "Dark Byte", "Cyber Eye",
-    "Void Chip", "Nova Gear", "Chrome Soul", "Pixel Flame",
-    "Shadow Key", "Digital Fang", "Quantum Coin", "Nexus Spark",
-
-    "Blood Circuit", "Night Runner", "Cyber Wolf", "Neon Phantom",
-    "Red Protocol", "Dark Matrix", "Ghost Drive", "Chrome Beast",
-    "Zero Signal", "Black Nova", "Cyber Fang", "Pulse Hunter",
-
-    "Omega Core", "Void Walker", "Neon Samurai", "Quantum Beast",
-    "Dark Emperor", "Cyber Dragon", "Red Horizon", "Phantom X",
-    "Night Protocol", "Digital Demon", "Nexus King", "Infinity Gear",
-
-    "Galaxy Hunter", "Shadow Emperor", "Neon Titan", "Quantum Lord",
-    "Cyber God", "Void Master", "Red Titan", "Dark Phoenix",
-    "Chrome Legend", "Omega Dragon", "Night King", "Nexus Prime",
-
-    "Mythic Core", "Absolute Zero", "Black Universe", "Neon Overlord",
-    "Quantum Emperor", "Void King", "Cyber Overlord", "Infinity Soul",
-    "Dark Universe", "NEXORA One", "Eternal Nexus", "Genesis"
-]
-
-NFTS = []
-
-for rarity, start_id, end_id, minimum, maximum in RARITIES:
-    for nft_id in range(start_id, end_id + 1):
-        position = (nft_id - start_id) / max(1, end_id - start_id)
-
-        NFTS.append({
-            "id": nft_id,
-            "name": NFT_NAMES[nft_id - 1],
-            "rarity": rarity,
-            "value": int(
-                minimum + (maximum - minimum) * position
-            )
-        })
-
-NFT_BY_ID = {nft["id"]: nft for nft in NFTS}
+CURRENCY = "💎"
 
 
-# =========================
-# CASES
-# =========================
-
-CASES = [
-    {
-        "id": 1,
-        "name": "STARTER",
-        "subtitle": "Первый шаг",
-        "accent": "blue",
-        "pool": list(range(1, 13))
-    },
-    {
-        "id": 2,
-        "name": "NEON",
-        "subtitle": "Неоновая серия",
-        "accent": "pink",
-        "pool": list(range(4, 25))
-    },
-    {
-        "id": 3,
-        "name": "SHADOW",
-        "subtitle": "Тёмная коллекция",
-        "accent": "purple",
-        "pool": list(range(13, 37))
-    },
-    {
-        "id": 4,
-        "name": "CYBER",
-        "subtitle": "Киберсерия",
-        "accent": "red",
-        "pool": list(range(13, 49))
-    },
-    {
-        "id": 5,
-        "name": "GALAXY",
-        "subtitle": "Галактический дроп",
-        "accent": "violet",
-        "pool": list(range(25, 49))
-    },
-    {
-        "id": 6,
-        "name": "QUANTUM",
-        "subtitle": "Квантовая серия",
-        "accent": "cyan",
-        "pool": list(range(29, 55))
-    },
-    {
-        "id": 7,
-        "name": "OMEGA",
-        "subtitle": "Омега уровень",
-        "accent": "orange",
-        "pool": list(range(37, 61))
-    },
-    {
-        "id": 8,
-        "name": "LEGEND",
-        "subtitle": "Легендарный дроп",
-        "accent": "gold",
-        "pool": list(range(37, 61))
-    },
-    {
-        "id": 9,
-        "name": "MYTHIC",
-        "subtitle": "Мифическая серия",
-        "accent": "mythic",
-        "pool": list(range(49, 61))
-    },
-    {
-        "id": 10,
-        "name": "NEXORA",
-        "subtitle": "Вся коллекция",
-        "accent": "nexora",
-        "pool": list(range(1, 61))
-    }
-]
-
-
-# =========================
-# PREFIXES
-# =========================
-
-PREFIXES = [
-    (1, "Новичок", "⚡ Новичок", 1000),
-    (2, "Охотник", "🎯 Охотник", 2500),
-    (3, "Кибер", "🤖 Кибер", 5000),
-    (4, "Неон", "💠 Неон", 7500),
-    (5, "Призрак", "👻 Призрак", 10000),
-    (6, "Ворон", "🐦‍⬛ Ворон", 15000),
-    (7, "Самурай", "⚔️ Самурай", 22000),
-    (8, "Титан", "🗿 Титан", 30000),
-    (9, "Император", "👑 Император", 40000),
-    (10, "Повелитель", "🔥 Повелитель", 55000),
-    (11, "Владыка", "🌑 Владыка", 70000),
-    (12, "Нексус", "🔮 Нексус", 90000),
-    (13, "Омега", "Ω Омега", 115000),
-    (14, "Легенда", "🏆 Легенда", 145000),
-    (15, "Мифик", "💎 Мифик", 180000),
-    (16, "Бессмертный", "♾️ Бессмертный", 220000),
-    (17, "Архитектор", "🧬 Архитектор", 275000),
-    (18, "Создатель", "🛠️ Создатель", 350000),
-    (19, "Абсолют", "✦ Абсолют", 450000),
-    (20, "NEXORA ELITE", "✧ NEXORA ELITE", 600000)
-]
-
-PREFIX_BY_ID = {
-    p[0]: {
-        "id": p[0],
-        "name": p[1],
-        "display": p[2],
-        "price": p[3]
-    }
-    for p in PREFIXES
-}
-
-
-# =========================
+# =========================================================
 # DATABASE
-# =========================
+# =========================================================
 
-def get_db():
-    conn = sqlite3.connect(DB_PATH)
+def db():
+    conn = sqlite3.connect(DB)
     conn.row_factory = sqlite3.Row
     return conn
 
 
 def init_db():
-
-    conn = get_db()
+    conn = db()
 
     conn.execute("""
         CREATE TABLE IF NOT EXISTS users (
-            telegram_id TEXT PRIMARY KEY,
-            username TEXT,
-            first_name TEXT,
-            coins INTEGER DEFAULT 1000,
-            total_opened INTEGER DEFAULT 0,
-            total_received_value INTEGER DEFAULT 0,
-            prefix_id INTEGER DEFAULT 0
-        )
-    """)
-
-    conn.execute("""
-        CREATE TABLE IF NOT EXISTS nfts (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
-            telegram_id TEXT NOT NULL,
-            nft_id INTEGER NOT NULL,
-            created_at INTEGER NOT NULL
+            telegram_id INTEGER UNIQUE,
+            username TEXT DEFAULT '',
+            first_name TEXT DEFAULT '',
+            balance INTEGER DEFAULT 5000,
+            bank INTEGER DEFAULT 0,
+            xp INTEGER DEFAULT 0,
+            level INTEGER DEFAULT 1,
+            energy INTEGER DEFAULT 100,
+            rating INTEGER DEFAULT 0,
+            created_at INTEGER
         )
     """)
 
     conn.execute("""
-        CREATE TABLE IF NOT EXISTS user_prefixes (
-            telegram_id TEXT NOT NULL,
-            prefix_id INTEGER NOT NULL,
-            PRIMARY KEY (telegram_id, prefix_id)
+        CREATE TABLE IF NOT EXISTS inventory (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            telegram_id INTEGER,
+            item_type TEXT,
+            item_name TEXT,
+            amount INTEGER DEFAULT 1,
+            value INTEGER DEFAULT 0
+        )
+    """)
+
+    conn.execute("""
+        CREATE TABLE IF NOT EXISTS businesses (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            telegram_id INTEGER,
+            business_type TEXT,
+            level INTEGER DEFAULT 1,
+            income INTEGER DEFAULT 0,
+            last_collect INTEGER DEFAULT 0
+        )
+    """)
+
+    conn.execute("""
+        CREATE TABLE IF NOT EXISTS farms (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            telegram_id INTEGER,
+            crop TEXT,
+            level INTEGER DEFAULT 1,
+            last_harvest INTEGER DEFAULT 0
+        )
+    """)
+
+    conn.execute("""
+        CREATE TABLE IF NOT EXISTS pets (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            telegram_id INTEGER,
+            name TEXT,
+            level INTEGER DEFAULT 1,
+            happiness INTEGER DEFAULT 100
+        )
+    """)
+
+    conn.execute("""
+        CREATE TABLE IF NOT EXISTS mines (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            telegram_id INTEGER,
+            mine_type TEXT,
+            level INTEGER DEFAULT 1,
+            last_mine INTEGER DEFAULT 0
+        )
+    """)
+
+    conn.execute("""
+        CREATE TABLE IF NOT EXISTS jobs (
+            telegram_id INTEGER PRIMARY KEY,
+            job TEXT DEFAULT 'Безработный',
+            salary INTEGER DEFAULT 100,
+            last_work INTEGER DEFAULT 0
+        )
+    """)
+
+    conn.execute("""
+        CREATE TABLE IF NOT EXISTS fishing (
+            telegram_id INTEGER PRIMARY KEY,
+            level INTEGER DEFAULT 1,
+            fish INTEGER DEFAULT 0,
+            last_fish INTEGER DEFAULT 0
+        )
+    """)
+
+    conn.execute("""
+        CREATE TABLE IF NOT EXISTS properties (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            telegram_id INTEGER,
+            property_name TEXT,
+            level INTEGER DEFAULT 1,
+            income INTEGER DEFAULT 0
+        )
+    """)
+
+    conn.execute("""
+        CREATE TABLE IF NOT EXISTS market (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            seller_id INTEGER,
+            item_type TEXT,
+            item_name TEXT,
+            amount INTEGER,
+            price INTEGER,
+            created_at INTEGER
         )
     """)
 
@@ -234,832 +144,1345 @@ def init_db():
 init_db()
 
 
-# =========================
-# TELEGRAM AUTH
-# =========================
+# =========================================================
+# HELPERS
+# =========================================================
 
-def get_telegram_user():
-
-    init_data = request.headers.get(
-        "X-Telegram-Init-Data",
-        ""
-    )
-
-    if init_data and BOT_TOKEN:
-
-        try:
-
-            params = dict(
-                parse_qsl(
-                    init_data,
-                    keep_blank_values=True
-                )
-            )
-
-            received_hash = params.pop("hash", None)
-
-            if not received_hash:
-                raise ValueError()
-
-            auth_date = int(
-                params.get("auth_date", "0")
-            )
-
-            if time.time() - auth_date > 86400:
-                raise ValueError()
-
-            data_check_string = "\n".join(
-                f"{key}={params[key]}"
-                for key in sorted(params)
-            )
-
-            secret_key = hmac.new(
-                b"WebAppData",
-                BOT_TOKEN.encode(),
-                hashlib.sha256
-            ).digest()
-
-            calculated_hash = hmac.new(
-                secret_key,
-                data_check_string.encode(),
-                hashlib.sha256
-            ).hexdigest()
-
-            if not hmac.compare_digest(
-                calculated_hash,
-                received_hash
-            ):
-                raise ValueError()
-
-            user = json.loads(
-                params.get("user", "{}")
-            )
-
-            return {
-                "id": str(user["id"]),
-                "username": user.get(
-                    "username",
-                    ""
-                ),
-                "first_name": user.get(
-                    "first_name",
-                    "Player"
-                )
-            }
-
-        except Exception:
-            pass
-
-    return {
-        "id": "demo_user",
-        "username": "demo",
-        "first_name": "Demo"
-    }
+def get_user(tg_id):
+    conn = db()
+    user = conn.execute(
+        "SELECT * FROM users WHERE telegram_id=?",
+        (tg_id,)
+    ).fetchone()
+    conn.close()
+    return user
 
 
-# =========================
-# USERS
-# =========================
+def create_user(tg_id, username="", first_name=""):
+    conn = db()
 
-def ensure_user(user):
+    user = conn.execute(
+        "SELECT * FROM users WHERE telegram_id=?",
+        (tg_id,)
+    ).fetchone()
 
-    conn = get_db()
-
-    row = conn.execute("""
-        SELECT *
-        FROM users
-        WHERE telegram_id = ?
-    """, (
-        user["id"],
-    )).fetchone()
-
-    if not row:
-
+    if not user:
         conn.execute("""
-            INSERT INTO users (
-                telegram_id,
-                username,
-                first_name,
-                coins,
-                total_opened,
-                total_received_value,
-                prefix_id
-            )
-            VALUES (?, ?, ?, 1000, 0, 0, 0)
+            INSERT INTO users
+            (telegram_id, username, first_name, balance, bank, xp, level, energy, rating, created_at)
+            VALUES (?, ?, ?, 5000, 0, 0, 1, 100, 0, ?)
         """, (
-            user["id"],
-            user["username"],
-            user["first_name"]
+            tg_id,
+            username,
+            first_name,
+            int(time.time())
         ))
 
-    else:
+        # Стартовые предметы
+        conn.execute("""
+            INSERT INTO inventory
+            (telegram_id, item_type, item_name, amount, value)
+            VALUES (?, 'resource', 'Железо', 10, 20)
+        """, (tg_id,))
 
         conn.execute("""
-            UPDATE users
-            SET username = ?,
-                first_name = ?
-            WHERE telegram_id = ?
-        """, (
-            user["username"],
-            user["first_name"],
-            user["id"]
-        ))
+            INSERT INTO inventory
+            (telegram_id, item_type, item_name, amount, value)
+            VALUES (?, 'resource', 'Кристалл', 5, 100)
+        """, (tg_id,))
 
-    conn.commit()
+        conn.execute("""
+            INSERT INTO businesses
+            (telegram_id, business_type, level, income, last_collect)
+            VALUES (?, 'Малый магазин', 1, 250, ?)
+        """, (tg_id, int(time.time())))
 
-    row = conn.execute("""
-        SELECT *
-        FROM users
-        WHERE telegram_id = ?
-    """, (
-        user["id"],
-    )).fetchone()
+        conn.execute("""
+            INSERT INTO jobs
+            (telegram_id, job, salary, last_work)
+            VALUES (?, 'Стажёр', 150, 0)
+        """, (tg_id,))
+
+        conn.execute("""
+            INSERT INTO fishing
+            (telegram_id, level, fish, last_fish)
+            VALUES (?, 1, 0, 0)
+        """, (tg_id,))
+
+        conn.execute("""
+            INSERT INTO farms
+            (telegram_id, crop, level, last_harvest)
+            VALUES (?, 'Пшеница', 1, ?)
+        """, (tg_id, int(time.time())))
+
+        conn.execute("""
+            INSERT INTO mines
+            (telegram_id, mine_type, level, last_mine)
+            VALUES (?, 'Железная шахта', 1, ?)
+        """, (tg_id, int(time.time())))
+
+        conn.commit()
 
     conn.close()
 
-    return row
 
+def auth():
+    tg_id = request.headers.get("X-Telegram-ID")
 
-def get_collection_value(user_id):
-
-    conn = get_db()
-
-    rows = conn.execute("""
-        SELECT nft_id
-        FROM nfts
-        WHERE telegram_id = ?
-    """, (
-        user_id,
-    )).fetchall()
-
-    conn.close()
-
-    total = 0
-
-    for row in rows:
-
-        nft = NFT_BY_ID.get(
-            row["nft_id"]
-        )
-
-        if nft:
-            total += nft["value"]
-
-    return total
-
-
-def serialize_user(row):
-
-    prefix = PREFIX_BY_ID.get(
-        row["prefix_id"] or 0
-    )
-
-    return {
-        "telegram_id": row["telegram_id"],
-        "username": row["username"],
-        "first_name": row["first_name"],
-        "coins": row["coins"],
-        "total_opened": row["total_opened"],
-        "collection_value":
-            get_collection_value(
-                row["telegram_id"]
-            ),
-        "prefix_id":
-            row["prefix_id"] or 0,
-        "prefix":
-            prefix["display"]
-            if prefix
-            else "",
-        "creator":
-            row["telegram_id"]
-            == CREATOR_TELEGRAM_ID
-    }
-
-
-# =========================
-# PROFILE
-# =========================
-
-@app.get("/api/me")
-def me():
-
-    user = get_telegram_user()
-
-    row = ensure_user(user)
-
-    return jsonify({
-        "ok": True,
-        "user": serialize_user(row)
-    })
-
-
-# =========================
-# CASES
-# =========================
-
-@app.get("/api/cases")
-def get_cases():
-
-    result = []
-
-    for case in CASES:
-
-        result.append({
-            "id": case["id"],
-            "name": case["name"],
-            "subtitle": case["subtitle"],
-            "accent": case["accent"],
-            "free": True
-        })
-
-    return jsonify({
-        "ok": True,
-        "cases": result
-    })
-
-
-# =========================
-# OPEN CASE
-# =========================
-
-@app.post("/api/cases/open")
-def open_case():
-
-    user = get_telegram_user()
-
-    ensure_user(user)
-
-    data = request.get_json(
-        silent=True
-    ) or {}
+    # Для разработки разрешаем demo-пользователя
+    if not tg_id:
+        tg_id = request.args.get("telegram_id")
 
     try:
-        case_id = int(
-            data.get("case_id", 0)
-        )
+        tg_id = int(tg_id)
     except:
-        case_id = 0
+        tg_id = 100000001
 
-    case = next(
-        (
-            c for c in CASES
-            if c["id"] == case_id
-        ),
-        None
+    username = request.headers.get("X-Telegram-Username", "")
+    first_name = request.headers.get("X-Telegram-Name", "Игрок")
+
+    create_user(tg_id, username, first_name)
+
+    return tg_id
+
+
+def add_balance(tg_id, amount):
+    conn = db()
+    conn.execute(
+        "UPDATE users SET balance = balance + ? WHERE telegram_id=?",
+        (amount, tg_id)
     )
+    conn.commit()
+    conn.close()
 
-    if not case:
 
-        return jsonify({
-            "ok": False,
-            "error": "Кейс не найден"
-        }), 404
+def add_xp(tg_id, amount):
+    conn = db()
 
-    nft_id = random.choice(
-        case["pool"]
-    )
+    user = conn.execute(
+        "SELECT xp, level FROM users WHERE telegram_id=?",
+        (tg_id,)
+    ).fetchone()
 
-    nft = NFT_BY_ID[nft_id]
+    if not user:
+        conn.close()
+        return
 
-    conn = get_db()
+    xp = user["xp"] + amount
+    level = user["level"]
+
+    needed = level * 1000
+
+    while xp >= needed:
+        xp -= needed
+        level += 1
+        needed = level * 1000
 
     conn.execute("""
-        INSERT INTO nfts (
-            telegram_id,
-            nft_id,
-            created_at
-        )
-        VALUES (?, ?, ?)
+        UPDATE users
+        SET xp=?, level=?, rating=rating+?
+        WHERE telegram_id=?
     """, (
-        user["id"],
-        nft["id"],
+        xp,
+        level,
+        amount // 10,
+        tg_id
+    ))
+
+    conn.commit()
+    conn.close()
+
+
+def is_creator(tg_id):
+    return tg_id == CREATOR_ID
+
+
+# =========================================================
+# MAIN
+# =========================================================
+
+@app.route("/")
+def index():
+    return send_from_directory("web", "index.html")
+
+
+@app.route("/api/me")
+def me():
+    tg_id = auth()
+
+    conn = db()
+
+    user = conn.execute(
+        "SELECT * FROM users WHERE telegram_id=?",
+        (tg_id,)
+    ).fetchone()
+
+    businesses = conn.execute(
+        "SELECT * FROM businesses WHERE telegram_id=?",
+        (tg_id,)
+    ).fetchall()
+
+    farms = conn.execute(
+        "SELECT * FROM farms WHERE telegram_id=?",
+        (tg_id,)
+    ).fetchall()
+
+    pets = conn.execute(
+        "SELECT * FROM pets WHERE telegram_id=?",
+        (tg_id,)
+    ).fetchall()
+
+    mines = conn.execute(
+        "SELECT * FROM mines WHERE telegram_id=?",
+        (tg_id,)
+    ).fetchall()
+
+    fishing = conn.execute(
+        "SELECT * FROM fishing WHERE telegram_id=?",
+        (tg_id,)
+    ).fetchone()
+
+    job = conn.execute(
+        "SELECT * FROM jobs WHERE telegram_id=?",
+        (tg_id,)
+    ).fetchone()
+
+    properties = conn.execute(
+        "SELECT * FROM properties WHERE telegram_id=?",
+        (tg_id,)
+    ).fetchall()
+
+    conn.close()
+
+    return jsonify({
+        "user": dict(user),
+        "creator": is_creator(tg_id),
+        "businesses": [dict(x) for x in businesses],
+        "farms": [dict(x) for x in farms],
+        "pets": [dict(x) for x in pets],
+        "mines": [dict(x) for x in mines],
+        "fishing": dict(fishing) if fishing else {},
+        "job": dict(job) if job else {},
+        "properties": [dict(x) for x in properties]
+    })
+
+
+# =========================================================
+# DAILY REWARD
+# =========================================================
+
+@app.route("/api/reward", methods=["POST"])
+def reward():
+    tg_id = auth()
+
+    conn = db()
+
+    user = conn.execute(
+        "SELECT * FROM users WHERE telegram_id=?",
+        (tg_id,)
+    ).fetchone()
+
+    now = int(time.time())
+
+    last = conn.execute("""
+        SELECT amount FROM inventory
+        WHERE telegram_id=? AND item_type='daily'
+        ORDER BY id DESC LIMIT 1
+    """, (tg_id,)).fetchone()
+
+    # Ограничение раз в 24 часа
+    if last:
+        conn.close()
+        return jsonify({
+            "ok": False,
+            "message": "Награда уже получена"
+        })
+
+    amount = 1000 + user["level"] * 250
+
+    conn.execute("""
+        INSERT INTO inventory
+        (telegram_id, item_type, item_name, amount, value)
+        VALUES (?, 'daily', 'Ежедневная награда', ?, ?)
+    """, (
+        tg_id,
+        1,
+        amount
+    ))
+
+    conn.execute(
+        "UPDATE users SET balance=balance+? WHERE telegram_id=?",
+        (amount, tg_id)
+    )
+
+    conn.commit()
+    conn.close()
+
+    add_xp(tg_id, 100)
+
+    return jsonify({
+        "ok": True,
+        "amount": amount
+    })
+
+
+# =========================================================
+# BUSINESS
+# =========================================================
+
+@app.route("/api/business/collect", methods=["POST"])
+def collect_business():
+    tg_id = auth()
+
+    conn = db()
+
+    business = conn.execute(
+        "SELECT * FROM businesses WHERE telegram_id=? LIMIT 1",
+        (tg_id,)
+    ).fetchone()
+
+    if not business:
+        conn.close()
+        return jsonify({"ok": False})
+
+    now = int(time.time())
+    elapsed = now - business["last_collect"]
+
+    # Доход каждые 60 секунд
+    cycles = min(elapsed // 60, 100)
+
+    if cycles <= 0:
+        conn.close()
+        return jsonify({
+            "ok": False,
+            "message": "Доход ещё не накопился"
+        })
+
+    amount = cycles * business["income"] * business["level"]
+
+    conn.execute(
+        "UPDATE users SET balance=balance+? WHERE telegram_id=?",
+        (amount, tg_id)
+    )
+
+    conn.execute(
+        "UPDATE businesses SET last_collect=? WHERE id=?",
+        (now, business["id"])
+    )
+
+    conn.commit()
+    conn.close()
+
+    add_xp(tg_id, 50)
+
+    return jsonify({
+        "ok": True,
+        "amount": amount
+    })
+
+
+@app.route("/api/business/upgrade", methods=["POST"])
+def upgrade_business():
+    tg_id = auth()
+
+    conn = db()
+
+    business = conn.execute(
+        "SELECT * FROM businesses WHERE telegram_id=? LIMIT 1",
+        (tg_id,)
+    ).fetchone()
+
+    user = conn.execute(
+        "SELECT balance FROM users WHERE telegram_id=?",
+        (tg_id,)
+    ).fetchone()
+
+    if not business:
+        conn.close()
+        return jsonify({"ok": False})
+
+    price = 3000 * business["level"]
+
+    if user["balance"] < price:
+        conn.close()
+        return jsonify({
+            "ok": False,
+            "message": "Недостаточно 💎"
+        })
+
+    conn.execute(
+        "UPDATE users SET balance=balance-? WHERE telegram_id=?",
+        (price, tg_id)
+    )
+
+    conn.execute(
+        "UPDATE businesses SET level=level+1 WHERE id=?",
+        (business["id"],)
+    )
+
+    conn.commit()
+    conn.close()
+
+    add_xp(tg_id, 200)
+
+    return jsonify({
+        "ok": True
+    })
+
+
+# =========================================================
+# MINING
+# =========================================================
+
+@app.route("/api/mine", methods=["POST"])
+def mine():
+    tg_id = auth()
+
+    conn = db()
+
+    mine_data = conn.execute(
+        "SELECT * FROM mines WHERE telegram_id=? LIMIT 1",
+        (tg_id,)
+    ).fetchone()
+
+    if not mine_data:
+        conn.close()
+        return jsonify({"ok": False})
+
+    now = int(time.time())
+
+    if now - mine_data["last_mine"] < 20:
+        conn.close()
+        return jsonify({
+            "ok": False,
+            "message": "Шахта перезаряжается"
+        })
+
+    amount = random.randint(
+        3 + mine_data["level"],
+        8 + mine_data["level"] * 2
+    )
+
+    item = random.choice([
+        ("Железо", 20),
+        ("Уголь", 30),
+        ("Кристалл", 100),
+        ("Золото", 250)
+    ])
+
+    existing = conn.execute("""
+        SELECT * FROM inventory
+        WHERE telegram_id=? AND item_type='resource' AND item_name=?
+    """, (
+        tg_id,
+        item[0]
+    )).fetchone()
+
+    if existing:
+        conn.execute(
+            "UPDATE inventory SET amount=amount+? WHERE id=?",
+            (amount, existing["id"])
+        )
+    else:
+        conn.execute("""
+            INSERT INTO inventory
+            (telegram_id,item_type,item_name,amount,value)
+            VALUES (?, 'resource', ?, ?, ?)
+        """, (
+            tg_id,
+            item[0],
+            amount,
+            item[1]
+        ))
+
+    conn.execute(
+        "UPDATE mines SET last_mine=? WHERE id=?",
+        (now, mine_data["id"])
+    )
+
+    conn.commit()
+    conn.close()
+
+    add_xp(tg_id, 75)
+
+    return jsonify({
+        "ok": True,
+        "item": item[0],
+        "amount": amount
+    })
+
+
+@app.route("/api/mine/upgrade", methods=["POST"])
+def upgrade_mine():
+    tg_id = auth()
+
+    conn = db()
+
+    mine_data = conn.execute(
+        "SELECT * FROM mines WHERE telegram_id=? LIMIT 1",
+        (tg_id,)
+    ).fetchone()
+
+    user = conn.execute(
+        "SELECT balance FROM users WHERE telegram_id=?",
+        (tg_id,)
+    ).fetchone()
+
+    price = 2500 * mine_data["level"]
+
+    if user["balance"] < price:
+        conn.close()
+        return jsonify({
+            "ok": False,
+            "message": "Недостаточно 💎"
+        })
+
+    conn.execute(
+        "UPDATE users SET balance=balance-? WHERE telegram_id=?",
+        (price, tg_id)
+    )
+
+    conn.execute(
+        "UPDATE mines SET level=level+1 WHERE id=?",
+        (mine_data["id"],)
+    )
+
+    conn.commit()
+    conn.close()
+
+    add_xp(tg_id, 150)
+
+    return jsonify({"ok": True})
+
+
+# =========================================================
+# FARM
+# =========================================================
+
+@app.route("/api/farm/harvest", methods=["POST"])
+def harvest():
+    tg_id = auth()
+
+    conn = db()
+
+    farm = conn.execute(
+        "SELECT * FROM farms WHERE telegram_id=? LIMIT 1",
+        (tg_id,)
+    ).fetchone()
+
+    if not farm:
+        conn.close()
+        return jsonify({"ok": False})
+
+    now = int(time.time())
+
+    if now - farm["last_harvest"] < 45:
+        conn.close()
+        return jsonify({
+            "ok": False,
+            "message": "Урожай ещё растёт"
+        })
+
+    amount = random.randint(
+        100,
+        180 + farm["level"] * 40
+    )
+
+    conn.execute(
+        "UPDATE users SET balance=balance+? WHERE telegram_id=?",
+        (amount, tg_id)
+    )
+
+    conn.execute(
+        "UPDATE farms SET last_harvest=? WHERE id=?",
+        (now, farm["id"])
+    )
+
+    conn.commit()
+    conn.close()
+
+    add_xp(tg_id, 60)
+
+    return jsonify({
+        "ok": True,
+        "amount": amount
+    })
+
+
+@app.route("/api/farm/upgrade", methods=["POST"])
+def upgrade_farm():
+    tg_id = auth()
+
+    conn = db()
+
+    farm = conn.execute(
+        "SELECT * FROM farms WHERE telegram_id=? LIMIT 1",
+        (tg_id,)
+    ).fetchone()
+
+    user = conn.execute(
+        "SELECT balance FROM users WHERE telegram_id=?",
+        (tg_id,)
+    ).fetchone()
+
+    price = 2000 * farm["level"]
+
+    if user["balance"] < price:
+        conn.close()
+        return jsonify({
+            "ok": False,
+            "message": "Недостаточно 💎"
+        })
+
+    conn.execute(
+        "UPDATE users SET balance=balance-? WHERE telegram_id=?",
+        (price, tg_id)
+    )
+
+    conn.execute(
+        "UPDATE farms SET level=level+1 WHERE id=?",
+        (farm["id"],)
+    )
+
+    conn.commit()
+    conn.close()
+
+    add_xp(tg_id, 100)
+
+    return jsonify({"ok": True})
+
+
+# =========================================================
+# JOBS
+# =========================================================
+
+JOBS = {
+    "Курьер": 250,
+    "Шахтёр": 400,
+    "Программист": 650,
+    "Инженер": 900,
+    "Директор": 1500
+}
+
+
+@app.route("/api/jobs")
+def jobs():
+    return jsonify(JOBS)
+
+
+@app.route("/api/job/set", methods=["POST"])
+def set_job():
+    tg_id = auth()
+
+    data = request.json or {}
+    job = data.get("job")
+
+    if job not in JOBS:
+        return jsonify({
+            "ok": False,
+            "message": "Такой работы нет"
+        })
+
+    conn = db()
+
+    conn.execute("""
+        UPDATE jobs
+        SET job=?, salary=?
+        WHERE telegram_id=?
+    """, (
+        job,
+        JOBS[job],
+        tg_id
+    ))
+
+    conn.commit()
+    conn.close()
+
+    return jsonify({"ok": True})
+
+
+@app.route("/api/job/work", methods=["POST"])
+def work():
+    tg_id = auth()
+
+    conn = db()
+
+    job = conn.execute(
+        "SELECT * FROM jobs WHERE telegram_id=?",
+        (tg_id,)
+    ).fetchone()
+
+    now = int(time.time())
+
+    if now - job["last_work"] < 30:
+        conn.close()
+        return jsonify({
+            "ok": False,
+            "message": "Подожди немного перед следующей работой"
+        })
+
+    salary = job["salary"]
+
+    conn.execute("""
+        UPDATE users
+        SET balance=balance+?
+        WHERE telegram_id=?
+    """, (
+        salary,
+        tg_id
+    ))
+
+    conn.execute(
+        "UPDATE jobs SET last_work=? WHERE telegram_id=?",
+        (now, tg_id)
+    )
+
+    conn.commit()
+    conn.close()
+
+    add_xp(tg_id, 80)
+
+    return jsonify({
+        "ok": True,
+        "amount": salary
+    })
+
+
+# =========================================================
+# FISHING
+# =========================================================
+
+@app.route("/api/fishing", methods=["POST"])
+def fishing():
+    tg_id = auth()
+
+    conn = db()
+
+    fish = conn.execute(
+        "SELECT * FROM fishing WHERE telegram_id=?",
+        (tg_id,)
+    ).fetchone()
+
+    now = int(time.time())
+
+    if now - fish["last_fish"] < 20:
+        conn.close()
+        return jsonify({
+            "ok": False,
+            "message": "Удочка отдыхает"
+        })
+
+    amount = random.randint(100, 350) * fish["level"]
+
+    conn.execute(
+        "UPDATE users SET balance=balance+? WHERE telegram_id=?",
+        (amount, tg_id)
+    )
+
+    conn.execute("""
+        UPDATE fishing
+        SET fish=fish+1,last_fish=?
+        WHERE telegram_id=?
+    """, (
+        now,
+        tg_id
+    ))
+
+    conn.commit()
+    conn.close()
+
+    add_xp(tg_id, 70)
+
+    return jsonify({
+        "ok": True,
+        "amount": amount
+    })
+
+
+# =========================================================
+# BANK
+# =========================================================
+
+@app.route("/api/bank/deposit", methods=["POST"])
+def bank_deposit():
+    tg_id = auth()
+
+    data = request.json or {}
+
+    try:
+        amount = int(data.get("amount", 0))
+    except:
+        amount = 0
+
+    conn = db()
+
+    user = conn.execute(
+        "SELECT balance FROM users WHERE telegram_id=?",
+        (tg_id,)
+    ).fetchone()
+
+    if amount <= 0 or user["balance"] < amount:
+        conn.close()
+        return jsonify({
+            "ok": False,
+            "message": "Недостаточно средств"
+        })
+
+    conn.execute("""
+        UPDATE users
+        SET balance=balance-?,
+            bank=bank+?
+        WHERE telegram_id=?
+    """, (
+        amount,
+        amount,
+        tg_id
+    ))
+
+    conn.commit()
+    conn.close()
+
+    return jsonify({"ok": True})
+
+
+@app.route("/api/bank/withdraw", methods=["POST"])
+def bank_withdraw():
+    tg_id = auth()
+
+    data = request.json or {}
+
+    try:
+        amount = int(data.get("amount", 0))
+    except:
+        amount = 0
+
+    conn = db()
+
+    user = conn.execute(
+        "SELECT bank FROM users WHERE telegram_id=?",
+        (tg_id,)
+    ).fetchone()
+
+    if amount <= 0 or user["bank"] < amount:
+        conn.close()
+        return jsonify({
+            "ok": False,
+            "message": "Недостаточно средств в банке"
+        })
+
+    conn.execute("""
+        UPDATE users
+        SET bank=bank-?,
+            balance=balance+?
+        WHERE telegram_id=?
+    """, (
+        amount,
+        amount,
+        tg_id
+    ))
+
+    conn.commit()
+    conn.close()
+
+    return jsonify({"ok": True})
+
+
+# =========================================================
+# PROPERTIES
+# =========================================================
+
+PROPERTY_LIST = [
+    ("Квартира", 10000, 300),
+    ("Дом", 30000, 900),
+    ("Бизнес-центр", 100000, 3500),
+    ("Небоскрёб", 500000, 20000)
+]
+
+
+@app.route("/api/properties")
+def properties():
+    return jsonify([
+        {
+            "name": x[0],
+            "price": x[1],
+            "income": x[2]
+        }
+        for x in PROPERTY_LIST
+    ])
+
+
+@app.route("/api/property/buy", methods=["POST"])
+def buy_property():
+    tg_id = auth()
+
+    data = request.json or {}
+    name = data.get("name")
+
+    selected = None
+
+    for x in PROPERTY_LIST:
+        if x[0] == name:
+            selected = x
+
+    if not selected:
+        return jsonify({"ok": False})
+
+    conn = db()
+
+    user = conn.execute(
+        "SELECT balance FROM users WHERE telegram_id=?",
+        (tg_id,)
+    ).fetchone()
+
+    if user["balance"] < selected[1]:
+        conn.close()
+        return jsonify({
+            "ok": False,
+            "message": "Недостаточно 💎"
+        })
+
+    conn.execute(
+        "UPDATE users SET balance=balance-? WHERE telegram_id=?",
+        (selected[1], tg_id)
+    )
+
+    conn.execute("""
+        INSERT INTO properties
+        (telegram_id, property_name, level, income)
+        VALUES (?, ?, 1, ?)
+    """, (
+        tg_id,
+        selected[0],
+        selected[2]
+    ))
+
+    conn.commit()
+    conn.close()
+
+    add_xp(tg_id, 500)
+
+    return jsonify({"ok": True})
+
+
+# =========================================================
+# PETS
+# =========================================================
+
+PETS = [
+    ("🐺 Волк", 5000),
+    ("🐉 Дракон", 25000),
+    ("🦊 Лиса", 8000),
+    ("🦅 Феникс", 50000)
+]
+
+
+@app.route("/api/pets")
+def pets():
+    return jsonify([
+        {
+            "name": p[0],
+            "price": p[1]
+        }
+        for p in PETS
+    ])
+
+
+@app.route("/api/pet/buy", methods=["POST"])
+def buy_pet():
+    tg_id = auth()
+
+    data = request.json or {}
+    name = data.get("name")
+
+    selected = None
+
+    for pet in PETS:
+        if pet[0] == name:
+            selected = pet
+
+    if not selected:
+        return jsonify({"ok": False})
+
+    conn = db()
+
+    user = conn.execute(
+        "SELECT balance FROM users WHERE telegram_id=?",
+        (tg_id,)
+    ).fetchone()
+
+    if user["balance"] < selected[1]:
+        conn.close()
+        return jsonify({
+            "ok": False,
+            "message": "Недостаточно 💎"
+        })
+
+    conn.execute(
+        "UPDATE users SET balance=balance-? WHERE telegram_id=?",
+        (selected[1], tg_id)
+    )
+
+    conn.execute("""
+        INSERT INTO pets
+        (telegram_id,name,level,happiness)
+        VALUES (?, ?, 1, 100)
+    """, (
+        tg_id,
+        name
+    ))
+
+    conn.commit()
+    conn.close()
+
+    add_xp(tg_id, 300)
+
+    return jsonify({"ok": True})
+
+
+# =========================================================
+# PLANETS
+# =========================================================
+
+PLANETS = [
+    ("🌍 Земля", 0),
+    ("🌙 Луна", 5000),
+    ("🔴 Марс", 25000),
+    ("🪐 Сатурн", 100000),
+    ("🌌 Нексус", 500000)
+]
+
+
+@app.route("/api/planets")
+def planets():
+    return jsonify([
+        {
+            "name": p[0],
+            "price": p[1]
+        }
+        for p in PLANETS
+    ])
+
+
+@app.route("/api/planet/travel", methods=["POST"])
+def travel():
+    tg_id = auth()
+
+    data = request.json or {}
+    name = data.get("name")
+
+    selected = None
+
+    for p in PLANETS:
+        if p[0] == name:
+            selected = p
+
+    if not selected:
+        return jsonify({"ok": False})
+
+    conn = db()
+
+    user = conn.execute(
+        "SELECT balance FROM users WHERE telegram_id=?",
+        (tg_id,)
+    ).fetchone()
+
+    if user["balance"] < selected[1]:
+        conn.close()
+        return jsonify({
+            "ok": False,
+            "message": "Недостаточно 💎"
+        })
+
+    if selected[1] > 0:
+        conn.execute(
+            "UPDATE users SET balance=balance-? WHERE telegram_id=?",
+            (selected[1], tg_id)
+        )
+
+    conn.commit()
+    conn.close()
+
+    add_xp(tg_id, 400)
+
+    return jsonify({
+        "ok": True,
+        "planet": name
+    })
+
+
+# =========================================================
+# INVENTORY
+# =========================================================
+
+@app.route("/api/inventory")
+def inventory():
+    tg_id = auth()
+
+    conn = db()
+
+    items = conn.execute("""
+        SELECT * FROM inventory
+        WHERE telegram_id=?
+        AND item_type!='daily'
+        ORDER BY id DESC
+    """, (tg_id,)).fetchall()
+
+    conn.close()
+
+    return jsonify([
+        dict(x)
+        for x in items
+    ])
+
+
+# =========================================================
+# MARKET
+# =========================================================
+
+@app.route("/api/market")
+def market():
+    conn = db()
+
+    items = conn.execute("""
+        SELECT * FROM market
+        ORDER BY id DESC
+        LIMIT 50
+    """).fetchall()
+
+    conn.close()
+
+    return jsonify([
+        dict(x)
+        for x in items
+    ])
+
+
+@app.route("/api/market/sell", methods=["POST"])
+def market_sell():
+    tg_id = auth()
+
+    data = request.json or {}
+
+    item_name = data.get("item_name")
+    amount = int(data.get("amount", 1))
+    price = int(data.get("price", 0))
+
+    if amount <= 0 or price <= 0:
+        return jsonify({
+            "ok": False,
+            "message": "Неверные данные"
+        })
+
+    conn = db()
+
+    item = conn.execute("""
+        SELECT * FROM inventory
+        WHERE telegram_id=?
+        AND item_name=?
+        AND item_type='resource'
+    """, (
+        tg_id,
+        item_name
+    )).fetchone()
+
+    if not item or item["amount"] < amount:
+        conn.close()
+        return jsonify({
+            "ok": False,
+            "message": "Недостаточно предметов"
+        })
+
+    conn.execute(
+        "UPDATE inventory SET amount=amount-? WHERE id=?",
+        (amount, item["id"])
+    )
+
+    conn.execute("""
+        INSERT INTO market
+        (seller_id,item_type,item_name,amount,price,created_at)
+        VALUES (?, 'resource', ?, ?, ?, ?)
+    """, (
+        tg_id,
+        item_name,
+        amount,
+        price,
         int(time.time())
     ))
 
-    conn.execute("""
-        UPDATE users
-        SET total_opened =
-                total_opened + 1,
-            total_received_value =
-                total_received_value + ?
-        WHERE telegram_id = ?
-    """, (
-        nft["value"],
-        user["id"]
-    ))
-
     conn.commit()
-
-    row = conn.execute("""
-        SELECT *
-        FROM users
-        WHERE telegram_id = ?
-    """, (
-        user["id"],
-    )).fetchone()
-
     conn.close()
 
-    return jsonify({
-        "ok": True,
-        "reward": nft,
-        "user": serialize_user(row)
-    })
+    return jsonify({"ok": True})
 
 
-# =========================
-# INVENTORY
-# =========================
+@app.route("/api/market/buy", methods=["POST"])
+def market_buy():
+    tg_id = auth()
 
-@app.get("/api/inventory")
-def inventory():
-
-    user = get_telegram_user()
-
-    ensure_user(user)
-
-    conn = get_db()
-
-    rows = conn.execute("""
-        SELECT id, nft_id, created_at
-        FROM nfts
-        WHERE telegram_id = ?
-        ORDER BY id DESC
-    """, (
-        user["id"],
-    )).fetchall()
-
-    conn.close()
-
-    result = []
-
-    for row in rows:
-
-        nft = NFT_BY_ID.get(
-            row["nft_id"]
-        )
-
-        if nft:
-
-            result.append({
-                "instance_id": row["id"],
-                "id": nft["id"],
-                "name": nft["name"],
-                "rarity": nft["rarity"],
-                "value": nft["value"],
-                "created_at": row["created_at"]
-            })
-
-    return jsonify({
-        "ok": True,
-        "inventory": result
-    })
-
-
-# =========================
-# SELL
-# =========================
-
-@app.post("/api/sell")
-def sell_nft():
-
-    user = get_telegram_user()
-
-    ensure_user(user)
-
-    data = request.get_json(
-        silent=True
-    ) or {}
+    data = request.json or {}
 
     try:
-        instance_id = int(
-            data.get("instance_id", 0)
-        )
+        listing_id = int(data.get("id"))
     except:
-        instance_id = 0
+        return jsonify({"ok": False})
 
-    conn = get_db()
+    conn = db()
 
-    row = conn.execute("""
-        SELECT *
-        FROM nfts
-        WHERE id = ?
-        AND telegram_id = ?
-    """, (
-        instance_id,
-        user["id"]
-    )).fetchone()
+    listing = conn.execute(
+        "SELECT * FROM market WHERE id=?",
+        (listing_id,)
+    ).fetchone()
 
-    if not row:
-
+    if not listing:
         conn.close()
-
         return jsonify({
             "ok": False,
-            "error": "NFT не найден"
-        }), 404
+            "message": "Лот уже продан"
+        })
 
-    nft = NFT_BY_ID.get(
-        row["nft_id"]
+    if listing["seller_id"] == tg_id:
+        conn.close()
+        return jsonify({
+            "ok": False,
+            "message": "Нельзя купить свой лот"
+        })
+
+    buyer = conn.execute(
+        "SELECT balance FROM users WHERE telegram_id=?",
+        (tg_id,)
+    ).fetchone()
+
+    if buyer["balance"] < listing["price"]:
+        conn.close()
+        return jsonify({
+            "ok": False,
+            "message": "Недостаточно 💎"
+        })
+
+    conn.execute(
+        "UPDATE users SET balance=balance-? WHERE telegram_id=?",
+        (listing["price"], tg_id)
     )
 
-    if not nft:
-
-        conn.close()
-
-        return jsonify({
-            "ok": False,
-            "error": "NFT не найден"
-        }), 404
-
-    conn.execute("""
-        DELETE FROM nfts
-        WHERE id = ?
-    """, (
-        instance_id,
-    ))
-
-    conn.execute("""
-        UPDATE users
-        SET coins = coins + ?
-        WHERE telegram_id = ?
-    """, (
-        nft["value"],
-        user["id"]
-    ))
-
-    conn.commit()
-
-    updated = conn.execute("""
-        SELECT *
-        FROM users
-        WHERE telegram_id = ?
-    """, (
-        user["id"],
-    )).fetchone()
-
-    conn.close()
-
-    return jsonify({
-        "ok": True,
-        "sold": nft,
-        "user": serialize_user(updated)
-    })
-
-
-# =========================
-# PREFIXES
-# =========================
-
-@app.get("/api/prefixes")
-def get_prefixes():
-
-    user = get_telegram_user()
-
-    row = ensure_user(user)
-
-    conn = get_db()
-
-    owned_rows = conn.execute("""
-        SELECT prefix_id
-        FROM user_prefixes
-        WHERE telegram_id = ?
-    """, (
-        user["id"],
-    )).fetchall()
-
-    conn.close()
-
-    owned = {
-        r["prefix_id"]
-        for r in owned_rows
-    }
-
-    current = row["prefix_id"] or 0
-
-    result = []
-
-    for prefix in PREFIX_BY_ID.values():
-
-        result.append({
-            **prefix,
-            "owned":
-                prefix["id"] in owned,
-            "equipped":
-                prefix["id"] == current
-        })
-
-    return jsonify({
-        "ok": True,
-        "current_prefix_id": current,
-        "prefixes": result
-    })
-
-
-# =========================
-# BUY PREFIX
-# =========================
-
-@app.post("/api/prefixes/buy")
-def buy_prefix():
-
-    user = get_telegram_user()
-
-    row = ensure_user(user)
-
-    data = request.get_json(
-        silent=True
-    ) or {}
-
-    try:
-        prefix_id = int(
-            data.get("prefix_id", 0)
-        )
-    except:
-        prefix_id = 0
-
-    prefix = PREFIX_BY_ID.get(
-        prefix_id
+    conn.execute(
+        "UPDATE users SET balance=balance+? WHERE telegram_id=?",
+        (listing["price"], listing["seller_id"])
     )
 
-    if not prefix:
-
-        return jsonify({
-            "ok": False,
-            "error": "Префикс не найден"
-        }), 404
-
-    conn = get_db()
-
-    owned = conn.execute("""
-        SELECT 1
-        FROM user_prefixes
-        WHERE telegram_id = ?
-        AND prefix_id = ?
+    existing = conn.execute("""
+        SELECT * FROM inventory
+        WHERE telegram_id=?
+        AND item_name=?
+        AND item_type='resource'
     """, (
-        user["id"],
-        prefix_id
+        tg_id,
+        listing["item_name"]
     )).fetchone()
 
-    if owned:
-
-        conn.close()
-
-        return jsonify({
-            "ok": False,
-            "error": "Префикс уже куплен"
-        })
-
-    if row["coins"] < prefix["price"]:
-
-        conn.close()
-
-        return jsonify({
-            "ok": False,
-            "error": "Недостаточно 💎"
-        })
-
-    conn.execute("""
-        UPDATE users
-        SET coins = coins - ?,
-            prefix_id = ?
-        WHERE telegram_id = ?
-    """, (
-        prefix["price"],
-        prefix_id,
-        user["id"]
-    ))
-
-    conn.execute("""
-        INSERT INTO user_prefixes (
-            telegram_id,
-            prefix_id
+    if existing:
+        conn.execute(
+            "UPDATE inventory SET amount=amount+? WHERE id=?",
+            (listing["amount"], existing["id"])
         )
-        VALUES (?, ?)
-    """, (
-        user["id"],
-        prefix_id
-    ))
-
-    conn.commit()
-
-    updated = conn.execute("""
-        SELECT *
-        FROM users
-        WHERE telegram_id = ?
-    """, (
-        user["id"],
-    )).fetchone()
-
-    conn.close()
-
-    return jsonify({
-        "ok": True,
-        "prefix": prefix,
-        "user": serialize_user(updated)
-    })
-
-
-# =========================
-# EQUIP PREFIX
-# =========================
-
-@app.post("/api/prefixes/equip")
-def equip_prefix():
-
-    user = get_telegram_user()
-
-    ensure_user(user)
-
-    data = request.get_json(
-        silent=True
-    ) or {}
-
-    try:
-        prefix_id = int(
-            data.get("prefix_id", 0)
-        )
-    except:
-        prefix_id = 0
-
-    conn = get_db()
-
-    if prefix_id != 0:
-
-        owned = conn.execute("""
-            SELECT 1
-            FROM user_prefixes
-            WHERE telegram_id = ?
-            AND prefix_id = ?
+    else:
+        conn.execute("""
+            INSERT INTO inventory
+            (telegram_id,item_type,item_name,amount,value)
+            VALUES (?, 'resource', ?, ?, 50)
         """, (
-            user["id"],
-            prefix_id
-        )).fetchone()
+            tg_id,
+            listing["item_name"],
+            listing["amount"]
+        ))
 
-        if not owned:
-
-            conn.close()
-
-            return jsonify({
-                "ok": False,
-                "error":
-                    "Сначала купи этот префикс"
-            })
-
-    conn.execute("""
-        UPDATE users
-        SET prefix_id = ?
-        WHERE telegram_id = ?
-    """, (
-        prefix_id,
-        user["id"]
-    ))
+    conn.execute(
+        "DELETE FROM market WHERE id=?",
+        (listing_id,)
+    )
 
     conn.commit()
-
-    row = conn.execute("""
-        SELECT *
-        FROM users
-        WHERE telegram_id = ?
-    """, (
-        user["id"],
-    )).fetchone()
-
     conn.close()
 
-    return jsonify({
-        "ok": True,
-        "user": serialize_user(row)
-    })
+    add_xp(tg_id, 100)
+
+    return jsonify({"ok": True})
 
 
-# =========================
+# =========================================================
 # LEADERBOARD
-# =========================
+# =========================================================
 
-@app.get("/api/leaderboard")
+@app.route("/api/leaderboard")
 def leaderboard():
-
-    conn = get_db()
+    conn = db()
 
     users = conn.execute("""
-        SELECT *
+        SELECT first_name, username, level, balance, rating
         FROM users
-    """).fetchall()
-
-    nft_rows = conn.execute("""
-        SELECT telegram_id, nft_id
-        FROM nfts
+        ORDER BY rating DESC
+        LIMIT 50
     """).fetchall()
 
     conn.close()
 
-    nft_values = {}
+    return jsonify([
+        dict(x)
+        for x in users
+    ])
 
-    for row in nft_rows:
 
-        nft = NFT_BY_ID.get(
-            row["nft_id"]
-        )
+# =========================================================
+# CREATOR PREFIX
+# =========================================================
 
-        if not nft:
-            continue
-
-        uid = row["telegram_id"]
-
-        nft_values[uid] = (
-            nft_values.get(uid, 0)
-            + nft["value"]
-        )
-
-    players = []
-
-    for row in users:
-
-        collection = nft_values.get(
-            row["telegram_id"],
-            0
-        )
-
-        prefix = PREFIX_BY_ID.get(
-            row["prefix_id"] or 0
-        )
-
-        score = (
-            row["coins"]
-            + collection
-        )
-
-        players.append({
-            "telegram_id":
-                row["telegram_id"],
-            "username":
-                row["username"],
-            "first_name":
-                row["first_name"],
-            "coins":
-                row["coins"],
-            "total_opened":
-                row["total_opened"],
-            "collection_value":
-                collection,
-            "score":
-                score,
-            "prefix":
-                prefix["display"]
-                if prefix
-                else "",
-            "creator":
-                row["telegram_id"]
-                == CREATOR_TELEGRAM_ID
-        })
-
-    players.sort(
-        key=lambda x: x["score"],
-        reverse=True
-    )
-
-    for index, player in enumerate(
-        players,
-        start=1
-    ):
-        player["rank"] = index
+@app.route("/api/prefix")
+def prefix():
+    tg_id = auth()
 
     return jsonify({
-        "ok": True,
-        "players": players[:50]
+        "creator": is_creator(tg_id),
+        "prefix": "👑 СОЗДАТЕЛЬ" if is_creator(tg_id) else ""
     })
 
 
-# =========================
-# FRONTEND
-# =========================
+# =========================================================
+# CREATOR PANEL
+# =========================================================
 
-@app.get("/")
-def index():
-    return send_from_directory(
-        "web",
-        "index.html"
-    )
+@app.route("/api/creator")
+def creator():
+    tg_id = auth()
+
+    if not is_creator(tg_id):
+        return jsonify({
+            "ok": False
+        })
+
+    conn = db()
+
+    users = conn.execute(
+        "SELECT COUNT(*) AS c FROM users"
+    ).fetchone()["c"]
+
+    balance = conn.execute(
+        "SELECT COALESCE(SUM(balance),0) AS c FROM users"
+    ).fetchone()["c"]
+
+    conn.close()
+
+    return jsonify({
+        "ok": True,
+        "users": users,
+        "economy": balance
+    })
 
 
-@app.get("/<path:path>")
-def files(path):
-    return send_from_directory(
-        "web",
-        path
-    )
-
+# =========================================================
+# RUN
+# =========================================================
 
 if __name__ == "__main__":
-
-    port = int(
-        os.environ.get(
-            "PORT",
-            5000
-        )
-    )
-
+    port = int(os.getenv("PORT", 5000))
     app.run(
         host="0.0.0.0",
         port=port,
