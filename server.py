@@ -152,22 +152,22 @@ def local_day():
 def process_daily_login(con,user_id):
     today=local_day()
     row=con.execute('SELECT last_day,streak FROM daily_rewards WHERE user_id=?',(user_id,)).fetchone()
-    if not row:
+    if row is None:
         con.execute('INSERT INTO daily_rewards(user_id,last_day,streak) VALUES(?,?,0)',(user_id,'',0))
-        row={'last_day':'','streak':0}
-    if row['last_day']==today:
-        return {'claimed':False,'streak':int(row['streak'] or 0),'day':int(row['streak'] or 0),'reward':0}
-    previous=row['last_day'] or ''
-    if previous:
+        last_day=''; old_streak=0
+    else:
+        last_day=str(row['last_day'] or '')
+        old_streak=int(row['streak'] or 0)
+    if last_day==today:
+        return {'claimed':False,'streak':old_streak,'day':old_streak,'reward':0}
+    consecutive=False
+    if last_day:
         try:
-            prev_ts=time.mktime(time.strptime(previous,'%Y-%m-%d'))
-            today_ts=time.mktime(time.strptime(today,'%Y-%m-%d'))
-            consecutive=(today_ts-prev_ts)<=86400
+            from datetime import date
+            consecutive=(date.fromisoformat(today)-date.fromisoformat(last_day)).days==1
         except Exception:
             consecutive=False
-    else:
-        consecutive=False
-    streak=(int(row['streak'] or 0)+1) if consecutive else 1
+    streak=old_streak+1 if consecutive else 1
     if streak>6: streak=1
     reward=DAILY_REWARDS[streak-1]
     add_coins(con,user_id,reward,f'Ежедневный бонус: день {streak}/6')
@@ -188,7 +188,7 @@ def remove_item(con,uid,key,q):
 def ensure_user(tg):
     con=db(); tid=str(tg['id']); u=con.execute('SELECT * FROM users WHERE telegram_id=?',(tid,)).fetchone()
     if not u:
-        con.execute('INSERT INTO users(telegram_id,username,first_name,last_name,photo_url,coins,xp,level,created_at,role) VALUES(?,?,?,?,?,1000,0,1,?,?)',(tid,tg.get('username',''),tg.get('first_name',''),tg.get('last_name',''),tg.get('photo_url',''),now(),now(),'creator' if tid==str(CREATOR_TELEGRAM_ID) else 'player'));con.commit();u=con.execute('SELECT * FROM users WHERE telegram_id=?',(tid,)).fetchone()
+        con.execute('INSERT INTO users(telegram_id,username,first_name,last_name,photo_url,coins,xp,level,created_at,role) VALUES(?,?,?,?,?,1000,0,1,?,?)',(tid,tg.get('username',''),tg.get('first_name',''),tg.get('last_name',''),tg.get('photo_url',''),now(),'creator' if tid==str(CREATOR_TELEGRAM_ID) else 'player'));con.commit();u=con.execute('SELECT * FROM users WHERE telegram_id=?',(tid,)).fetchone()
     else:
         con.execute('UPDATE users SET username=?,first_name=?,last_name=?,photo_url=? WHERE telegram_id=?',(tg.get('username',''),tg.get('first_name',''),tg.get('last_name',''),tg.get('photo_url',''),tid));con.commit()
     if tid==str(CREATOR_TELEGRAM_ID):con.execute("UPDATE users SET role='creator' WHERE telegram_id=?",(tid,))
@@ -646,7 +646,7 @@ def admin_wipe(actor):
     if str(d.get('confirm','')).upper()!='WIPE':return jsonify({'ok':False,'error':'Для вайпа отправь confirm=WIPE'}),400
     con=db();users=con.execute('SELECT id,telegram_id FROM users').fetchall()
     for r in users:
-        uid=r['id'];con.execute('UPDATE users SET coins=1000,xp=0,level=1,rating=0,bank=0,last_daily=0 WHERE id=?',(now(),uid))
+        uid=r['id'];con.execute('UPDATE users SET coins=1000,xp=0,level=1,rating=0,bank=0,last_daily=0,world=1 WHERE id=?',(uid,))
         for table in ('inventory','cooldowns','businesses','properties','achievements','notifications'):con.execute(f'DELETE FROM {table} WHERE user_id=?',(uid,))
         con.execute('UPDATE skills SET mining=1,farming=1,fishing=1,business=1,work=1 WHERE user_id=?',(uid,));con.execute('DELETE FROM quests WHERE user_id=?',(uid,))
         for k in QUESTS:con.execute('INSERT OR IGNORE INTO quests(user_id,quest_key) VALUES(?,?)',(uid,k))
