@@ -7,7 +7,6 @@ from flask import Flask, request, jsonify, send_from_directory
 app=Flask(__name__,static_folder='web',static_url_path='')
 DB_PATH=os.getenv('DB_PATH','nexora.db'); BOT_TOKEN=os.getenv('BOT_TOKEN','')
 CREATOR_TELEGRAM_ID=os.getenv('CREATOR_TELEGRAM_ID','8518976778')
-MAX_ENERGY=100; ENERGY_REGEN_SECONDS=300
 app.config['JSON_AS_ASCII']=False
 
 def db():
@@ -15,8 +14,9 @@ def db():
 
 def init_db():
     con=db(); con.executescript('''
-    CREATE TABLE IF NOT EXISTS users(id INTEGER PRIMARY KEY AUTOINCREMENT,telegram_id TEXT UNIQUE NOT NULL,username TEXT DEFAULT '',first_name TEXT DEFAULT '',last_name TEXT DEFAULT '',photo_url TEXT DEFAULT '',coins INTEGER DEFAULT 1000,xp INTEGER DEFAULT 0,level INTEGER DEFAULT 1,energy INTEGER DEFAULT 100,energy_updated INTEGER DEFAULT 0,rating INTEGER DEFAULT 0,bank INTEGER DEFAULT 0,created_at INTEGER DEFAULT 0,last_daily INTEGER DEFAULT 0,role TEXT DEFAULT 'player',world INTEGER DEFAULT 1);
+    CREATE TABLE IF NOT EXISTS users(id INTEGER PRIMARY KEY AUTOINCREMENT,telegram_id TEXT UNIQUE NOT NULL,username TEXT DEFAULT '',first_name TEXT DEFAULT '',last_name TEXT DEFAULT '',photo_url TEXT DEFAULT '',coins INTEGER DEFAULT 1000,xp INTEGER DEFAULT 0,level INTEGER DEFAULT 1,rating INTEGER DEFAULT 0,bank INTEGER DEFAULT 0,created_at INTEGER DEFAULT 0,last_daily INTEGER DEFAULT 0,role TEXT DEFAULT 'player',world INTEGER DEFAULT 1);
     CREATE TABLE IF NOT EXISTS inventory(id INTEGER PRIMARY KEY AUTOINCREMENT,user_id INTEGER NOT NULL,item_key TEXT NOT NULL,quantity INTEGER DEFAULT 0,UNIQUE(user_id,item_key));
+    CREATE TABLE IF NOT EXISTS daily_rewards(user_id INTEGER PRIMARY KEY,last_day TEXT DEFAULT '',streak INTEGER DEFAULT 0);
     CREATE TABLE IF NOT EXISTS cooldowns(user_id INTEGER NOT NULL,action TEXT NOT NULL,last_used INTEGER DEFAULT 0,PRIMARY KEY(user_id,action));
     CREATE TABLE IF NOT EXISTS businesses(id INTEGER PRIMARY KEY AUTOINCREMENT,user_id INTEGER NOT NULL,business_key TEXT NOT NULL,level INTEGER DEFAULT 1,last_collect INTEGER DEFAULT 0,UNIQUE(user_id,business_key));
     CREATE TABLE IF NOT EXISTS properties(id INTEGER PRIMARY KEY AUTOINCREMENT,user_id INTEGER NOT NULL,property_key TEXT NOT NULL,UNIQUE(user_id,property_key));
@@ -41,42 +41,12 @@ def init_db():
 init_db()
 
 def migrate_database():
-    con=db()
-    cols={r['name'] for r in con.execute('PRAGMA table_info(users)').fetchall()}
-    # Safe migrations for databases created by older NEXORA versions.
-    # CREATE TABLE IF NOT EXISTS does not add new columns to an existing DB.
-    migrations={
-        'username': "TEXT DEFAULT ''",
-        'first_name': "TEXT DEFAULT ''",
-        'last_name': "TEXT DEFAULT ''",
-        'photo_url': "TEXT DEFAULT ''",
-        'coins': "INTEGER DEFAULT 1000",
-        'xp': "INTEGER DEFAULT 0",
-        'level': "INTEGER DEFAULT 1",
-        'energy': "INTEGER DEFAULT 100",
-        'energy_updated': "INTEGER DEFAULT 0",
-        'rating': "INTEGER DEFAULT 0",
-        'bank': "INTEGER DEFAULT 0",
-        'created_at': "INTEGER DEFAULT 0",
-        'last_daily': "INTEGER DEFAULT 0",
-        'role': "TEXT DEFAULT 'player'",
-        'world': "INTEGER DEFAULT 1"
-    }
-    for name,definition in migrations.items():
-        if name not in cols:
-            con.execute(f'ALTER TABLE users ADD COLUMN {name} {definition}')
-    # Daily reward table is also created for databases from builds that did not have it.
-    con.execute('CREATE TABLE IF NOT EXISTS daily_rewards(user_id INTEGER PRIMARY KEY,last_day TEXT DEFAULT '',streak INTEGER DEFAULT 0)')
-    con.execute("UPDATE users SET energy=100 WHERE energy IS NULL")
-    con.execute("UPDATE users SET energy_updated=? WHERE energy_updated IS NULL OR energy_updated=0",(int(time.time()),))
-    con.execute("UPDATE users SET coins=1000 WHERE coins IS NULL")
-    con.execute("UPDATE users SET xp=0 WHERE xp IS NULL")
-    con.execute("UPDATE users SET level=1 WHERE level IS NULL OR level<1")
-    con.execute("UPDATE users SET rating=0 WHERE rating IS NULL")
-    con.execute("UPDATE users SET bank=0 WHERE bank IS NULL")
+    con=db(); cols={r['name'] for r in con.execute('PRAGMA table_info(users)').fetchall()}
+    if 'role' not in cols: con.execute("ALTER TABLE users ADD COLUMN role TEXT DEFAULT 'player'")
+    if 'world' not in cols: con.execute("ALTER TABLE users ADD COLUMN world INTEGER DEFAULT 1")
     con.execute("UPDATE users SET world=1 WHERE world IS NULL OR world<1")
     con.execute("UPDATE users SET role='creator' WHERE telegram_id=?",(str(CREATOR_TELEGRAM_ID),))
-    con.execute("UPDATE users SET role='player' WHERE role IS NULL OR role=''")
+    con.execute("UPDATE users SET role='player' WHERE role IS NULL OR role='' ")
     con.commit(); con.close()
 migrate_database()
 
@@ -86,24 +56,24 @@ seed_promo_codes()
 
 WORLDS={1:{'name':'Мир бизнеса','level':1,'description':'Стартовый мир NEXORA'},2:{'name':'Мир корпораций','level':100,'description':'Новый мир открывается на 100 уровне'},3:{'name':'Мир мегакорпораций','level':200,'description':'Третий мир открывается на 200 уровне'}}
 JOBS={
-'courier':{'name':'Курьер','level':1,'reward':80,'xp':20,'cooldown':45,'world':1,'taps':12},
-'loader':{'name':'Грузчик','level':2,'reward':140,'xp':30,'cooldown':60,'world':1,'taps':15},
-'fisher':{'name':'Рыбак','level':4,'reward':230,'xp':45,'cooldown':90,'world':1,'taps':18},
-'miner':{'name':'Шахтёр','level':6,'reward':360,'xp':65,'cooldown':110,'world':1,'taps':20},
-'driver':{'name':'Водитель','level':9,'reward':520,'xp':85,'cooldown':130,'world':1,'taps':22},
-'programmer':{'name':'Программист','level':13,'reward':750,'xp':110,'cooldown':160,'world':1,'taps':25},
-'trader':{'name':'Трейдер','level':18,'reward':1050,'xp':145,'cooldown':190,'world':1,'taps':28},
-'engineer':{'name':'Инженер','level':24,'reward':1450,'xp':185,'cooldown':220,'world':1,'taps':30},
-'director':{'name':'Директор','level':32,'reward':2100,'xp':240,'cooldown':260,'world':1,'taps':34},
-'magnate':{'name':'Магнат','level':45,'reward':3200,'xp':320,'cooldown':320,'world':1,'taps':38},
-'corporate_manager':{'name':'Корпоративный менеджер','level':100,'reward':7000,'xp':500,'cooldown':360,'world':2,'taps':45},
-'investment_banker':{'name':'Инвестиционный банкир','level':110,'reward':11000,'xp':650,'cooldown':400,'world':2,'taps':50},
-'tech_ceo':{'name':'CEO технологической компании','level':125,'reward':17000,'xp':850,'cooldown':450,'world':2,'taps':55},
-'global_trader':{'name':'Глобальный трейдер','level':145,'reward':26000,'xp':1100,'cooldown':500,'world':2,'taps':60},
-'corporation_owner':{'name':'Владелец корпорации','level':170,'reward':40000,'xp':1400,'cooldown':560,'world':2,'taps':65},
-'ceo_empire':{'name':'CEO империи','level':200,'reward':65000,'xp':1800,'cooldown':620,'world':3,'taps':75},
-'industrial_tycoon':{'name':'Промышленный магнат','level':225,'reward':95000,'xp':2200,'cooldown':680,'world':3,'taps':82},
-'global_empire':{'name':'Глобальный император','level':250,'reward':140000,'xp':2800,'cooldown':750,'world':3,'taps':90}}
+'courier':{'name':'Курьер','level':1,'reward':80,'xp':10,'cooldown':45,'world':1,'taps':12},
+'loader':{'name':'Грузчик','level':2,'reward':140,'xp':15,'cooldown':60,'world':1,'taps':15},
+'fisher':{'name':'Рыбак','level':4,'reward':230,'xp':22,'cooldown':90,'world':1,'taps':18},
+'miner':{'name':'Шахтёр','level':6,'reward':360,'xp':32,'cooldown':110,'world':1,'taps':20},
+'driver':{'name':'Водитель','level':9,'reward':520,'xp':42,'cooldown':130,'world':1,'taps':22},
+'programmer':{'name':'Программист','level':13,'reward':750,'xp':55,'cooldown':160,'world':1,'taps':25},
+'trader':{'name':'Трейдер','level':18,'reward':1050,'xp':72,'cooldown':190,'world':1,'taps':28},
+'engineer':{'name':'Инженер','level':24,'reward':1450,'xp':92,'cooldown':220,'world':1,'taps':30},
+'director':{'name':'Директор','level':32,'reward':2100,'xp':120,'cooldown':260,'world':1,'taps':34},
+'magnate':{'name':'Магнат','level':45,'reward':3200,'xp':160,'cooldown':320,'world':1,'taps':38},
+'corporate_manager':{'name':'Корпоративный менеджер','level':100,'reward':7000,'xp':250,'cooldown':360,'world':2,'taps':45},
+'investment_banker':{'name':'Инвестиционный банкир','level':110,'reward':11000,'xp':160,'cooldown':400,'world':2,'taps':50},
+'tech_ceo':{'name':'CEO технологической компании','level':125,'reward':17000,'xp':420,'cooldown':450,'world':2,'taps':55},
+'global_trader':{'name':'Глобальный трейдер','level':145,'reward':26000,'xp':550,'cooldown':500,'world':2,'taps':60},
+'corporation_owner':{'name':'Владелец корпорации','level':170,'reward':40000,'xp':700,'cooldown':560,'world':2,'taps':65},
+'ceo_empire':{'name':'CEO империи','level':200,'reward':65000,'xp':900,'cooldown':620,'world':3,'taps':75},
+'industrial_tycoon':{'name':'Промышленный магнат','level':225,'reward':95000,'xp':1100,'cooldown':680,'world':3,'taps':82},
+'global_empire':{'name':'Глобальный император','level':250,'reward':140000,'xp':1400,'cooldown':750,'world':3,'taps':90}}
 ITEMS={'iron':{'name':'Железо','icon':'⛓️','base_price':35},'coal':{'name':'Уголь','icon':'⬛','base_price':25},'gold':{'name':'Золото','icon':'🪙','base_price':120},'wood':{'name':'Древесина','icon':'🪵','base_price':30},'wheat':{'name':'Пшеница','icon':'🌾','base_price':20},'apple':{'name':'Яблоко','icon':'🍎','base_price':25},'fish':{'name':'Рыба','icon':'🐟','base_price':70},'rare_fish':{'name':'Редкая рыба','icon':'🐠','base_price':250},'steel':{'name':'Сталь','icon':'🔩','base_price':180},'energy_core':{'name':'Энергокристалл','icon':'🔷','base_price':500},'microchip':{'name':'Микрочип','icon':'💾','base_price':750},'quantum':{'name':'Квантовый модуль','icon':'🧬','base_price':1800}}
 BUSINESS_LIMITS={'farm':100,'mine':75,'factory':50,'tech':25,'space':10}; PROPERTY_LIMITS={'room':500,'apartment':250,'penthouse':50,'mansion':10}; BUSINESS_UPGRADE_MULTIPLIER=1.55
 BUSINESSES={'farm':{'name':'Ферма','price':5000,'income':300,'interval':3600},'mine':{'name':'Шахта','price':15000,'income':900,'interval':3600},'factory':{'name':'Завод','price':50000,'income':3200,'interval':3600},'tech':{'name':'IT-компания','price':150000,'income':10000,'interval':3600},'space':{'name':'Космическая корпорация','price':500000,'income':38000,'interval':3600}}
@@ -174,14 +144,37 @@ def get_discount(con,event_type):
 def discounted_price(con,event_type,p): return max(1,int(round(p*(1-get_discount(con,event_type)))))
 def log_admin(con,actor,action,target='',details=''): con.execute('INSERT INTO admin_logs(creator_id,action,target_telegram_id,details,created_at) VALUES(?,?,?,?,?)',(str(actor),action,str(target),details,now()))
 
-def restore_energy(con,u):
-    cur=u['energy']; updated=u['energy_updated'] or now(); gained=max(0,(now()-updated)//ENERGY_REGEN_SECONDS); new=min(MAX_ENERGY,cur+gained)
-    if new!=cur: con.execute('UPDATE users SET energy=?,energy_updated=? WHERE id=?',(new,now(),u['id']))
-    return new
-def use_energy(con,uid,amount=10):
-    u=con.execute('SELECT * FROM users WHERE id=?',(uid,)).fetchone(); e=restore_energy(con,u)
-    if e<amount:return False
-    con.execute('UPDATE users SET energy=?,energy_updated=? WHERE id=?',(e-amount,now(),uid));return True
+DAILY_REWARDS=[500,750,1000,1500,2500,5000]
+
+def local_day():
+    return time.strftime('%Y-%m-%d',time.gmtime(time.time()+5*3600))
+
+def process_daily_login(con,user_id):
+    today=local_day()
+    row=con.execute('SELECT last_day,streak FROM daily_rewards WHERE user_id=?',(user_id,)).fetchone()
+    if row is None:
+        con.execute('INSERT INTO daily_rewards(user_id,last_day,streak) VALUES(?,?,0)',(user_id,'',0))
+        last_day=''; old_streak=0
+    else:
+        last_day=str(row['last_day'] or '')
+        old_streak=int(row['streak'] or 0)
+    if last_day==today:
+        return {'claimed':False,'streak':old_streak,'day':old_streak,'reward':0}
+    consecutive=False
+    if last_day:
+        try:
+            from datetime import date
+            consecutive=(date.fromisoformat(today)-date.fromisoformat(last_day)).days==1
+        except Exception:
+            consecutive=False
+    streak=old_streak+1 if consecutive else 1
+    if streak>6: streak=1
+    reward=DAILY_REWARDS[streak-1]
+    add_coins(con,user_id,reward,f'Ежедневный бонус: день {streak}/6')
+    con.execute('UPDATE daily_rewards SET last_day=?,streak=? WHERE user_id=?',(today,streak,user_id))
+    add_notification(con,user_id,'🎁 Ежедневный бонус',f'День {streak}/6 — получено {reward} 💎. Заходи завтра, чтобы продолжить серию.','daily')
+    return {'claimed':True,'streak':streak,'day':streak,'reward':reward}
+
 def cooldown_remaining(con,uid,action,cooldown):
     r=con.execute('SELECT last_used FROM cooldowns WHERE user_id=? AND action=?',(uid,action)).fetchone(); return 0 if not r else max(0,cooldown-(now()-r['last_used']))
 def set_cooldown(con,uid,action): con.execute('INSERT INTO cooldowns(user_id,action,last_used) VALUES(?,?,?) ON CONFLICT(user_id,action) DO UPDATE SET last_used=excluded.last_used',(uid,action,now()))
@@ -195,7 +188,7 @@ def remove_item(con,uid,key,q):
 def ensure_user(tg):
     con=db(); tid=str(tg['id']); u=con.execute('SELECT * FROM users WHERE telegram_id=?',(tid,)).fetchone()
     if not u:
-        con.execute('INSERT INTO users(telegram_id,username,first_name,last_name,photo_url,coins,xp,level,energy,energy_updated,created_at,role) VALUES(?,?,?,?,?,1000,0,1,100,?,?,?)',(tid,tg.get('username',''),tg.get('first_name',''),tg.get('last_name',''),tg.get('photo_url',''),now(),now(),'creator' if tid==str(CREATOR_TELEGRAM_ID) else 'player'));con.commit();u=con.execute('SELECT * FROM users WHERE telegram_id=?',(tid,)).fetchone()
+        con.execute('INSERT INTO users(telegram_id,username,first_name,last_name,photo_url,coins,xp,level,created_at,role) VALUES(?,?,?,?,?,1000,0,1,?,?)',(tid,tg.get('username',''),tg.get('first_name',''),tg.get('last_name',''),tg.get('photo_url',''),now(),'creator' if tid==str(CREATOR_TELEGRAM_ID) else 'player'));con.commit();u=con.execute('SELECT * FROM users WHERE telegram_id=?',(tid,)).fetchone()
     else:
         con.execute('UPDATE users SET username=?,first_name=?,last_name=?,photo_url=? WHERE telegram_id=?',(tg.get('username',''),tg.get('first_name',''),tg.get('last_name',''),tg.get('photo_url',''),tid));con.commit()
     if tid==str(CREATOR_TELEGRAM_ID):con.execute("UPDATE users SET role='creator' WHERE telegram_id=?",(tid,))
@@ -248,11 +241,11 @@ def require_creator(fn):
     return wrapper
 
 def user_json(u,con):
-    e=restore_energy(con,u); inv=con.execute('SELECT item_key,quantity FROM inventory WHERE user_id=? AND quantity>0 ORDER BY quantity DESC',(u['id'],)).fetchall(); inventory=[]
+    inv=con.execute('SELECT item_key,quantity FROM inventory WHERE user_id=? AND quantity>0 ORDER BY quantity DESC',(u['id'],)).fetchall(); inventory=[]
     for r in inv:
         if r['item_key'] in ITEMS: inventory.append({'key':r['item_key'],'name':ITEMS[r['item_key']]['name'],'icon':ITEMS[r['item_key']]['icon'],'quantity':r['quantity'],'price':ITEMS[r['item_key']]['base_price']})
     unread=con.execute('SELECT COUNT(*) c FROM notifications WHERE user_id=? AND is_read=0',(u['id'],)).fetchone()['c']
-    return {'id':u['id'],'telegram_id':u['telegram_id'],'username':u['username'],'first_name':u['first_name'],'last_name':u['last_name'],'photo_url':u['photo_url'],'coins':u['coins'],'bank':u['bank'],'xp':u['xp'],'level':u['level'],'energy':e,'max_energy':MAX_ENERGY,'rating':u['rating'],'prefix':role_display(u),'role':role_name(u),'role_display':role_display(u),'creator':is_creator(u),'assistant':is_assistant(u),'world':current_world(u),'world_name':WORLDS[current_world(u)]['name'],'inventory':inventory,'unread_notifications':unread}
+    return {'id':u['id'],'telegram_id':u['telegram_id'],'username':u['username'],'first_name':u['first_name'],'last_name':u['last_name'],'photo_url':u['photo_url'],'coins':u['coins'],'bank':u['bank'],'xp':u['xp'],'level':u['level'],'rating':u['rating'],'prefix':role_display(u),'role':role_name(u),'role_display':role_display(u),'creator':is_creator(u),'assistant':is_assistant(u),'world':current_world(u),'world_name':WORLDS[current_world(u)]['name'],'inventory':inventory,'unread_notifications':unread}
 
 @app.get('/')
 def index():return send_from_directory('web','index.html')
@@ -260,7 +253,7 @@ def index():return send_from_directory('web','index.html')
 @app.get('/api/bootstrap')
 @require_user
 def bootstrap(u):
-    con=db();cleanup_events(con);data=user_json(u,con)
+    con=db();cleanup_events(con);daily=process_daily_login(con,u['id']);data=user_json(u,con)
     events=[dict(x) for x in con.execute('SELECT id,event_type,multiplier,ends_at,title,description FROM events WHERE active=1 AND ends_at>? ORDER BY id DESC',(now(),)).fetchall()]
     market=[]
     for r in con.execute('SELECT m.*,u.username,u.first_name FROM market m JOIN users u ON u.id=m.seller_id WHERE m.status="active" ORDER BY m.id DESC LIMIT 50').fetchall():
@@ -272,14 +265,12 @@ def bootstrap(u):
     properties=[]; ownedp={r['property_key'] for r in con.execute('SELECT property_key FROM properties WHERE user_id=?',(u['id'],)).fetchall()}
     for k,v in PROPERTIES.items():
         cnt=con.execute('SELECT COUNT(*) c FROM properties WHERE property_key=?',(k,)).fetchone()['c'];properties.append({'key':k,**v,'price':discounted_price(con,'property_discount',v['price']),'base_price':v['price'],'discount':int(get_discount(con,'property_discount')*100),'limit':PROPERTY_LIMITS.get(k,0),'owned_count':cnt,'available':cnt<PROPERTY_LIMITS.get(k,10**9),'owned':k in ownedp})
-    pets=[];op={r['pet_key']:r['level'] for r in con.execute('SELECT pet_key,level FROM pets WHERE user_id=?',(u['id'],)).fetchall()}
-    for k,v in PETS.items():pets.append({'key':k,**v,'owned':k in op,'level_owned':op.get(k,0)})
     quests=[]
     for r in con.execute('SELECT quest_key,progress,completed,claimed FROM quests WHERE user_id=?',(u['id'],)).fetchall():
         if r['quest_key'] in QUESTS:quests.append({'key':r['quest_key'],**QUESTS[r['quest_key']],'progress':r['progress'],'completed':bool(r['completed']),'claimed':bool(r['claimed'])})
     sr=con.execute('SELECT * FROM skills WHERE user_id=?',(u['id'],)).fetchone();skills=dict(sr) if sr else {}
     con.commit();con.close()
-    return jsonify({'ok':True,'user':data,'jobs':[{'key':k,**v,'world_name':WORLDS[v['world']]['name'],'world_unlocked':world_unlocked(u['level'],v['world'])} for k,v in JOBS.items()],'worlds':[{'key':k,**v,'unlocked':world_unlocked(u['level'],k)} for k,v in WORLDS.items()],'items':ITEMS,'businesses':businesses,'properties':properties,'pets':pets,'planets':[{'key':k,**v} for k,v in PLANETS.items()],'quests':quests,'skills':skills,'market':market,'business_market':bm,'events':events,'promo_codes':['START','BETA TEST','GO'],'creator':is_creator(u),'assistant':is_assistant(u),'admin':is_creator(u) or is_assistant(u)})
+    return jsonify({'ok':True,'user':data,'jobs':[{'key':k,**v,'world_name':WORLDS[v['world']]['name'],'world_unlocked':world_unlocked(u['level'],v['world'])} for k,v in JOBS.items()],'worlds':[{'key':k,**v,'unlocked':world_unlocked(u['level'],k)} for k,v in WORLDS.items()],'items':ITEMS,'businesses':businesses,'properties':properties,'quests':quests,'daily':daily,'skills':skills,'market':market,'business_market':bm,'events':events,'promo_codes':['START','BETA TEST','GO'],'creator':is_creator(u),'assistant':is_assistant(u),'admin':is_creator(u) or is_assistant(u)})
 
 # WORLD SWITCH
 @app.post('/api/world/switch')
@@ -302,10 +293,10 @@ def world_switch(u):
         add_item(con,uid,r['item_key'],r['quantity'])
     con.execute("UPDATE market SET status='cancelled' WHERE seller_id=? AND status='active'",(uid,))
     con.execute("UPDATE business_market SET status='cancelled' WHERE seller_id=? AND status='active'",(uid,))
-    for table in ('inventory','businesses','properties','pets','cooldowns'):
+    for table in ('inventory','businesses','properties','cooldowns'):
         con.execute(f'DELETE FROM {table} WHERE user_id=?',(uid,))
     con.execute('DELETE FROM work_sessions WHERE user_id=?',(uid,))
-    con.execute('UPDATE users SET world=?,coins=1000,bank=0,energy=100,energy_updated=? WHERE id=?',(wid,now(),uid))
+    con.execute('UPDATE users SET world=?,coins=1000,bank=0 WHERE id=?',(wid,uid))
     con.execute('INSERT INTO transactions(user_id,amount,reason,created_at) VALUES(?,?,?,?)',(uid,1000,f'Стартовая экономика: {WORLDS[wid]["name"]}',now()))
     add_notification(con,uid,'🌍 Новый мир',f'Ты перешёл в {WORLDS[wid]["name"]}. Экономика нового мира начата с 1000 💎.','world')
     con.commit(); fresh=con.execute('SELECT * FROM users WHERE id=?',(uid,)).fetchone(); con.close()
@@ -323,7 +314,6 @@ def work_start(u):
     if u['level']<job['level']:return jsonify({'ok':False,'error':f'Нужен уровень {job["level"]}'}),400
     con=db();rem=cooldown_remaining(con,u['id'],'job_'+key,job['cooldown'])
     if rem:con.close();return jsonify({'ok':False,'error':f'Подожди {rem} сек.'}),400
-    if not use_energy(con,u['id'],10):con.close();return jsonify({'ok':False,'error':'Недостаточно энергии'}),400
     sid=uuid.uuid4().hex;required=job.get('taps',20);expires=now()+120
     con.execute('DELETE FROM work_sessions WHERE user_id=? AND completed=0',(u['id'],));con.execute('INSERT INTO work_sessions(id,user_id,job_key,taps_required,taps,started_at,expires_at,completed) VALUES(?,?,?,?,?,?,?,0)',(sid,u['id'],key,required,0,now(),expires));con.commit();con.close()
     return jsonify({'ok':True,'session_id':sid,'job':key,'taps':0,'taps_required':required,'progress':0,'expires_at':expires})
@@ -361,7 +351,6 @@ def work_compat(u):
 def mining(u):
     con=db();rem=cooldown_remaining(con,u['id'],'mining',30)
     if rem:con.close();return jsonify({'ok':False,'error':f'Шахта перезаряжается: {rem} сек.'}),400
-    if not use_energy(con,u['id'],15):con.close();return jsonify({'ok':False,'error':'Недостаточно энергии'}),400
     r=con.execute('SELECT mining FROM skills WHERE user_id=?',(u['id'],)).fetchone();lvl=r['mining'] if r else 1;possible=['iron','coal','wood']
     if lvl>=3:possible.append('gold')
     if lvl>=6:possible.append('steel')
@@ -372,14 +361,12 @@ def mining(u):
 def farm(u):
     con=db();rem=cooldown_remaining(con,u['id'],'farm',40)
     if rem:con.close();return jsonify({'ok':False,'error':f'Ферма готовится: {rem} сек.'}),400
-    if not use_energy(con,u['id'],12):con.close();return jsonify({'ok':False,'error':'Недостаточно энергии'}),400
     r=con.execute('SELECT farming FROM skills WHERE user_id=?',(u['id'],)).fetchone();lvl=r['farming'] if r else 1;add_item(con,u['id'],'wheat',2+lvl//3);add_item(con,u['id'],'apple',1+lvl//5);add_xp(con,u['id'],30);con.execute('UPDATE skills SET farming=farming+1 WHERE user_id=? AND farming<20',(u['id'],));set_cooldown(con,u['id'],'farm');con.commit();con.close();return jsonify({'ok':True,'message':'Урожай собран'})
 @app.post('/api/fishing')
 @require_user
 def fishing(u):
     con=db();rem=cooldown_remaining(con,u['id'],'fishing',35)
     if rem:con.close();return jsonify({'ok':False,'error':f'Рыбалка недоступна ещё {rem} сек.'}),400
-    if not use_energy(con,u['id'],10):con.close();return jsonify({'ok':False,'error':'Недостаточно энергии'}),400
     r=con.execute('SELECT fishing FROM skills WHERE user_id=?',(u['id'],)).fetchone();lvl=r['fishing'] if r else 1;key='rare_fish' if lvl>=7 and random.random()<.2 else 'fish';q=1+lvl//5;add_item(con,u['id'],key,q);add_xp(con,u['id'],40);con.execute('UPDATE skills SET fishing=fishing+1 WHERE user_id=? AND fishing<20',(u['id'],));set_cooldown(con,u['id'],'fishing');con.commit();con.close();return jsonify({'ok':True,'item':ITEMS[key]['name'],'icon':ITEMS[key]['icon'],'quantity':q})
 
 # BUSINESSES
@@ -462,25 +449,6 @@ def buy_property(u):
     price=discounted_price(con,'property_discount',p['price'])
     if u['coins']<price:con.close();return jsonify({'ok':False,'error':'Недостаточно 💎'}),400
     add_coins(con,u['id'],-price,f'Покупка недвижимости: {p["name"]}');con.execute('INSERT INTO properties(user_id,property_key) VALUES(?,?)',(u['id'],k));con.execute('UPDATE users SET rating=rating+? WHERE id=?',(p['rating'],u['id']));con.commit();con.close();return jsonify({'ok':True})
-@app.post('/api/pets/buy')
-@require_user
-def buy_pet(u):
-    d=request.get_json(silent=True) or {};k=d.get('key');p=PETS.get(k)
-    if not p:return jsonify({'ok':False,'error':'Питомец не найден'}),400
-    con=db()
-    if con.execute('SELECT id FROM pets WHERE user_id=? AND pet_key=?',(u['id'],k)).fetchone():con.close();return jsonify({'ok':False,'error':'Этот питомец уже есть'}),400
-    if u['coins']<p['price']:con.close();return jsonify({'ok':False,'error':'Недостаточно 💎'}),400
-    add_coins(con,u['id'],-p['price'],f'Питомец: {p["name"]}');con.execute('INSERT INTO pets(user_id,pet_key) VALUES(?,?)',(u['id'],k));add_xp(con,u['id'],100);con.commit();con.close();return jsonify({'ok':True})
-@app.post('/api/planets/travel')
-@require_user
-def travel(u):
-    d=request.get_json(silent=True) or {};k=d.get('key');p=PLANETS.get(k)
-    if not p:return jsonify({'ok':False,'error':'Планета не найдена'}),400
-    if u['level']<p['level']:return jsonify({'ok':False,'error':f'Нужен уровень {p["level"]}'}),400
-    con=db()
-    if u['coins']<p['price']:con.close();return jsonify({'ok':False,'error':'Недостаточно 💎'}),400
-    add_coins(con,u['id'],-p['price'],f'Путешествие: {p["name"]}');add_xp(con,u['id'],250);con.commit();con.close();return jsonify({'ok':True,'planet':p['name']})
-
 # INVENTORY / MARKET
 @app.get('/api/inventory')
 @require_user
@@ -678,8 +646,8 @@ def admin_wipe(actor):
     if str(d.get('confirm','')).upper()!='WIPE':return jsonify({'ok':False,'error':'Для вайпа отправь confirm=WIPE'}),400
     con=db();users=con.execute('SELECT id,telegram_id FROM users').fetchall()
     for r in users:
-        uid=r['id'];con.execute('UPDATE users SET coins=1000,xp=0,level=1,energy=100,energy_updated=?,rating=0,bank=0,last_daily=0 WHERE id=?',(now(),uid))
-        for table in ('inventory','cooldowns','businesses','properties','pets','achievements','notifications'):con.execute(f'DELETE FROM {table} WHERE user_id=?',(uid,))
+        uid=r['id'];con.execute('UPDATE users SET coins=1000,xp=0,level=1,rating=0,bank=0,last_daily=0,world=1 WHERE id=?',(uid,))
+        for table in ('inventory','cooldowns','businesses','properties','achievements','notifications'):con.execute(f'DELETE FROM {table} WHERE user_id=?',(uid,))
         con.execute('UPDATE skills SET mining=1,farming=1,fishing=1,business=1,work=1 WHERE user_id=?',(uid,));con.execute('DELETE FROM quests WHERE user_id=?',(uid,))
         for k in QUESTS:con.execute('INSERT OR IGNORE INTO quests(user_id,quest_key) VALUES(?,?)',(uid,k))
         con.execute('DELETE FROM prefixes WHERE user_id=?',(uid,))
