@@ -3,263 +3,218 @@
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#050c19">
-<title>NOMER CLUB 4.0</title>
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#080e17">
+<title>NOMER CLUB</title>
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 <style>
 :root{
- --bg:#050c19;
- --bg2:#08172b;
- --card:#0c2038;
- --card2:#112c49;
- --line:#254665;
- --blue:#28b7ff;
- --cyan:#6ce6ff;
- --text:#f4f9ff;
- --muted:#91abc6;
- --green:#46e5a4;
- --red:#ff667f;
- --gold:#ffcf6c;
+ --bg:#080e17;
+ --surface:#101b2a;
+ --surface2:#142338;
+ --border:#213249;
+ --text:#f3f7fc;
+ --muted:#8294ab;
+ --accent:#59c5ff;
+ --green:#65e3ad;
+ --red:#ff738a;
 }
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-html{background:var(--bg)}
 body{
- margin:0;color:var(--text);
- font-family:system-ui,-apple-system,Arial,sans-serif;
- background:
- radial-gradient(ellipse at 50% -5%,#174d7b 0%,transparent 38%),
- linear-gradient(180deg,#071629,#050c19 60%);
- min-height:100vh;
+ margin:0;
+ background:var(--bg);
+ color:var(--text);
+ font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;
 }
 button,input,select{font:inherit}
 button{cursor:pointer}
-button:disabled{opacity:.45;cursor:not-allowed}
-main{max-width:680px;margin:auto;padding:18px 14px 120px}
-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px}
-.logo{
- font-size:clamp(23px,6vw,32px);font-weight:1000;
- letter-spacing:1.5px;color:var(--cyan);
- text-shadow:0 0 24px #18c9ff50;
-}
-.subtitle{font-size:10px;letter-spacing:2px;color:var(--muted)}
-h2{font-size:20px;margin:0 0 14px}
-h3{font-size:16px;margin:0 0 10px}
-p{line-height:1.55}
-.muted{color:var(--muted);font-size:13px}
-.tiny{font-size:11px;color:var(--muted)}
-.row{display:flex;align-items:center;justify-content:space-between;gap:10px}
-.wrap{flex-wrap:wrap}
-.center{text-align:center}
-.card{
- background:linear-gradient(145deg,#112b48,#0a1a2e);
- border:1px solid var(--line);
- border-radius:19px;padding:16px;margin-bottom:13px;
- box-shadow:0 8px 25px #0002;
-}
-.stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-bottom:15px}
-.stat{
- padding:13px 10px;background:#102840;
- border:1px solid var(--line);border-radius:15px;min-width:0;
-}
-.stat small{display:block;color:var(--muted);font-size:10px}
-.stat strong{display:block;font-size:clamp(14px,3.7vw,20px);margin-top:7px;overflow-wrap:anywhere}
-.hero{
- padding:22px 12px;
- background:radial-gradient(circle at 50% 15%,#175784,#0c2038 65%);
- border:1px solid #31658c;border-radius:22px;
- margin-bottom:14px;
-}
-.hero-label{text-align:center;font-size:11px;letter-spacing:2px;color:#9ed8f4}
-.plate{
- width:100%;margin:19px auto;
- display:flex;align-items:stretch;
- background:linear-gradient(180deg,#fff,#e5e9e8);
- color:#101114;border:3px solid #171e27;
- outline:2px solid #9daeb9;border-radius:10px;
- box-shadow:0 13px 32px #0008,0 0 30px #36c6ff25;
- min-height:clamp(100px,26vw,158px);
- overflow:hidden;
-}
-.plate-main{
- flex:1;min-width:0;display:flex;align-items:center;
- justify-content:center;padding:5px 2px;
- font-family:Arial,Helvetica,sans-serif;
- font-weight:1000;
- font-size:clamp(37px,10.5vw,74px);
- letter-spacing:-2.5px;white-space:nowrap;
- font-stretch:condensed;
-}
-.plate-region{
- width:clamp(66px,20vw,110px);flex-shrink:0;
- border-left:3px solid #1d232b;
- display:flex;flex-direction:column;align-items:center;
- justify-content:center;gap:4px;
- font-family:Arial,sans-serif;font-weight:900;
-}
-.region-number{font-size:clamp(25px,6.8vw,46px);line-height:1}
-.region-country{font-size:clamp(10px,2.6vw,15px);white-space:nowrap}
-.plate.compact{
- min-height:76px;margin:10px 0;outline:0;border-width:2px;
-}
-.plate.compact .plate-main{font-size:clamp(27px,7.5vw,43px)}
-.plate.compact .plate-region{width:72px;border-left-width:2px}
-.plate.compact .region-number{font-size:25px}
-.plate.compact .region-country{font-size:10px}
-.plate.spinning{animation:shake .12s infinite alternate;box-shadow:0 0 35px #4ce1ff90}
-@keyframes shake{from{transform:translateX(-2px)}to{transform:translateX(2px)}}
-@keyframes appear{
- from{opacity:0;transform:translateY(15px) scale(.95)}
- to{opacity:1;transform:translateY(0) scale(1)}
-}
-@keyframes glow{
- 0%,100%{box-shadow:0 0 16px #3acfff30}
- 50%{box-shadow:0 0 45px #3acfff90}
-}
-.reveal{animation:appear .5s ease,glow 1.6s ease 2}
-.primary,.secondary,.danger-btn{
- border:0;border-radius:13px;padding:14px 15px;
- color:white;font-weight:800;font-size:14px;
-}
-.primary{background:linear-gradient(105deg,#087cc5,#29c8ed);box-shadow:0 8px 24px #0089e52d}
-.secondary{background:#214969;border:1px solid #35678a}
-.danger-btn{background:#693249;border:1px solid #98506c}
-.full{width:100%}
-.small{padding:10px 12px;font-size:12px}
-.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
-.actions button{flex:1}
-.tag{
- display:inline-flex;align-items:center;
- padding:5px 9px;border-radius:8px;
- background:#163c5b;color:var(--cyan);
- font-size:11px;font-weight:800;
-}
-.rarity-Обычный{color:#c4cedb}
-.rarity-Необычный{color:#60e9a2}
-.rarity-Редкий{color:#59bcff}
-.rarity-Эпический{color:#b68cff}
-.rarity-Легендарный{color:#ffcf66}
-.rarity-Мифический{color:#ff779e}
-.item{padding:14px 0;border-bottom:1px solid var(--line)}
-.item:last-child{border-bottom:0}
-.item-title{font-size:17px;font-weight:850;margin:5px 0}
-.empty{padding:24px 5px;text-align:center;color:var(--muted)}
-input,select{
- width:100%;background:#081a2d;color:white;
- border:1px solid #335675;border-radius:12px;
- padding:13px;outline:none;margin:7px 0;
-}
-input:focus,select:focus{border-color:var(--cyan)}
-.progress{height:8px;border-radius:20px;background:#092036;overflow:hidden;margin:9px 0}
-.progress-fill{height:100%;background:linear-gradient(90deg,#1285d1,#58e7ff);border-radius:20px}
-section{display:none;animation:appear .2s ease}
-section.active{display:block}
-nav{
- position:fixed;bottom:0;left:0;right:0;
- display:flex;gap:1px;justify-content:center;
- background:#071729f5;border-top:1px solid var(--line);
- padding:8px 4px max(11px,env(safe-area-inset-bottom));
- backdrop-filter:blur(16px);z-index:20;
- overflow-x:auto;
-}
-nav button{
- flex:1;min-width:0;max-width:95px;
- background:transparent;border:0;color:#91abc6;
- border-radius:10px;padding:7px 1px;font-size:9px;
-}
-nav button span{display:block;font-size:19px;margin-bottom:4px}
-nav button.active{background:#153d5b;color:var(--cyan)}
-#toast{
- position:fixed;left:5%;bottom:100px;width:90%;
- background:#123954;border:1px solid #55d7ff;
- border-radius:13px;padding:13px;display:none;
- z-index:100;text-align:center;overflow:hidden;
- box-shadow:0 10px 30px #0009;
-}
-#toast-bar{position:absolute;bottom:0;left:0;height:3px;background:var(--cyan);width:100%}
-#error{
- display:none;background:#4a2335;color:#ffd5de;
- border:1px solid #a94d67;border-radius:12px;
- padding:12px;margin-bottom:14px;font-size:13px;
-}
-.overlay{
- display:none;position:fixed;inset:0;
- background:#020711d9;z-index:60;
- align-items:center;justify-content:center;padding:15px;
- backdrop-filter:blur(8px);
-}
-.modal{
- width:100%;max-width:520px;max-height:90vh;
- overflow-y:auto;background:linear-gradient(145deg,#143454,#081a2e);
- border:1px solid #40769a;border-radius:22px;
- padding:20px;animation:appear .3s ease;
-}
-.modal h2{text-align:center}
-.grid2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
-.mini-card{background:#102c47;border:1px solid #274b69;border-radius:14px;padding:13px}
-.mini-card strong{display:block;font-size:18px;margin-top:5px}
+button:disabled{opacity:.4;cursor:not-allowed}
+main{max-width:650px;margin:auto;padding:20px 16px 115px}
+header{display:flex;align-items:center;justify-content:space-between;margin-bottom:24px}
+.logo{font-size:23px;font-weight:900;letter-spacing:1px}
+.logo span{color:var(--accent)}
+.sub{font-size:10px;color:var(--muted);letter-spacing:2px;margin-top:4px}
 .avatar{
- width:54px;height:54px;border-radius:50%;
- background:#174d76;border:2px solid var(--cyan);
- display:grid;place-items:center;font-size:25px;
- overflow:hidden;
+ width:43px;height:43px;border-radius:14px;
+ background:var(--surface2);border:1px solid var(--border);
+ display:grid;place-items:center;overflow:hidden;font-size:22px
 }
 .avatar img{width:100%;height:100%;object-fit:cover}
-.profile-line{padding:10px 0;border-bottom:1px solid var(--line)}
-.profile-line:last-child{border:0}
-.hidden{display:none!important}
+h2{font-size:20px;margin:0 0 8px;letter-spacing:-.5px}
+h3{font-size:15px;margin:0 0 9px}
+p{line-height:1.5}
+.muted{color:var(--muted);font-size:13px}
+.small{font-size:11px;color:var(--muted)}
+.card{
+ background:var(--surface);
+ border:1px solid var(--border);
+ border-radius:17px;
+ padding:17px;margin-bottom:12px;
+}
+.row{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px;margin-bottom:14px}
+.stat{
+ background:var(--surface);
+ border:1px solid var(--border);
+ border-radius:14px;padding:13px 10px;
+ min-width:0;
+}
+.stat label{display:block;color:var(--muted);font-size:10px;margin-bottom:8px}
+.stat b{font-size:17px;overflow-wrap:anywhere}
+.accent{color:var(--accent)}
+.green{color:var(--green)}
+.hero{
+ background:linear-gradient(160deg,#152940,#0e1929 75%);
+ border:1px solid #2a4966;
+ border-radius:20px;
+ padding:22px 13px;
+ margin-bottom:13px;
+ text-align:center;
+}
+.eyebrow{font-size:10px;letter-spacing:2px;color:var(--muted);font-weight:700}
+.plate{
+ display:flex;align-items:stretch;
+ background:#f3f4f2;color:#121417;
+ border:3px solid #222833;border-radius:9px;
+ margin:22px 0;
+ min-height:clamp(92px,24vw,135px);
+ overflow:hidden;
+ box-shadow:0 12px 25px #0005;
+ font-family:Arial,Helvetica,sans-serif;
+}
+.plate-main{
+ flex:1;min-width:0;
+ display:flex;align-items:center;justify-content:center;
+ font-size:clamp(34px,10vw,70px);
+ font-weight:900;letter-spacing:-2px;
+ white-space:nowrap;
+}
+.plate-side{
+ width:clamp(64px,20vw,100px);
+ border-left:3px solid #222833;
+ display:flex;flex-direction:column;
+ justify-content:center;align-items:center;
+ font-weight:900;
+}
+.plate-side strong{font-size:clamp(25px,7vw,42px)}
+.plate-side small{font-size:11px}
+.plate.mini{min-height:70px;margin:12px 0;border-width:2px}
+.plate.mini .plate-main{font-size:clamp(27px,7vw,43px)}
+.plate.mini .plate-side{width:72px;border-left-width:2px}
+.plate.mini .plate-side strong{font-size:25px}
+.btn{
+ background:var(--accent);color:#061320;
+ border:0;border-radius:11px;
+ padding:13px 15px;font-weight:800;font-size:13px;
+}
+.btn.alt{background:#20364e;color:#e6f3ff}
+.btn.danger{background:#422634;color:#ffb8c5}
+.btn.sm{padding:9px 11px;font-size:11px}
+.btn.full{width:100%}
+.actions{display:flex;gap:7px;flex-wrap:wrap;margin-top:12px}
+.actions .btn{flex:1}
+.tag{
+ display:inline-block;background:#20344a;
+ padding:5px 9px;border-radius:7px;
+ font-size:11px;font-weight:700;color:var(--accent);
+}
+.item{padding:15px 0;border-bottom:1px solid var(--border)}
+.item:last-child{border-bottom:0;padding-bottom:0}
+.item:first-child{padding-top:4px}
+.item-title{font-weight:800;font-size:15px;margin-bottom:6px}
+input,select{
+ width:100%;padding:12px;margin:7px 0;
+ background:#0a1421;border:1px solid #2b4158;
+ border-radius:10px;color:white;outline:0;
+}
+input:focus,select:focus{border-color:var(--accent)}
+.progress{height:6px;background:#203044;border-radius:10px;overflow:hidden;margin:10px 0}
+.progress div{height:100%;background:var(--accent);border-radius:10px}
+.empty{text-align:center;padding:24px 8px;color:var(--muted);font-size:13px}
+section{display:none}
+section.active{display:block;animation:fade .2s ease}
+@keyframes fade{from{opacity:.3;transform:translateY(5px)}to{opacity:1;transform:none}}
+@keyframes shake{from{transform:translateX(-2px)}to{transform:translateX(2px)}}
+.shake{animation:shake .1s infinite alternate}
+nav{
+ position:fixed;bottom:0;left:0;right:0;
+ background:#0c1725f7;border-top:1px solid var(--border);
+ display:flex;overflow-x:auto;z-index:10;
+ padding:8px 5px max(9px,env(safe-area-inset-bottom));
+ scrollbar-width:none;
+}
+nav::-webkit-scrollbar{display:none}
+nav button{
+ flex:1;min-width:54px;max-width:100px;
+ background:transparent;border:0;
+ color:var(--muted);font-size:9px;
+ padding:7px 2px;border-radius:10px;
+}
+nav button span{display:block;font-size:19px;margin-bottom:5px}
+nav button.active{color:var(--accent);background:#152b42}
+.overlay{
+ position:fixed;inset:0;display:none;
+ align-items:center;justify-content:center;
+ background:#030812dd;z-index:50;padding:15px;
+}
+.modal{
+ background:#111f30;border:1px solid #36516b;
+ border-radius:20px;padding:20px;width:100%;
+ max-width:500px;max-height:90vh;overflow-y:auto;
+}
+#toast{
+ position:fixed;bottom:100px;left:5%;width:90%;
+ padding:14px;text-align:center;
+ background:#1a344c;border:1px solid #417397;
+ border-radius:12px;display:none;z-index:100;
+ font-size:13px;
+}
+.creator{color:#ffda82;font-size:12px;font-weight:800;margin-top:8px}
 </style>
 </head>
-
 <body>
 <main>
 <header>
  <div>
-  <div class="logo">NOMER CLUB</div>
-  <div class="subtitle">ULTIMATE GARAGE • VERSION 4.0</div>
+  <div class="logo">NOMER <span>CLUB</span></div>
+  <div class="sub">ULTIMATE GARAGE · 4.1</div>
  </div>
- <div class="avatar" id="header-avatar">🏁</div>
+ <div class="avatar" id="avatar">🏁</div>
 </header>
 
-<div id="error"></div>
-
-<div class="stats">
- <div class="stat"><small>БАЛАНС</small><strong id="balance">—</strong></div>
- <div class="stat"><small>УРОВЕНЬ</small><strong id="level">—</strong></div>
- <div class="stat"><small>НОМЕРА</small><strong id="count">—</strong></div>
+<div class="grid">
+ <div class="stat"><label>БАЛАНС</label><b id="balance">—</b></div>
+ <div class="stat"><label>УРОВЕНЬ</label><b id="level">—</b></div>
+ <div class="stat"><label>НОМЕРА</label><b id="collection-count">—</b></div>
 </div>
 
 <section id="home" class="active">
  <div class="hero">
-  <div class="hero-label">ГЕНЕРАТОР АВТОМОБИЛЬНЫХ НОМЕРОВ</div>
-  <div id="main-plate"></div>
-  <p class="center muted" id="spin-info">Твоя следующая коллекционная находка</p>
-  <button id="spin-button" class="primary full" disabled>ПОДКЛЮЧЕНИЕ...</button>
-  <p class="center tiny" id="spins-left">—</p>
+  <div class="eyebrow">ГЕНЕРАТОР НОМЕРОВ</div>
+  <div id="spin-plate"></div>
+  <p class="muted" id="spin-description">Создай уникальный номер для коллекции</p>
+  <button class="btn full" id="spin-btn" onclick="spin()" disabled>ЗАГРУЗКА...</button>
+  <p class="small" id="spin-count">—</p>
  </div>
  <div class="card">
-  <div class="row"><h2>Мой гараж</h2><span class="tag" id="garage-count">0 номеров</span></div>
-  <div class="grid2">
-   <div class="mini-card"><span class="tiny">Автомобили</span><strong id="home-cars">0</strong></div>
-   <div class="mini-card"><span class="tiny">Автоклуб</span><strong id="home-club" style="font-size:13px">Нет клуба</strong></div>
-  </div>
-  <div class="actions">
-   <button class="secondary" onclick="openTab('garage')">Открыть гараж</button>
-   <button class="secondary" onclick="openTab('cars')">Автосалон</button>
+  <div class="row">
+   <div><h3>Мой гараж</h3><span class="muted">Твоя коллекция номеров</span></div>
+   <button class="btn alt sm" onclick="tab('garage')">Открыть →</button>
   </div>
  </div>
  <div class="card">
-  <h2>Бонус поддержки</h2>
-  <p class="muted">Если у тебя меньше 500 NC, можешь получить 1 500 NC один раз в 24 часа.</p>
-  <button id="bonus-button" class="secondary full" onclick="claimBonus()">ПОЛУЧИТЬ 1 500 NC</button>
+  <div class="row">
+   <div><h3>Бонус поддержки</h3><span class="muted">+1 500 NC при балансе ниже 500</span></div>
+  </div>
+  <button class="btn alt full" style="margin-top:14px" id="bonus-btn" onclick="bonus()">ПОЛУЧИТЬ БОНУС</button>
  </div>
 </section>
 
 <section id="garage">
+ <h2>Гараж</h2>
+ <p class="muted">Твои автомобильные номера</p>
  <div class="card">
-  <div class="row"><h2>Мой гараж</h2><span class="tag" id="garage-total">0</span></div>
-  <p class="muted">Коллекционируй номера, добавляй в избранное, устанавливай на автомобили и продавай.</p>
-  <select id="garage-filter" onchange="renderGarage()">
+  <select id="filter" onchange="renderGarage()">
    <option value="all">Все номера</option>
    <option value="favorite">Избранное</option>
    <option value="Обычный">Обычные</option>
@@ -269,137 +224,116 @@ nav button.active{background:#153d5b;color:var(--cyan)}
    <option value="Легендарный">Легендарные</option>
    <option value="Мифический">Мифические</option>
   </select>
-  <div id="garage-list" class="empty">Загрузка...</div>
+  <div id="garage-list"></div>
  </div>
 </section>
 
 <section id="cars">
- <div class="card">
-  <h2>Мои автомобили</h2>
-  <div id="my-cars" class="empty">Загрузка...</div>
- </div>
- <div class="card">
-  <h2>Автосалон</h2>
-  <p class="muted">Покупай виртуальные автомобили за NC и устанавливай коллекционные номера.</p>
-  <div id="car-catalog" class="empty">Загрузка...</div>
- </div>
+ <h2>Автомобили</h2>
+ <p class="muted">Собери собственный автопарк</p>
+ <div class="card"><h3>Мой автопарк</h3><div id="my-cars"></div></div>
+ <div class="card"><h3>Автосалон</h3><div id="car-shop"></div></div>
 </section>
 
 <section id="market">
+ <h2>Маркет</h2>
+ <p class="muted">Покупка и продажа номеров между игроками</p>
  <div class="card">
-  <h2>Торговая площадка</h2>
-  <p class="muted">Покупай конкретные номера у игроков. Комиссия с продажи — 5%.</p>
-  <input id="market-search" placeholder="Поиск по номеру..." oninput="renderMarket()">
+  <input id="market-search" placeholder="Поиск номера" oninput="renderMarket()">
   <select id="market-sort" onchange="renderMarket()">
    <option value="new">Сначала новые</option>
    <option value="cheap">Сначала дешёвые</option>
    <option value="expensive">Сначала дорогие</option>
   </select>
-  <div id="market-list" class="empty">Загрузка...</div>
+  <div id="market-list"></div>
  </div>
 </section>
 
 <section id="auctions">
- <div class="card">
-  <h2>Аукционы</h2>
-  <p class="muted">Торги за коллекционные номера. Ставки резервируются, проигравшим участникам NC возвращаются.</p>
-  <div id="auction-list" class="empty">Загрузка...</div>
- </div>
+ <h2>Аукционы</h2>
+ <p class="muted">Ставки на коллекционные номера</p>
+ <div class="card"><div id="auction-list"></div></div>
 </section>
 
 <section id="tasks">
- <div class="card">
-  <h2>Задания и достижения</h2>
-  <p class="muted">Выполняй задания и получай NC и опыт.</p>
-  <div id="task-list" class="empty">Загрузка...</div>
- </div>
+ <h2>Задания</h2>
+ <p class="muted">Выполняй задания и получай награды</p>
+ <div class="card"><div id="task-list"></div></div>
 </section>
 
 <section id="clubs">
+ <h2>Автоклубы</h2>
+ <p class="muted" id="my-club">Твой клуб: нет</p>
  <div class="card">
-  <h2>Автоклубы</h2>
-  <p class="muted" id="my-club">Твой клуб: нет</p>
-  <input id="club-name" placeholder="Название нового клуба">
-  <button class="primary full" onclick="createClub()">СОЗДАТЬ АВТОКЛУБ</button>
+  <h3>Создать клуб</h3>
+  <input id="club-name" placeholder="Название автоклуба">
+  <button class="btn full" onclick="createClub()">СОЗДАТЬ</button>
   <div class="actions">
-   <button class="secondary" onclick="leaveClub()">Покинуть клуб</button>
-   <button class="danger-btn" onclick="disbandClub()">Распустить свой клуб</button>
+   <button class="btn alt sm" onclick="leaveClub()">Выйти</button>
+   <button class="btn danger sm" onclick="disbandClub()">Распустить</button>
   </div>
  </div>
- <div class="card">
-  <h2>Список автоклубов</h2>
-  <div id="club-list" class="empty">Загрузка...</div>
- </div>
+ <div class="card"><h3>Список клубов</h3><div id="club-list"></div></div>
 </section>
 
 <section id="profile">
+ <h2>Профиль</h2>
  <div class="card">
-  <div class="row">
-   <div class="avatar" id="profile-avatar">🏁</div>
-   <div style="flex:1">
-    <h2 id="profile-name" style="margin:0">Игрок</h2>
-    <span class="muted" id="profile-username"></span>
-   </div>
-  </div>
-  <div id="creator-badge" class="tag hidden" style="margin-top:12px">👑 СОЗДАТЕЛЬ NOMER CLUB</div>
-  <div id="profile-info" style="margin-top:14px"></div>
+  <h3 id="profile-name">Игрок</h3>
+  <p class="muted" id="profile-username"></p>
+  <div id="creator" class="creator" style="display:none">👑 СОЗДАТЕЛЬ NOMER CLUB</div>
+  <div id="profile-info"></div>
  </div>
- <div class="card">
-  <h2>Рейтинг игроков</h2>
-  <div id="top-list" class="empty">Загрузка...</div>
- </div>
- <div class="card hidden" id="admin-panel">
-  <h2>Админ-панель</h2>
-  <p class="muted">Управление NC и XP игроков. Доступ только создателю.</p>
+ <div class="card"><h3>Рейтинг игроков</h3><div id="top-list"></div></div>
+ <div class="card" id="admin" style="display:none">
+  <h3>👑 Админ-панель</h3>
+  <p class="muted">Управление балансом и опытом игроков</p>
+  <input id="admin-search" placeholder="Поиск игрока по имени или ID" oninput="renderAdminPlayers()">
+  <div id="admin-players"></div>
   <input id="admin-id" type="number" placeholder="Telegram ID игрока">
   <select id="admin-kind">
-   <option value="balance">Баланс NC</option>
-   <option value="xp">Опыт XP</option>
+   <option value="balance">NC — игровая валюта</option>
+   <option value="xp">XP — опыт</option>
   </select>
-  <input id="admin-amount" type="number" placeholder="Сумма (можно отрицательную)">
-  <button class="primary full" onclick="adminGrant()">ПРИМЕНИТЬ</button>
-  <h3 style="margin-top:20px">Последние игроки</h3>
-  <div id="admin-players"></div>
+  <input id="admin-amount" type="number" placeholder="Сумма, например 10000 или -500">
+  <button class="btn full" onclick="adminGrant()">ПРИМЕНИТЬ ИЗМЕНЕНИЕ</button>
  </div>
 </section>
 </main>
 
 <nav>
- <button class="active" data-tab="home"><span>⌂</span>Главная</button>
- <button data-tab="garage"><span>▤</span>Гараж</button>
- <button data-tab="cars"><span>🚘</span>Авто</button>
- <button data-tab="market"><span>⇄</span>Маркет</button>
- <button data-tab="auctions"><span>⚖</span>Торги</button>
- <button data-tab="tasks"><span>★</span>Задания</button>
- <button data-tab="clubs"><span>♛</span>Клубы</button>
- <button data-tab="profile"><span>◉</span>Профиль</button>
+ <button class="active" data-tab="home" onclick="tab('home')"><span>⌂</span>Главная</button>
+ <button data-tab="garage" onclick="tab('garage')"><span>▤</span>Гараж</button>
+ <button data-tab="cars" onclick="tab('cars')"><span>🚘</span>Авто</button>
+ <button data-tab="market" onclick="tab('market')"><span>⇄</span>Маркет</button>
+ <button data-tab="auctions" onclick="tab('auctions')"><span>⚖</span>Торги</button>
+ <button data-tab="tasks" onclick="tab('tasks')"><span>✓</span>Задания</button>
+ <button data-tab="clubs" onclick="tab('clubs')"><span>♛</span>Клубы</button>
+ <button data-tab="profile" onclick="tab('profile')"><span>◉</span>Профиль</button>
 </nav>
 
 <div class="overlay" id="result-overlay">
  <div class="modal">
-  <h2>ТВОЙ НОВЫЙ НОМЕР</h2>
-  <div class="center"><span class="tag" id="result-rarity">—</span></div>
+  <div class="eyebrow" style="text-align:center">НОВЫЙ НОМЕР</div>
   <div id="result-plate"></div>
-  <p class="center muted">Номер автоматически сохранён в гараже</p>
-  <div class="grid2">
-   <button class="secondary" onclick="closeResult()">В ГАРАЖ</button>
-   <button class="primary" id="result-sell" onclick="sellResult()">ПРОДАТЬ</button>
+  <h3 id="result-rarity" style="text-align:center"></h3>
+  <p class="muted" style="text-align:center">Номер сохранён в гараже</p>
+  <div class="actions">
+   <button class="btn alt" onclick="closeResult()">ОСТАВИТЬ</button>
+   <button class="btn" id="sell-result" onclick="sellResult()">ПРОДАТЬ</button>
   </div>
  </div>
 </div>
 
 <div class="overlay" id="passport-overlay">
  <div class="modal">
-  <h2>ПАСПОРТ НОМЕРА</h2>
-  <div id="passport-content"></div>
-  <button class="secondary full" onclick="closePassport()">ЗАКРЫТЬ</button>
+  <h3>Паспорт номера</h3>
+  <div id="passport-data"></div>
+  <button class="btn alt full" onclick="document.getElementById('passport-overlay').style.display='none'">ЗАКРЫТЬ</button>
  </div>
 </div>
 
-<div id="toast">
- <span id="toast-text"></span>
- <div id="toast-bar"></div>
-</div>
+<div id="toast"></div>
 
 <script>
 "use strict";
@@ -408,52 +342,36 @@ const tg=window.Telegram?.WebApp;
 if(tg){tg.ready();tg.expand()}
 
 const $=id=>document.getElementById(id);
-const fmt=n=>Number(n||0).toLocaleString("ru-RU");
-const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+const money=n=>Number(n||0).toLocaleString("ru-RU");
+const wait=ms=>new Promise(r=>setTimeout(r,ms));
 
-let me=null;
-let plates=[];
-let marketItems=[];
-let spinning=false;
-let latestPlate=null;
-let toastTimer=null;
+let user=null,plates=[],marketItems=[],adminPlayers=[];
+let spinning=false,lastPlate=null,toastTimer=null;
 
-const RARITY_COLORS={
- "Обычный":"#c4cedb",
- "Необычный":"#60e9a2",
- "Редкий":"#59bcff",
- "Эпический":"#b68cff",
- "Легендарный":"#ffcf66",
- "Мифический":"#ff779e"
+const colors={
+ "Обычный":"#c2cbd6",
+ "Необычный":"#68e6a7",
+ "Редкий":"#63c1ff",
+ "Эпический":"#b48cff",
+ "Легендарный":"#ffd17b",
+ "Мифический":"#ff7ca2"
 };
 
-function esc(value){
- return String(value??"").replace(/[&<>"']/g,c=>({
+function safe(v){
+ return String(v??"").replace(/[&<>"']/g,c=>({
   "&":"&amp;","<":"&lt;",">":"&gt;",
   '"':"&quot;","'":"&#39;"
  })[c]);
 }
 
-function toast(message){
- $("toast-text").textContent=message;
+function notify(msg){
+ $("toast").textContent=msg;
  $("toast").style.display="block";
- const bar=$("toast-bar");
- bar.style.transition="none";
- bar.style.width="100%";
- void bar.offsetWidth;
- bar.style.transition="width 3s linear";
- bar.style.width="0%";
  clearTimeout(toastTimer);
  toastTimer=setTimeout(()=>$("toast").style.display="none",3000);
 }
 
-function showError(message){
- $("error").textContent=message;
- $("error").style.display="block";
- toast(message);
-}
-
-async function api(path,method="GET",data){
+async function api(path,method="GET",body){
  const response=await fetch("/api/"+path,{
   method,
   cache:"no-store",
@@ -461,526 +379,457 @@ async function api(path,method="GET",data){
    "Content-Type":"application/json",
    "X-Telegram-Init-Data":tg?.initData||""
   },
-  body:data===undefined?undefined:JSON.stringify(data)
+  body:body===undefined?undefined:JSON.stringify(body)
  });
- let result;
- try{result=await response.json()}
- catch{throw Error("Ошибка ответа сервера: HTTP "+response.status)}
- if(!response.ok)throw Error(result.error||"HTTP "+response.status);
- return result;
+ let data;
+ try{data=await response.json()}
+ catch{throw Error("Ошибка сервера HTTP "+response.status)}
+ if(!response.ok)throw Error(data.error||"Ошибка "+response.status);
+ return data;
 }
 
-function plateHTML(code,compact=false){
- const match=String(code||"").match(/^([A-Z])(\d{3})([A-Z]{2}) (\d{2,3})$/);
- const main=match?match[1]+match[2]+match[3]:"A777AA";
- const region=match?match[4]:"77";
- return `
- <div class="plate ${compact?"compact":""}">
-  <div class="plate-main">${esc(main)}</div>
-  <div class="plate-region">
-   <div class="region-number">${esc(region)}</div>
-   <div class="region-country">RUS 🇷🇺</div>
-  </div>
+async function action(fn){
+ try{return await fn()}
+ catch(e){notify(e.message);return null}
+}
+
+function plateHTML(code,mini=false){
+ const m=String(code||"").match(/^([A-Z])(\d{3})([A-Z]{2}) (\d{2,3})$/);
+ const main=m?m[1]+m[2]+m[3]:"A777AA";
+ const region=m?m[4]:"77";
+ return `<div class="plate ${mini?"mini":""}">
+  <div class="plate-main">${safe(main)}</div>
+  <div class="plate-side"><strong>${safe(region)}</strong><small>RUS 🇷🇺</small></div>
  </div>`;
 }
 
 function randomCode(){
  const letters="ABEKMHOPCTYX";
  const pick=()=>letters[Math.floor(Math.random()*letters.length)];
- const digits=String(Math.floor(100+Math.random()*900));
- const regions=["77","777","99","177","116","78","50"];
- return pick()+digits+pick()+pick()+" "+regions[Math.floor(Math.random()*regions.length)];
+ const regions=["77","777","99","177","50"];
+ return pick()+String(Math.floor(100+Math.random()*900))+pick()+pick()+" "+regions[Math.floor(Math.random()*regions.length)];
 }
 
-function updateSpinButton(){
- const b=$("spin-button");
- b.disabled=spinning||!me||me.spins_left<=0;
- b.textContent=spinning?"ГЕНЕРАЦИЯ...":
- !me?"НЕТ ПОДКЛЮЧЕНИЯ":
- me.spins_left<=0?"ПОПЫТКИ ЗАКОНЧИЛИСЬ":
- "СГЕНЕРИРОВАТЬ НОМЕР";
-}
-
-function setAvatar(id){
- const u=tg?.initDataUnsafe?.user;
- if(u?.photo_url){
-  $(id).innerHTML=`<img src="${esc(u.photo_url)}" alt="Аватар">`;
- }
+function tab(name){
+ document.querySelectorAll("section").forEach(s=>s.classList.toggle("active",s.id===name));
+ document.querySelectorAll("nav button").forEach(b=>b.classList.toggle("active",b.dataset.tab===name));
+ window.scrollTo(0,0);
+ const loaders={
+  garage:loadGarage,cars:loadCars,market:loadMarket,
+  auctions:loadAuctions,tasks:loadTasks,clubs:loadClubs,
+  profile:loadProfile
+ };
+ if(loaders[name])action(loaders[name]);
 }
 
 async function refresh(){
- try{
-  me=await api("me");
-  $("error").style.display="none";
-  $("balance").textContent=fmt(me.balance)+" NC";
-  $("level").textContent=me.level+" LVL";
-  $("count").textContent=me.collection;
-  $("garage-count").textContent=me.collection+" номеров";
-  $("home-cars").textContent=me.cars;
-  $("home-club").textContent=me.club||"Нет клуба";
-  $("my-club").textContent="Твой клуб: "+(me.club||"нет");
-  $("spins-left").textContent="Осталось попыток сегодня: "+me.spins_left+" / 20";
-  $("bonus-button").disabled=!me.bonus_ready;
-  $("profile-name").textContent=me.name;
-  $("profile-username").textContent=me.username?"@"+me.username:"Без username";
-  $("creator-badge").classList.toggle("hidden",!me.is_admin);
-  $("admin-panel").classList.toggle("hidden",!me.is_admin);
-  $("profile-info").innerHTML=`
-   <div class="profile-line">Telegram ID: <b>${me.id}</b></div>
-   <div class="profile-line">Баланс: <b>${fmt(me.balance)} NC</b></div>
-   <div class="profile-line">Уровень: <b>${me.level}</b></div>
-   <div class="profile-line">Опыт: <b>${fmt(me.xp)} XP</b></div>
-   <div class="profile-line">Номеров: <b>${me.collection}</b></div>
-   <div class="profile-line">Автомобилей: <b>${me.cars}</b></div>
-   <div class="profile-line">Автоклуб: <b>${esc(me.club||"Нет")}</b></div>
-  `;
-  updateSpinButton();
-  return true;
- }catch(e){
-  me=null;updateSpinButton();showError(e.message);
-  return false;
- }
+ user=await api("me");
+ $("balance").textContent=money(user.balance);
+ $("level").textContent=user.level;
+ $("collection-count").textContent=user.collection;
+ $("spin-count").textContent="Осталось попыток: "+user.spins_left+" / 20";
+ $("spin-btn").disabled=spinning||user.spins_left<=0;
+ $("spin-btn").textContent=spinning?"ГЕНЕРАЦИЯ...":
+ user.spins_left<=0?"ПОПЫТКИ ЗАКОНЧИЛИСЬ":"СГЕНЕРИРОВАТЬ НОМЕР";
+ $("bonus-btn").disabled=!user.bonus_ready;
+ $("my-club").textContent="Твой клуб: "+(user.club||"нет");
+ $("profile-name").textContent=user.name;
+ $("profile-username").textContent=user.username?"@"+user.username:"Telegram";
+ $("creator").style.display=user.is_admin?"block":"none";
+ $("admin").style.display=user.is_admin?"block":"none";
+ $("profile-info").innerHTML=`
+  <p class="muted">Telegram ID: ${user.id}</p>
+  <p class="muted">Баланс: ${money(user.balance)} NC</p>
+  <p class="muted">Опыт: ${money(user.xp)} XP</p>
+  <p class="muted">Автомобили: ${user.cars}</p>
+  <p class="muted">Номера: ${user.collection}</p>`;
 }
 
 async function spin(){
- if(spinning||!me||me.spins_left<=0)return;
+ if(spinning||!user||user.spins_left<=0)return;
  spinning=true;
- updateSpinButton();
- $("spin-info").textContent="Подбираем комбинацию...";
- const display=$("main-plate");
- display.classList.add("spinning");
+ $("spin-btn").disabled=true;
+ $("spin-btn").textContent="ГЕНЕРАЦИЯ...";
+ $("spin-description").textContent="Подбираем комбинацию...";
+ $("spin-plate").classList.add("shake");
 
  try{
-  // Сначала сервер сохраняет результат. Анимация только показывает его.
   const result=await api("spin","POST");
-  for(let i=0;i<22;i++){
-   display.innerHTML=plateHTML(randomCode());
-   await sleep(45+i*8);
+  for(let i=0;i<20;i++){
+   $("spin-plate").innerHTML=plateHTML(randomCode());
+   await wait(45+i*9);
   }
-  display.classList.remove("spinning");
-  display.innerHTML=plateHTML(result.plate.code);
-  display.classList.add("reveal");
-  setTimeout(()=>display.classList.remove("reveal"),1900);
-  $("spin-info").textContent=result.plate.rarity+" • Номер получен!";
-  latestPlate=result.plate;
-  await refresh();
-  $("result-rarity").textContent=result.plate.rarity;
-  $("result-rarity").style.color=RARITY_COLORS[result.plate.rarity]||"#fff";
-  $("result-plate").innerHTML=plateHTML(result.plate.code);
-  $("result-sell").textContent="ПРОДАТЬ ЗА "+fmt(result.plate.sell_price)+" NC";
+  lastPlate=result.plate;
+  $("spin-plate").innerHTML=plateHTML(lastPlate.code);
+  $("spin-description").textContent="Получен номер: "+lastPlate.rarity;
+  $("result-plate").innerHTML=plateHTML(lastPlate.code);
+  $("result-rarity").textContent=lastPlate.rarity;
+  $("result-rarity").style.color=colors[lastPlate.rarity]||"white";
+  $("sell-result").textContent="ПРОДАТЬ · "+money(lastPlate.sell_price)+" NC";
   $("result-overlay").style.display="flex";
- }catch(e){
-  showError(e.message);
- }finally{
+ }catch(e){notify(e.message)}
+ finally{
   spinning=false;
-  display.classList.remove("spinning");
-  updateSpinButton();
+  $("spin-plate").classList.remove("shake");
+  await action(refresh);
  }
 }
 
 function closeResult(){
  $("result-overlay").style.display="none";
- latestPlate=null;
- toast("Номер сохранён в гараже");
+ lastPlate=null;
+ notify("Номер оставлен в гараже");
 }
 
 async function sellResult(){
- if(!latestPlate)return;
- try{
-  const result=await api("sell-system","POST",{plate_id:latestPlate.id});
+ if(!lastPlate)return;
+ await action(async()=>{
+  const r=await api("sell-system","POST",{plate_id:lastPlate.id});
+  lastPlate=null;
   $("result-overlay").style.display="none";
-  latestPlate=null;
-  toast("Продано за "+fmt(result.earned)+" NC");
+  notify("Получено "+money(r.earned)+" NC");
   await refresh();
- }catch(e){showError(e.message)}
+ });
 }
 
-async function claimBonus(){
- try{
+async function bonus(){
+ await action(async()=>{
   const r=await api("bonus","POST");
-  toast("Получено "+fmt(r.earned)+" NC");
+  notify("Получено "+money(r.earned)+" NC");
   await refresh();
- }catch(e){showError(e.message)}
+ });
 }
 
 async function loadGarage(){
- try{
-  const data=await api("collection");
-  plates=data.plates;
-  $("garage-total").textContent=plates.length+" номеров";
-  renderGarage();
- }catch(e){showError(e.message)}
+ const r=await api("collection");
+ plates=r.plates;
+ renderGarage();
 }
 
 function renderGarage(){
- const filter=$("garage-filter").value;
- const selected=plates.filter(p=>
-  filter==="all"||
-  (filter==="favorite"&&p.favorite)||
-  p.rarity===filter
- );
- $("garage-list").innerHTML=selected.length?selected.map(p=>`
+ const filter=$("filter").value;
+ const list=plates.filter(p=>filter==="all"||(filter==="favorite"&&p.favorite)||p.rarity===filter);
+ $("garage-list").innerHTML=list.length?list.map(p=>`
  <div class="item">
   <div class="row">
-   <span class="tag" style="color:${RARITY_COLORS[p.rarity]||"#fff"}">${esc(p.rarity)}</span>
-   <span class="tiny">ID #${p.id}</span>
+   <span class="tag" style="color:${colors[p.rarity]||"white"}">${safe(p.rarity)}</span>
+   <span class="small">#${p.id}</span>
   </div>
   ${plateHTML(p.code,true)}
-  ${p.installed_on?`<div class="tiny">🚘 Установлен: ${esc(p.installed_on)}</div>`:""}
-  ${p.listing_id?'<div class="tiny">На маркете</div>':""}
-  ${p.auction_id?'<div class="tiny">На аукционе</div>':""}
+  ${p.installed_on?`<p class="small">Установлен: ${safe(p.installed_on)}</p>`:""}
   <div class="actions">
-   <button class="secondary small" onclick="openPassport(${p.id})">Паспорт</button>
-   <button class="secondary small" onclick="favorite(${p.id})">${p.favorite?"★":"☆"}</button>
+   <button class="btn alt sm" onclick="passport(${p.id})">Паспорт</button>
+   <button class="btn alt sm" onclick="favorite(${p.id})">${p.favorite?"★":"☆"}</button>
   </div>
   <div class="actions">
    ${p.listing_id
-    ?`<button class="secondary small" onclick="cancelListing(${p.listing_id})">Снять с маркета</button>`
-    :(!p.auction_id&&!p.installed_on?`
-     <button class="secondary small" onclick="listPlate(${p.id})">На маркет</button>
-     <button class="secondary small" onclick="auctionPlate(${p.id})">На аукцион</button>
-     <button class="danger-btn small" onclick="sellPlate(${p.id},${p.sell_price})">Продать ${fmt(p.sell_price)} NC</button>
-    `:"")
-   }
+    ?`<button class="btn alt sm" onclick="cancelListing(${p.listing_id})">Снять с продажи</button>`
+    :p.auction_id||p.installed_on
+    ?`<span class="small">Номер занят</span>`
+    :`<button class="btn alt sm" onclick="listPlate(${p.id})">Маркет</button>
+      <button class="btn alt sm" onclick="auctionPlate(${p.id})">Аукцион</button>
+      <button class="btn danger sm" onclick="sellPlate(${p.id},${p.sell_price})">Продать</button>`}
   </div>
- </div>`).join(""):'<div class="empty">Здесь пока нет номеров</div>';
+ </div>`).join(""):'<div class="empty">Номеров пока нет</div>';
 }
 
 async function favorite(id){
- try{
+ await action(async()=>{
   await api("favorite","POST",{plate_id:id});
   await loadGarage();
- }catch(e){showError(e.message)}
+ });
 }
 
-async function openPassport(id){
- try{
-  const data=await api("passport/"+id);
-  const p=data.plate;
-  $("passport-content").innerHTML=`
+async function passport(id){
+ await action(async()=>{
+  const r=await api("passport/"+id);
+  const p=r.plate;
+  $("passport-data").innerHTML=`
    ${plateHTML(p.code)}
-   <div class="profile-line">ID: #${p.id}</div>
-   <div class="profile-line">Редкость: ${esc(p.rarity)}</div>
-   <div class="profile-line">Владелец: ${esc(p.owner)}</div>
-   <div class="profile-line">Создан: ${new Date(p.created_at*1000).toLocaleString("ru-RU")}</div>
-   <h3 style="margin-top:18px">История продаж</h3>
-   ${data.history.length?data.history.map(h=>`
-    <div class="item">
-     ${esc(h.seller)} → ${esc(h.buyer)}
-     <div class="tiny">${fmt(h.price)} NC • ${new Date(h.created_at*1000).toLocaleDateString("ru-RU")}</div>
-    </div>`).join(""):'<p class="muted">Продаж ещё не было</p>'}
-  `;
+   <p class="muted">ID: #${p.id}</p>
+   <p class="muted">Редкость: ${safe(p.rarity)}</p>
+   <p class="muted">Владелец: ${safe(p.owner)}</p>
+   <p class="muted">Дата: ${new Date(p.created_at*1000).toLocaleDateString("ru-RU")}</p>
+   <h3>История продаж</h3>
+   ${r.history.length?r.history.map(h=>`
+    <div class="item"><b>${safe(h.seller)} → ${safe(h.buyer)}</b>
+    <p class="small">${money(h.price)} NC</p></div>`).join(""):'<p class="muted">Истории пока нет</p>'}`;
   $("passport-overlay").style.display="flex";
- }catch(e){showError(e.message)}
-}
-
-function closePassport(){
- $("passport-overlay").style.display="none";
+ });
 }
 
 async function sellPlate(id,price){
- if(!confirm("Продать номер системе за "+fmt(price)+" NC?"))return;
- try{
+ if(!confirm("Продать номер за "+money(price)+" NC?"))return;
+ await action(async()=>{
   await api("sell-system","POST",{plate_id:id});
-  toast("Номер продан");
+  notify("Номер продан");
   await refresh();await loadGarage();
- }catch(e){showError(e.message)}
+ });
 }
 
 async function listPlate(id){
- const value=prompt("Цена продажи NC (100–100000000):");
+ const value=prompt("Цена номера в NC:");
  if(value===null)return;
  const price=Number(value);
- if(!Number.isSafeInteger(price)||price<100||price>100000000){
-  toast("Неверная цена");return;
- }
- try{
+ if(!Number.isSafeInteger(price)||price<100||price>100000000){notify("Неверная цена");return}
+ await action(async()=>{
   await api("list","POST",{plate_id:id,price});
-  toast("Номер выставлен на маркет");
+  notify("Выставлено на маркет");
   await loadGarage();
- }catch(e){showError(e.message)}
+ });
 }
 
 async function cancelListing(id){
- try{
+ await action(async()=>{
   await api("cancel","POST",{listing_id:id});
-  toast("Объявление отменено");
-  await loadGarage();
- }catch(e){showError(e.message)}
+  notify("Объявление снято");
+  await loadGarage();await loadMarket();
+ });
 }
 
 async function auctionPlate(id){
- const value=prompt("Начальная ставка NC (от 100):");
+ const value=prompt("Начальная ставка NC:");
  if(value===null)return;
  const price=Number(value);
- if(!Number.isSafeInteger(price)||price<100||price>100000000){
-  toast("Неверная цена");return;
- }
- try{
+ if(!Number.isSafeInteger(price)||price<100||price>100000000){notify("Неверная ставка");return}
+ await action(async()=>{
   await api("auctions/create","POST",{plate_id:id,price});
-  toast("Аукцион создан на 24 часа");
+  notify("Аукцион создан");
   await loadGarage();
- }catch(e){showError(e.message)}
+ });
 }
 
 async function loadCars(){
- try{
-  const [mine,catalog]=await Promise.all([
-   api("cars"),api("cars/catalog")
-  ]);
-  $("my-cars").innerHTML=mine.cars.length?mine.cars.map(c=>`
-   <div class="item">
-    <div class="item-title">🚘 ${esc(c.model)}</div>
-    <div class="tiny">Автомобиль #${c.id}</div>
-    <div class="muted">Номер: ${c.plate_code?esc(c.plate_code):"Не установлен"}</div>
-    <button class="secondary small" style="margin-top:10px" onclick="installPlate(${c.id})">Установить номер</button>
-   </div>`).join(""):'<div class="empty">Автомобилей пока нет</div>';
-  $("car-catalog").innerHTML=catalog.cars.map(c=>`
-   <div class="item">
-    <div class="item-title">🚘 ${esc(c.model)}</div>
-    <div class="row">
-     <b>${fmt(c.price)} NC</b>
-     <button class="primary small" onclick="buyCar('${esc(c.model)}',${c.price})">Купить</button>
-    </div>
-   </div>`).join("");
- }catch(e){showError(e.message)}
+ const [mine,shop]=await Promise.all([api("cars"),api("cars/catalog")]);
+ $("my-cars").innerHTML=mine.cars.length?mine.cars.map(c=>`
+  <div class="item">
+   <div class="item-title">${safe(c.model)}</div>
+   <p class="small">Номер: ${safe(c.plate_code||"Не установлен")}</p>
+   <button class="btn alt sm" onclick="installPlate(${c.id})">Установить номер</button>
+  </div>`).join(""):'<div class="empty">Автомобилей пока нет</div>';
+ $("car-shop").innerHTML=shop.cars.map((c,i)=>`
+  <div class="item">
+   <div class="row">
+    <div><div class="item-title">${safe(c.model)}</div><span class="accent">${money(c.price)} NC</span></div>
+    <button class="btn sm" onclick="buyCar(${i})">Купить</button>
+   </div>
+  </div>`).join("");
+ window.carCatalog=shop.cars;
 }
 
-async function buyCar(model,price){
- if(!confirm("Купить "+model+" за "+fmt(price)+" NC?"))return;
- try{
-  await api("cars/buy","POST",{model});
-  toast("Автомобиль куплен!");
+async function buyCar(i){
+ const c=window.carCatalog?.[i];
+ if(!c||!confirm("Купить "+c.model+" за "+money(c.price)+" NC?"))return;
+ await action(async()=>{
+  await api("cars/buy","POST",{model:c.model});
+  notify("Автомобиль куплен");
   await refresh();await loadCars();
- }catch(e){showError(e.message)}
+ });
 }
 
 async function installPlate(carId){
- try{
-  const data=await api("collection");
-  const available=data.plates.filter(p=>!p.listing_id&&!p.auction_id);
-  if(!available.length){toast("Нет доступных номеров");return}
-  const message=available.slice(0,30).map(p=>`ID ${p.id}: ${p.code}`).join("\n");
-  const value=prompt("Введи ID номера:\n"+message);
+ await action(async()=>{
+  const r=await api("collection");
+  const available=r.plates.filter(p=>!p.listing_id&&!p.auction_id);
+  if(!available.length){notify("Нет доступных номеров");return}
+  const value=prompt("ID номера:\n"+available.slice(0,30).map(p=>p.id+" — "+p.code).join("\n"));
   if(value===null)return;
-  const plateId=Number(value);
-  if(!available.some(p=>p.id===plateId)){toast("Неверный ID");return}
-  await api("cars/install","POST",{car_id:carId,plate_id:plateId});
-  toast("Номер установлен");
+  const id=Number(value);
+  if(!available.some(p=>p.id===id)){notify("Неверный ID");return}
+  await api("cars/install","POST",{car_id:carId,plate_id:id});
+  notify("Номер установлен");
   await loadCars();
- }catch(e){showError(e.message)}
+ });
 }
 
 async function loadMarket(){
- try{
-  const data=await api("market");
-  marketItems=data.listings;
-  renderMarket();
- }catch(e){showError(e.message)}
+ const r=await api("market");
+ marketItems=r.listings;
+ renderMarket();
 }
 
 function renderMarket(){
  const search=$("market-search").value.toUpperCase().replace(/\s/g,"");
  const sort=$("market-sort").value;
- let list=marketItems.filter(p=>p.code.replace(/\s/g,"").includes(search));
- if(sort==="cheap")list.sort((a,b)=>a.price-b.price);
- if(sort==="expensive")list.sort((a,b)=>b.price-a.price);
- $("market-list").innerHTML=list.length?list.map(p=>`
+ const items=marketItems.filter(p=>p.code.replace(/\s/g,"").includes(search));
+ if(sort==="cheap")items.sort((a,b)=>a.price-b.price);
+ if(sort==="expensive")items.sort((a,b)=>b.price-a.price);
+ $("market-list").innerHTML=items.length?items.map(p=>`
   <div class="item">
-   <div class="row">
-    <span class="tag" style="color:${RARITY_COLORS[p.rarity]||"#fff"}">${esc(p.rarity)}</span>
-    <span class="tiny">${esc(p.seller)}</span>
-   </div>
+   <div class="row"><span class="tag">${safe(p.rarity)}</span><span class="small">${safe(p.seller)}</span></div>
    ${plateHTML(p.code,true)}
    <div class="row">
-    <strong>${fmt(p.price)} NC</strong>
-    ${p.seller_id===me?.id
-     ?`<button class="secondary small" onclick="cancelListing(${p.id}).then(loadMarket)">Отменить</button>`
-     :`<button class="primary small" onclick="buyPlate(${p.id},${p.price})">Купить</button>`}
+    <b>${money(p.price)} NC</b>
+    <button class="btn sm ${p.seller_id===user?.id?"alt":""}"
+     onclick="${p.seller_id===user?.id?`cancelListing(${p.id})`:`buyPlate(${p.id},${p.price})`}">
+     ${p.seller_id===user?.id?"Снять":"Купить"}
+    </button>
    </div>
-  </div>`).join(""):'<div class="empty">Ничего не найдено</div>';
+  </div>`).join(""):'<div class="empty">Объявлений нет</div>';
 }
 
 async function buyPlate(id,price){
- if(!confirm("Купить номер за "+fmt(price)+" NC?"))return;
- try{
+ if(!confirm("Купить номер за "+money(price)+" NC?"))return;
+ await action(async()=>{
   await api("buy","POST",{listing_id:id});
-  toast("Номер куплен!");
+  notify("Номер куплен");
   await refresh();await loadMarket();
- }catch(e){showError(e.message)}
+ });
 }
 
 async function loadAuctions(){
- try{
-  const data=await api("auctions");
-  $("auction-list").innerHTML=data.auctions.length?data.auctions.map(a=>`
-   <div class="item">
-    <span class="tag" style="color:${RARITY_COLORS[a.rarity]||"#fff"}">${esc(a.rarity)}</span>
-    ${plateHTML(a.code,true)}
-    <div class="row"><span class="muted">Текущая ставка</span><b>${fmt(a.current_price)} NC</b></div>
-    <div class="tiny">Продавец: ${esc(a.seller)}</div>
-    <div class="tiny">Завершение: ${new Date(a.ends_at*1000).toLocaleString("ru-RU")}</div>
-    ${a.seller_id!==me?.id?`
-     <button class="primary small full" style="margin-top:10px" onclick="makeBid(${a.id},${a.current_price},${a.bidder_id===null})">Сделать ставку</button>`:""}
-   </div>`).join(""):'<div class="empty">Активных аукционов нет</div>';
- }catch(e){showError(e.message)}
+ const r=await api("auctions");
+ $("auction-list").innerHTML=r.auctions.length?r.auctions.map(a=>`
+  <div class="item">
+   <span class="tag">${safe(a.rarity)}</span>
+   ${plateHTML(a.code,true)}
+   <div class="row"><span class="muted">Текущая ставка</span><b>${money(a.current_price)} NC</b></div>
+   <p class="small">До: ${new Date(a.ends_at*1000).toLocaleString("ru-RU")}</p>
+   ${a.seller_id!==user?.id?`<button class="btn full sm" onclick="bid(${a.id},${a.current_price},${a.bidder_id===null})">СДЕЛАТЬ СТАВКУ</button>`:""}
+  </div>`).join(""):'<div class="empty">Активных аукционов нет</div>';
 }
 
-async function makeBid(id,current,first){
+async function bid(id,current,first){
  const minimum=first?current:current+100;
- const value=prompt("Минимальная ставка: "+fmt(minimum)+" NC",String(minimum));
+ const value=prompt("Минимальная ставка: "+money(minimum),String(minimum));
  if(value===null)return;
  const amount=Number(value);
- if(!Number.isSafeInteger(amount)||amount<minimum){
-  toast("Ставка слишком маленькая");return;
- }
- try{
+ if(!Number.isSafeInteger(amount)||amount<minimum){notify("Неверная ставка");return}
+ await action(async()=>{
   await api("auctions/bid","POST",{auction_id:id,amount});
-  toast("Ставка принята");
+  notify("Ставка принята");
   await refresh();await loadAuctions();
- }catch(e){showError(e.message)}
+ });
 }
 
 async function loadTasks(){
- try{
-  const data=await api("tasks");
-  $("task-list").innerHTML=data.tasks.map(t=>`
-   <div class="item">
-    <div class="row"><b>${esc(t.title)}</b><span class="tag">${t.progress}/${t.target}</span></div>
-    <div class="muted">${esc(t.description)}</div>
-    <div class="progress"><div class="progress-fill" style="width:${Math.min(100,t.progress/t.target*100)}%"></div></div>
-    <div class="row">
-     <span class="tiny">+${fmt(t.reward)} NC • +${t.xp} XP</span>
-     <button class="secondary small" ${!t.completed||t.claimed?"disabled":""}
-      onclick="claimTask('${esc(t.id)}')">${t.claimed?"Получено":"Забрать"}</button>
-    </div>
-   </div>`).join("");
- }catch(e){showError(e.message)}
+ const r=await api("tasks");
+ $("task-list").innerHTML=r.tasks.length?r.tasks.map(t=>`
+  <div class="item">
+   <div class="row"><b>${safe(t.title)}</b><span class="tag">${t.progress}/${t.target}</span></div>
+   <p class="muted">${safe(t.description)}</p>
+   <div class="progress"><div style="width:${Math.min(100,t.progress/t.target*100)}%"></div></div>
+   <div class="row">
+    <span class="small">+${money(t.reward)} NC · +${t.xp} XP</span>
+    <button class="btn sm ${t.claimed?"alt":""}" ${!t.completed||t.claimed?"disabled":""}
+     onclick="claimTask('${safe(t.id)}')">${t.claimed?"Получено":"Забрать"}</button>
+   </div>
+  </div>`).join(""):'<div class="empty">Заданий пока нет</div>';
 }
 
 async function claimTask(id){
- try{
+ await action(async()=>{
   const r=await api("tasks/claim","POST",{task_id:id});
-  toast("Получено "+fmt(r.reward)+" NC и "+r.xp+" XP");
+  notify("Получено "+money(r.reward)+" NC");
   await refresh();await loadTasks();
- }catch(e){showError(e.message)}
+ });
 }
 
 async function loadClubs(){
- try{
-  const data=await api("clubs");
-  $("club-list").innerHTML=data.clubs.length?data.clubs.map(c=>`
-   <div class="item">
-    <div class="row"><b>♛ ${esc(c.name)}</b><span class="tag">${c.members}/50</span></div>
-    <button class="secondary small" style="margin-top:9px" onclick="joinClub(${c.id})">Вступить</button>
-   </div>`).join(""):'<div class="empty">Автоклубов пока нет</div>';
- }catch(e){showError(e.message)}
+ const r=await api("clubs");
+ $("club-list").innerHTML=r.clubs.length?r.clubs.map(c=>`
+  <div class="item row">
+   <div><b>${safe(c.name)}</b><p class="small">${c.members}/50 участников</p></div>
+   <button class="btn alt sm" onclick="joinClub(${c.id})">Вступить</button>
+  </div>`).join(""):'<div class="empty">Клубов пока нет</div>';
 }
 
 async function createClub(){
- const name=$("club-name").value.trim();
- try{
-  await api("clubs/create","POST",{name});
-  toast("Автоклуб создан!");
-  await refresh();await loadClubs();
- }catch(e){showError(e.message)}
+ await action(async()=>{
+  await api("clubs/create","POST",{name:$("club-name").value.trim()});
+  notify("Клуб создан");await refresh();await loadClubs();
+ });
 }
 
 async function joinClub(id){
- try{
+ await action(async()=>{
   await api("clubs/join","POST",{club_id:id});
-  toast("Ты вступил в автоклуб");
-  await refresh();await loadClubs();
- }catch(e){showError(e.message)}
+  notify("Ты вступил в клуб");await refresh();await loadClubs();
+ });
 }
 
 async function leaveClub(){
- if(!confirm("Покинуть автоклуб?"))return;
- try{
+ if(!confirm("Покинуть клуб?"))return;
+ await action(async()=>{
   await api("clubs/leave","POST");
-  toast("Ты покинул клуб");
-  await refresh();await loadClubs();
- }catch(e){showError(e.message)}
+  notify("Ты покинул клуб");await refresh();await loadClubs();
+ });
 }
 
 async function disbandClub(){
- if(!confirm("Распустить свой автоклуб?"))return;
- try{
+ if(!confirm("Распустить свой клуб?"))return;
+ await action(async()=>{
   await api("clubs/disband","POST");
-  toast("Клуб распущен");
-  await refresh();await loadClubs();
- }catch(e){showError(e.message)}
+  notify("Клуб распущен");await refresh();await loadClubs();
+ });
 }
 
-async function loadTop(){
- try{
-  const data=await api("top");
-  $("top-list").innerHTML=data.players.map((p,i)=>`
-   <div class="item row">
-    <div><b>${i+1}. ${esc(p.name)}</b><div class="tiny">${p.collection} номеров</div></div>
-    <strong>${fmt(p.balance)} NC</strong>
-   </div>`).join("");
- }catch(e){showError(e.message)}
+async function loadProfile(){
+ await refresh();
+ const r=await api("top");
+ $("top-list").innerHTML=r.players.map((p,i)=>`
+  <div class="item row">
+   <div><b>${i+1}. ${safe(p.name)}</b><p class="small">${p.collection} номеров</p></div>
+   <b>${money(p.balance)} NC</b>
+  </div>`).join("");
+ if(user.is_admin){
+  const a=await api("admin/players");
+  adminPlayers=a.players;
+  renderAdminPlayers();
+ }
 }
 
-async function loadAdmin(){
- if(!me?.is_admin)return;
- try{
-  const data=await api("admin/players");
-  $("admin-players").innerHTML=data.players.map(p=>`
-   <div class="item" onclick="$('admin-id').value=${p.id}">
-    <b>${esc(p.name)}</b>
-    <div class="tiny">ID ${p.id} • ${fmt(p.balance)} NC • ${p.xp} XP</div>
-   </div>`).join("");
- }catch(e){showError(e.message)}
+function renderAdminPlayers(){
+ const q=$("admin-search").value.toLowerCase().trim();
+ const list=adminPlayers.filter(p=>
+  p.name.toLowerCase().includes(q)||String(p.id).includes(q)
+ );
+ $("admin-players").innerHTML=list.slice(0,20).map(p=>`
+  <div class="item row">
+   <div><b>${safe(p.name)}</b><p class="small">ID ${p.id} · ${money(p.balance)} NC</p></div>
+   <button class="btn alt sm" onclick="selectAdmin(${p.id})">Выбрать</button>
+  </div>`).join("");
+}
+
+function selectAdmin(id){
+ $("admin-id").value=id;
+ notify("Игрок выбран");
 }
 
 async function adminGrant(){
  const user_id=Number($("admin-id").value);
  const amount=Number($("admin-amount").value);
  const kind=$("admin-kind").value;
- if(!Number.isSafeInteger(user_id)||!Number.isSafeInteger(amount)){
-  toast("Некорректные данные");return;
+ if(!Number.isSafeInteger(user_id)||user_id<=0||
+    !Number.isSafeInteger(amount)||amount===0||
+    Math.abs(amount)>100000000){
+  notify("Проверь ID и сумму");return;
  }
- if(!confirm("Применить изменение к игроку "+user_id+"?"))return;
- try{
+ if(!confirm("Изменить "+kind+" игрока "+user_id+" на "+amount+"?"))return;
+ await action(async()=>{
   await api("admin/grant","POST",{user_id,amount,kind});
-  toast("Изменение выполнено");
-  await refresh();await loadAdmin();
- }catch(e){showError(e.message)}
+  notify("Изменения сохранены");
+  await loadProfile();
+ });
 }
 
-const loaders={
- home:async()=>{},
- garage:loadGarage,
- cars:loadCars,
- market:loadMarket,
- auctions:loadAuctions,
- tasks:loadTasks,
- clubs:loadClubs,
- profile:async()=>{await loadTop();await loadAdmin()}
-};
-
-function openTab(tab){
- document.querySelectorAll("section").forEach(s=>{
-  s.classList.toggle("active",s.id===tab);
- });
- document.querySelectorAll("nav button").forEach(b=>{
-  b.classList.toggle("active",b.dataset.tab===tab);
- });
- window.scrollTo({top:0,behavior:"smooth"});
- loaders[tab]?.();
+async function start(){
+ $("spin-plate").innerHTML=plateHTML("A777AA 77");
+ const photo=tg?.initDataUnsafe?.user?.photo_url;
+ if(photo){
+  const img=document.createElement("img");
+  img.src=photo;
+  img.alt="Аватар";
+  $("avatar").replaceChildren(img);
+ }
+ try{await refresh()}
+ catch(e){
+  $("spin-btn").textContent="ОШИБКА ПОДКЛЮЧЕНИЯ";
+  notify(e.message);
+ }
 }
 
-document.querySelectorAll("nav button").forEach(b=>{
- b.addEventListener("click",()=>openTab(b.dataset.tab));
-});
-
-$("spin-button").addEventListener("click",spin);
-$("main-plate").innerHTML=plateHTML("A777AA 77");
-setAvatar("header-avatar");
-setAvatar("profile-avatar");
-refresh();
+start();
 </script>
 </body>
 </html>
