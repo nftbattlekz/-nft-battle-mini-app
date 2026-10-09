@@ -1,3 +1,5 @@
+
+
 <!DOCTYPE html>
 
 <html lang="ru">
@@ -6,7 +8,7 @@
 
 <meta charset="UTF-8">
 
-<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,viewport-fit=cover">
 
 <title>NOMER CLUB</title>
 
@@ -16,17 +18,17 @@
 
 :root{
 
- --bg:#050c19;
+ --bg:#050b17;
 
- --card:#0e2036;
+ --card:#10223b;
 
- --line:#1d3955;
+ --line:#214568;
 
- --cyan:#4cddff;
+ --blue:#20b9ff;
 
- --muted:#8ca8c3;
+ --text:#f2f8ff;
 
- --text:#f1f7ff;
+ --muted:#8eacc8;
 
 }
 
@@ -36,21 +38,23 @@ body{
 
  margin:0;
 
+ background:radial-gradient(circle at 50% 0,#12395e,var(--bg) 55%);
+
+ font:15px system-ui,-apple-system,sans-serif;
+
  color:var(--text);
-
- font-family:system-ui,-apple-system,Arial;
-
- background:radial-gradient(ellipse at top,#113e65 0%,#061526 35%,var(--bg) 75%);
-
- min-height:100vh;
 
 }
 
-button,input{font:inherit}
+main{
 
-button{cursor:pointer;border:0}
+ max-width:600px;
 
-main{max-width:600px;margin:auto;padding:20px 16px 108px}
+ margin:auto;
+
+ padding:18px 15px 110px;
+
+}
 
 header{
 
@@ -60,15 +64,25 @@ header{
 
  justify-content:space-between;
 
- margin-bottom:24px;
+ margin-bottom:18px;
 
 }
 
-h1{margin:0;font-size:26px;letter-spacing:2px;color:var(--cyan)}
+h1{
 
-h2{font-size:19px;margin:0 0 16px}
+ font-size:25px;
 
-.small,.muted{color:var(--muted);font-size:13px}
+ letter-spacing:2px;
+
+ color:#65deff;
+
+ margin:0;
+
+}
+
+h2{font-size:18px;margin:0 0 15px}
+
+.muted{color:var(--muted);font-size:13px}
 
 .stats{
 
@@ -78,25 +92,33 @@ h2{font-size:19px;margin:0 0 16px}
 
  gap:8px;
 
- margin-bottom:18px;
+ margin:15px 0;
 
 }
 
 .stat,.card{
 
- background:linear-gradient(145deg,#102943,#0b1b30);
+ background:linear-gradient(140deg,#102b48,#0b1a2e);
 
  border:1px solid var(--line);
 
- border-radius:18px;
+ border-radius:17px;
 
- padding:16px;
+ padding:15px;
 
 }
 
 .stat{padding:12px 9px}
 
-.stat strong{display:block;font-size:16px;margin-top:5px}
+.stat b{
+
+ display:block;
+
+ margin-top:8px;
+
+ font-size:16px;
+
+}
 
 .card{margin-bottom:13px}
 
@@ -104,51 +126,45 @@ h2{font-size:19px;margin:0 0 16px}
 
  display:flex;
 
- align-items:center;
-
  justify-content:space-between;
 
- gap:8px;
+ align-items:center;
 
- background:linear-gradient(#fff,#e1e4e3);
+ background:linear-gradient(#fff,#dfe4e5);
+
+ border:4px double #151b23;
+
+ border-radius:10px;
 
  color:#111;
 
- border:3px solid #181d23;
+ padding:13px 10px;
 
- outline:2px solid #bac9d2;
+ margin:24px 0 10px;
 
- border-radius:9px;
-
- padding:8px 13px;
-
- box-shadow:0 8px 20px #0007;
-
- margin:18px auto;
-
- max-width:420px;
-
- font-size:clamp(21px,6vw,37px);
-
- font-weight:800;
-
- letter-spacing:2px;
+ box-shadow:0 12px 24px #0007;
 
  white-space:nowrap;
 
+ font-size:clamp(22px,6vw,38px);
+
+ font-weight:900;
+
+ letter-spacing:1px;
+
 }
 
-.plate .region{
+.region{
 
- font-size:15px;
+ font-size:14px;
+
+ letter-spacing:0;
 
  border-left:2px solid #333;
 
- padding-left:10px;
+ padding-left:9px;
 
  text-align:center;
-
- letter-spacing:0;
 
 }
 
@@ -156,65 +172,75 @@ h2{font-size:19px;margin:0 0 16px}
 
  width:100%;
 
+ border:0;
+
+ border-radius:12px;
+
+ background:linear-gradient(100deg,#0877c1,#24caeb);
+
  padding:16px;
-
- border-radius:13px;
-
- background:linear-gradient(100deg,#087bbd,#25c8f0);
 
  color:white;
 
  font-weight:800;
 
- box-shadow:0 7px 22px #028fe033;
+ font-size:16px;
 
 }
 
 .primary:disabled{opacity:.45}
 
-.secondary,.danger{
-
- padding:10px 12px;
-
- border-radius:10px;
-
- background:#1b3e5e;
-
- color:white;
-
-}
-
-.danger{background:#653044}
-
 .row{
 
  display:flex;
 
- justify-content:space-between;
-
  align-items:center;
+
+ justify-content:space-between;
 
  gap:10px;
 
 }
 
-.row>div:first-child{min-width:0}
-
-.pill{color:#4ce3ad;font-size:12px}
-
-.tag{font-size:12px;color:#a9d9ff}
-
 .item{
 
  border-bottom:1px solid var(--line);
 
- padding:14px 0;
+ padding:13px 0;
 
 }
 
-.item:last-child{border-bottom:0}
+.item:last-child{border:0}
 
-.item strong{display:block;margin:5px 0}
+.item strong{
+
+ display:block;
+
+ font-size:18px;
+
+ margin:5px 0;
+
+}
+
+.tag{color:#6cd9ff;font-size:12px}
+
+.smallbtn{
+
+ background:#1b4667;
+
+ border:1px solid #31628a;
+
+ border-radius:10px;
+
+ color:white;
+
+ padding:10px 12px;
+
+ font:inherit;
+
+ font-size:12px;
+
+}
 
 .actions{
 
@@ -228,25 +254,19 @@ h2{font-size:19px;margin:0 0 16px}
 
 }
 
-.actions button{font-size:13px}
+.empty{
 
-input{
+ text-align:center;
 
- width:100%;
+ color:var(--muted);
 
- border:1px solid #376080;
-
- border-radius:10px;
-
- padding:11px;
-
- background:#07182b;
-
- color:white;
-
- margin-top:10px;
+ padding:25px 5px;
 
 }
+
+section{display:none}
+
+section.active{display:block}
 
 nav{
 
@@ -258,47 +278,57 @@ nav{
 
  right:0;
 
- background:#081729ed;
-
- backdrop-filter:blur(14px);
-
- border-top:1px solid #25415e;
-
  display:flex;
 
  justify-content:center;
 
- padding:10px 6px max(12px,env(safe-area-inset-bottom));
+ background:#07172bea;
 
- gap:4px;
+ border-top:1px solid var(--line);
+
+ padding:8px 4px max(12px,env(safe-area-inset-bottom));
+
+ backdrop-filter:blur(15px);
 
 }
 
 nav button{
 
- background:none;
+ flex:1;
 
- color:#9eb5ce;
+ max-width:120px;
 
- padding:8px 10px;
+ background:transparent;
 
- border-radius:10px;
+ border:0;
 
- font-size:12px;
+ color:#9ab6d1;
+
+ font-size:11px;
+
+ padding:9px 2px;
+
+ border-radius:12px;
 
 }
 
 nav button.active{
 
- color:#51dfff;
+ background:#153956;
 
- background:#153550;
+ color:#62dcff;
 
 }
 
-section{display:none}
+nav span{
 
-section.active{display:block}
+ display:block;
+
+ font-size:20px;
+
+ margin-bottom:3px;
+
+}
 
 #toast{
 
@@ -306,41 +336,45 @@ section.active{display:block}
 
  bottom:92px;
 
- left:50%;
+ left:5%;
 
- transform:translateX(-50%);
+ width:90%;
 
- background:#204d68;
+ background:#173f60;
 
- color:white;
-
- border:1px solid #4dc9e8;
-
- padding:12px 18px;
+ border:1px solid #45bff5;
 
  border-radius:12px;
 
+ padding:13px;
+
  display:none;
-
- width:max-content;
-
- max-width:90vw;
 
  text-align:center;
 
- z-index:10;
+ z-index:5;
+
+}
+
+#status{
+
+ color:#ffcf84;
+
+ font-size:13px;
+
+ margin:8px 0;
+
+ display:none;
 
 }
 
 .center{text-align:center}
 
-.empty{
+.profile-line{
 
- padding:35px 12px;
+ padding:9px 0;
 
- text-align:center;
-
- color:var(--muted);
+ border-bottom:1px solid var(--line);
 
 }
 
@@ -358,37 +392,43 @@ section.active{display:block}
 
   <h1>NOMER CLUB</h1>
 
-  <div class="small">ТВОЯ КОЛЛЕКЦИЯ. ТВОИ ПРАВИЛА.</div>
+  <div class="muted">
+
+   ТВОЯ КОЛЛЕКЦИЯ. ТВОИ ПРАВИЛА.
+
+  </div>
 
  </div>
 
- <span style="font-size:25px">💠</span>
+ <span style="font-size:25px">💎</span>
 
 </header>
+
+<div id="status"></div>
 
 <div class="stats">
 
  <div class="stat">
 
-  <span class="small">БАЛАНС</span>
+  <span class="muted">БАЛАНС</span>
 
-  <strong id="balance">—</strong>
-
- </div>
-
- <div class="stat">
-
-  <span class="small">УРОВЕНЬ</span>
-
-  <strong id="level">—</strong>
+  <b id="balance">—</b>
 
  </div>
 
  <div class="stat">
 
-  <span class="small">НОМЕРА</span>
+  <span class="muted">УРОВЕНЬ</span>
 
-  <strong id="count">—</strong>
+  <b id="level">—</b>
+
+ </div>
+
+ <div class="stat">
+
+  <span class="muted">НОМЕРА</span>
+
+  <b id="count">—</b>
 
  </div>
 
@@ -402,7 +442,7 @@ section.active{display:block}
 
    <h2>Генератор номеров</h2>
 
-   <span class="pill" id="attempts">—</span>
+   <span class="tag" id="attempts">—</span>
 
   </div>
 
@@ -410,25 +450,29 @@ section.active{display:block}
 
    <span id="plate-text">A 777 AA</span>
 
-   <span class="region" id="plate-region">77<br>🇷🇺</span>
+   <span class="region" id="plate-region">
+
+    77<br>🇷🇺
+
+   </span>
 
   </div>
 
-  <p class="center muted" id="spin-result">
+  <p class="muted center" id="result">
 
    Найди уникальный номер для коллекции
 
   </p>
 
-  <button id="spin-btn" class="primary" onclick="spin()">
+  <button class="primary" id="spin-btn" disabled>
 
    СГЕНЕРИРОВАТЬ
 
   </button>
 
-  <p class="center small">
+  <p class="muted center">
 
-   20 бесплатных попыток в день • сброс в 00:00 UTC
+   20 попыток в день • сброс в 00:00 UTC
 
   </p>
 
@@ -440,9 +484,11 @@ section.active{display:block}
 
   <p class="muted">
 
-   Генерируй номера, собирай коллекцию, продавай находки
+   Генерируй номера, собирай коллекцию,
 
-   на маркете и поднимайся в рейтинге.
+   продавай находки на маркете
+
+   и поднимайся в рейтинге.
 
   </p>
 
@@ -468,9 +514,9 @@ section.active{display:block}
 
   <h2>Торговая площадка</h2>
 
-  <p class="small">
+  <p class="muted">
 
-   Комиссия с продавца 5%. Максимум 3 объявления.
+   Комиссия продавца 5%. До 3 объявлений.
 
   </p>
 
@@ -484,7 +530,7 @@ section.active{display:block}
 
  <div class="card">
 
-  <h2>Топ коллекционеров</h2>
+  <h2>Рейтинг коллекционеров</h2>
 
   <div id="players"></div>
 
@@ -496,15 +542,15 @@ section.active{display:block}
 
  <div class="card">
 
-  <h2>Профиль</h2>
+  <h2>Мой профиль</h2>
 
   <div id="profile-data"></div>
 
-  <p class="small">
+  <p class="muted">
 
-   Все предметы и NC виртуальные,
+   Все номера и NC виртуальные,
 
-   не имеют денежного эквивалента.
+   без денежного эквивалента.
 
   </p>
 
@@ -516,15 +562,35 @@ section.active{display:block}
 
 <nav>
 
- <button data-tab="home" class="active">⌂<br>Главная</button>
+ <button data-tab="home" class="active">
 
- <button data-tab="collection">▤<br>Коллекция</button>
+  <span>⌂</span>Главная
 
- <button data-tab="market">⇄<br>Маркет</button>
+ </button>
 
- <button data-tab="top">★<br>Рейтинг</button>
+ <button data-tab="collection">
 
- <button data-tab="profile">◉<br>Профиль</button>
+  <span>▤</span>Коллекция
+
+ </button>
+
+ <button data-tab="market">
+
+  <span>⇄</span>Маркет
+
+ </button>
+
+ <button data-tab="top">
+
+  <span>★</span>Рейтинг
+
+ </button>
+
+ <button data-tab="profile">
+
+  <span>◉</span>Профиль
+
+ </button>
 
 </nav>
 
@@ -538,11 +604,15 @@ tg?.ready();
 
 tg?.expand();
 
-let meData=null,toastTimer;
-
 const $=id=>document.getElementById(id);
 
 const fmt=n=>Number(n).toLocaleString('ru-RU');
+
+let me=null;
+
+let busy=false;
+
+let toastTimer;
 
 function esc(s){
 
@@ -562,7 +632,7 @@ function esc(s){
 
 }
 
-function toast(s){
+function notify(s){
 
  $('toast').textContent=s;
 
@@ -570,11 +640,21 @@ function toast(s){
 
  clearTimeout(toastTimer);
 
- toastTimer=setTimeout(
+ toastTimer=setTimeout(()=>{
 
-  ()=>$('toast').style.display='none',3200
+  $('toast').style.display='none';
 
- );
+ },3200);
+
+}
+
+function error(e){
+
+ notify(e.message);
+
+ $('status').style.display='block';
+
+ $('status').textContent=e.message;
 
 }
 
@@ -584,6 +664,8 @@ async function api(path,method='GET',data){
 
   method,
 
+  cache:'no-store',
+
   headers:{
 
    'Content-Type':'application/json',
@@ -592,13 +674,31 @@ async function api(path,method='GET',data){
 
   },
 
-  body:data?JSON.stringify(data):undefined
+  body:data===undefined?undefined:JSON.stringify(data)
 
  });
 
- const j=await r.json();
+ let j;
 
- if(!r.ok)throw Error(j.error||'Ошибка сервера');
+ try{
+
+  j=await r.json();
+
+ }catch{
+
+  throw Error(
+
+   'Сервер вернул некорректный ответ: '+r.status
+
+  );
+
+ }
+
+ if(!r.ok){
+
+  throw Error(j.error||'Ошибка '+r.status);
+
+ }
 
  return j;
 
@@ -608,55 +708,63 @@ async function refresh(){
 
  try{
 
-  meData=await api('me');
+  me=await api('me');
 
-  $('balance').textContent=fmt(meData.balance)+' NC';
+  $('status').style.display='none';
 
-  $('level').textContent=meData.level+' LVL';
+  $('balance').textContent=fmt(me.balance)+' NC';
 
-  $('count').textContent=meData.collection;
+  $('level').textContent=me.level;
 
-  $('attempts').textContent=meData.spins_left+' / 20';
+  $('count').textContent=me.collection;
 
-  $('spin-btn').disabled=!meData.spins_left;
+  $('attempts').textContent=me.spins_left+'/20';
+
+  $('spin-btn').disabled=busy||me.spins_left<=0;
 
   $('profile-data').innerHTML=`
 
-   <p><b>${esc(meData.name)}</b>
+   <div class="profile-line">
 
-   ${meData.username?'@'+esc(meData.username):''}</p>
+    <b>${esc(me.name)}</b>
 
-   <p>Telegram ID: ${meData.id}</p>
+    ${me.username?'@'+esc(me.username):''}
 
-   <p>Уровень: ${meData.level} • XP: ${meData.xp}</p>
+   </div>
 
-   <p>Номеров: ${meData.collection}</p>
+   <div class="profile-line">
 
-   <p>Баланс: ${fmt(meData.balance)} NC</p>
+    Telegram ID: ${me.id}
 
-   ${meData.demo?'<p class="pill">Демо-режим</p>':''}
+   </div>
+
+   <div class="profile-line">
+
+    Уровень: ${me.level} • XP: ${me.xp}
+
+   </div>
+
+   <div class="profile-line">
+
+    Баланс: ${fmt(me.balance)} NC
+
+   </div>
+
+   <div class="profile-line">
+
+    Номеров: ${me.collection}
+
+   </div>
+
+   ${me.demo?'<p class="tag">Демо-режим</p>':''}
 
   `;
 
  }catch(e){
 
-  toast(e.message);
-
   $('spin-btn').disabled=true;
 
- }
-
-}
-
-function renderPlate(code){
-
- const m=code.match(/^([A-Z])(\d{3})([A-Z]{2}) (\d{2,3})$/);
-
- if(m){
-
-  $('plate-text').textContent=m[1]+' '+m[2]+' '+m[3];
-
-  $('plate-region').innerHTML=m[4]+'<br>🇷🇺';
+  error(e);
 
  }
 
@@ -664,31 +772,53 @@ function renderPlate(code){
 
 async function spin(){
 
- const b=$('spin-btn');
+ if(busy)return;
 
- b.disabled=true;
+ busy=true;
+
+ $('spin-btn').disabled=true;
 
  try{
 
   const j=await api('spin','POST');
 
-  renderPlate(j.plate.code);
+  const m=j.plate.code.match(
 
-  $('spin-result').textContent=
+   /^([A-Z])(\d{3})([A-Z]{2}) (\d{2,3})$/
 
-   j.plate.rarity+' • номер добавлен в коллекцию';
+  );
 
-  toast('Получен номер '+j.plate.code);
+  if(m){
+
+   $('plate-text').textContent=
+
+    m[1]+' '+m[2]+' '+m[3];
+
+   $('plate-region').innerHTML=
+
+    m[4]+'<br>🇷🇺';
+
+  }
+
+  $('result').textContent=
+
+   j.plate.rarity+' • добавлен в коллекцию';
+
+  notify('Получен '+j.plate.code);
 
   await refresh();
 
  }catch(e){
 
-  toast(e.message);
+  error(e);
 
  }finally{
 
-  if(meData?.spins_left)b.disabled=false;
+  busy=false;
+
+  $('spin-btn').disabled=
+
+   !me||me.spins_left<=0;
 
  }
 
@@ -702,61 +832,67 @@ async function collection(){
 
   $('plates').innerHTML=j.plates.length
 
-  ?j.plates.map(p=>`
+   ?j.plates.map(p=>`
 
-   <div class="item">
+    <div class="item">
 
-    <div class="row">
+     <span class="tag">${esc(p.rarity)}</span>
 
-     <div>
+     <strong>${esc(p.code)}</strong>
 
-      <span class="tag">${esc(p.rarity)}</span>
+     <div class="actions">
 
-      <strong>${esc(p.code)}</strong>
+      ${p.listing_id
+
+       ?`<button class="smallbtn"
+
+           data-act="cancel"
+
+           data-id="${p.listing_id}">
+
+           Снять с продажи
+
+          </button>`
+
+       :`<button class="smallbtn"
+
+           data-act="list"
+
+           data-id="${p.id}">
+
+           Выставить
+
+          </button>
+
+          ${p.rarity==='Обычный'
+
+           ?`<button class="smallbtn"
+
+               data-act="sell"
+
+               data-id="${p.id}">
+
+               Продать системе: 25 NC
+
+              </button>`
+
+           :''}`
+
+      }
 
      </div>
 
-     <span class="small">#${p.id}</span>
-
     </div>
 
-    <div class="actions">
+   `).join('')
 
-     ${p.listing_id
+   :'<div class="empty">Коллекция пока пуста</div>';
 
-      ?`<button class="secondary" onclick="cancel(${p.listing_id})">
+ }catch(e){
 
-         Снять с продажи
+  error(e);
 
-        </button>`
-
-      :`<button class="secondary" onclick="list(${p.id})">
-
-         Выставить на маркет
-
-        </button>
-
-        ${p.rarity==='Обычный'
-
-         ?`<button class="danger" onclick="sellSystem(${p.id})">
-
-            Продать системе: 25 NC
-
-           </button>`
-
-         :''}`
-
-     }
-
-    </div>
-
-   </div>
-
-  `).join('')
-
-  :'<div class="empty">Пока нет номеров. Начни с генератора!</div>';
-
- }catch(e){toast(e.message)}
+ }
 
 }
 
@@ -768,53 +904,63 @@ async function market(){
 
   $('listings').innerHTML=j.listings.length
 
-  ?j.listings.map(p=>`
+   ?j.listings.map(p=>`
 
-   <div class="item">
+    <div class="item">
 
-    <div class="row">
+     <span class="tag">${esc(p.rarity)}</span>
 
-     <div>
+     <strong>${esc(p.code)}</strong>
 
-      <span class="tag">${esc(p.rarity)}</span>
+     <div class="row">
 
-      <strong>${esc(p.code)}</strong>
+      <span class="muted">${esc(p.seller)}</span>
 
-      <span class="small">Продавец: ${esc(p.seller)}</span>
+      <b>${fmt(p.price)} NC</b>
 
      </div>
 
-     <b>${fmt(p.price)} NC</b>
+     <div class="actions">
+
+      ${p.seller_id===me?.id
+
+       ?`<button class="smallbtn"
+
+           data-act="cancel"
+
+           data-id="${p.id}">
+
+           Отменить
+
+          </button>`
+
+       :`<button class="smallbtn"
+
+           data-act="buy"
+
+           data-id="${p.id}"
+
+           data-price="${p.price}">
+
+           Купить
+
+          </button>`
+
+      }
+
+     </div>
 
     </div>
 
-    <div class="actions">
+   `).join('')
 
-     ${p.seller_id===meData?.id
+   :'<div class="empty">Объявлений пока нет</div>';
 
-      ?`<button class="secondary" onclick="cancel(${p.id})">
+ }catch(e){
 
-         Отменить
+  error(e);
 
-        </button>`
-
-      :`<button class="secondary" onclick="buy(${p.id},${p.price})">
-
-         Купить
-
-        </button>`
-
-     }
-
-    </div>
-
-   </div>
-
-  `).join('')
-
-  :'<div class="empty">Объявлений пока нет</div>';
-
- }catch(e){toast(e.message)}
+ }
 
 }
 
@@ -832,103 +978,155 @@ async function top(){
 
      <b>${i+1}. ${esc(p.name)}</b>
 
-     <div class="small">Номеров: ${p.collection}</div>
+     <div class="muted">
+
+      Номеров: ${p.collection}
+
+     </div>
 
     </div>
 
-    <span class="tag">${fmt(p.balance)} NC</span>
+    <b>${fmt(p.balance)} NC</b>
 
    </div>
 
   `).join('');
 
- }catch(e){toast(e.message)}
+ }catch(e){
 
-}
-
-async function list(id){
-
- const raw=prompt('Цена продажи в NC (100 — 100 000 000):');
-
- if(raw===null)return;
-
- const price=Number(raw);
-
- if(!Number.isSafeInteger(price)){
-
-  toast('Введи целое число');
-
-  return;
+  error(e);
 
  }
 
- try{
-
-  await api('list','POST',{plate_id:id,price});
-
-  toast('Номер выставлен на продажу');
-
-  await collection();
-
- }catch(e){toast(e.message)}
-
 }
 
-async function cancel(id){
+async function action(act,id,price){
 
  try{
 
-  await api('cancel','POST',{listing_id:id});
+  if(act==='list'){
 
-  toast('Объявление снято');
+   const raw=prompt(
+
+    'Цена в NC (100–100000000):'
+
+   );
+
+   if(raw===null)return;
+
+   const n=Number(raw);
+
+   if(
+
+    !Number.isSafeInteger(n)||
+
+    n<100||n>100000000
+
+   ){
+
+    throw Error('Укажи целую цену от 100 до 100000000');
+
+   }
+
+   await api('list','POST',{
+
+    plate_id:id,
+
+    price:n
+
+   });
+
+  }
+
+  else if(act==='cancel'){
+
+   await api('cancel','POST',{
+
+    listing_id:id
+
+   });
+
+  }
+
+  else if(act==='buy'){
+
+   if(!confirm(
+
+    'Купить за '+fmt(price)+' NC?'
+
+   ))return;
+
+   await api('buy','POST',{
+
+    listing_id:id
+
+   });
+
+  }
+
+  else if(act==='sell'){
+
+   if(!confirm(
+
+    'Продать обычный номер системе за 25 NC?'
+
+   ))return;
+
+   await api('sell-system','POST',{
+
+    plate_id:id
+
+   });
+
+  }
+
+  notify('Готово!');
 
   await refresh();
 
-  await collection();
+  if($('collection').classList.contains('active')){
 
-  await market();
+   await collection();
 
- }catch(e){toast(e.message)}
+  }
 
-}
+  if($('market').classList.contains('active')){
 
-async function buy(id,price){
+   await market();
 
- if(!confirm('Купить номер за '+fmt(price)+' NC?'))return;
+  }
 
- try{
+ }catch(e){
 
-  await api('buy','POST',{listing_id:id});
+  error(e);
 
-  toast('Номер куплен!');
-
-  await refresh();
-
-  await market();
-
- }catch(e){toast(e.message)}
+ }
 
 }
 
-async function sellSystem(id){
+document.addEventListener('click',e=>{
 
- if(!confirm('Безвозвратно продать обычный номер за 25 NC?'))return;
+ const b=e.target.closest('[data-act]');
 
- try{
+ if(b){
 
-  await api('sell-system','POST',{plate_id:id});
+  action(
 
-  toast('Продано за 25 NC');
+   b.dataset.act,
 
-  await refresh();
+   Number(b.dataset.id),
 
-  await collection();
+   Number(b.dataset.price)
 
- }catch(e){toast(e.message)}
+  );
 
-}
+ }
 
-const handlers={
+});
+
+$('spin-btn').addEventListener('click',spin);
+
+const tabs={
 
  home:()=>{},
 
@@ -944,23 +1142,29 @@ const handlers={
 
 document.querySelectorAll('nav button').forEach(b=>{
 
- b.onclick=()=>{
+ b.addEventListener('click',()=>{
 
-  document.querySelectorAll('nav button').forEach(
+  document.querySelectorAll('nav button').forEach(x=>{
 
-   x=>x.classList.toggle('active',x===b)
+   x.classList.toggle('active',x===b);
 
-  );
+  });
 
-  document.querySelectorAll('section').forEach(
+  document.querySelectorAll('section').forEach(s=>{
 
-   s=>s.classList.toggle('active',s.id===b.dataset.tab)
+   s.classList.toggle(
 
-  );
+    'active',
 
-  handlers[b.dataset.tab]();
+    s.id===b.dataset.tab
 
- };
+   );
+
+  });
+
+  tabs[b.dataset.tab]();
+
+ });
 
 });
 
