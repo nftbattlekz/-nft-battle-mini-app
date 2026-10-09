@@ -15,12 +15,31 @@ from werkzeug.exceptions import HTTPException
 app = Flask(__name__, static_folder="web", static_url_path="")
 app.config["JSON_AS_ASCII"] = False
 
+@app.after_request
+def no_cache(response):
+    # Telegram WebView агрессивно кеширует Mini App.
+    # Не даём старому index.html оставаться после деплоя.
+    response.headers["Cache-Control"] = "no-store, no-cache, must-revalidate, max-age=0"
+    response.headers["Pragma"] = "no-cache"
+    response.headers["Expires"] = "0"
+    response.headers["X-Nomer-Club-Version"] = "6.0"
+    return response
+
 DB_PATH = os.getenv("DB_PATH", "nomer_fixed.db")
 BOT_TOKEN = os.getenv("BOT_TOKEN", "").strip()
 DEMO_MODE = os.getenv("DEMO_MODE", "0") == "1"
-CREATOR_TELEGRAM_ID = int(os.getenv("CREATOR_TELEGRAM_ID", "8518976778"))
+PRIMARY_CREATOR_ID = 8518976778
+_extra_admins = set()
+for _raw in os.getenv("ADMIN_TELEGRAM_IDS", "").split(","):
+    _raw = _raw.strip()
+    if _raw.isdigit():
+        _extra_admins.add(int(_raw))
+ADMIN_TELEGRAM_IDS = {PRIMARY_CREATOR_ID, *_extra_admins}
+CREATOR_TELEGRAM_ID = PRIMARY_CREATOR_ID
 
-SPIN_COST = max(1, int(os.getenv("SPIN_COST", "100")))
+# NOMER CLUB 6.0: цена прокрутки фиксирована в коде,
+# чтобы старая переменная Render не могла снова сделать её 0/250.
+SPIN_COST = 100
 DAILY_SPIN_LIMIT = 20
 RESCUE_BONUS = 1500
 MARKET_FEE_PERCENT = 5
@@ -288,7 +307,7 @@ def auth(fn):
 def creator_only(fn):
     @wraps(fn)
     def wrapped(uid, *args, **kwargs):
-        if int(uid) != CREATOR_TELEGRAM_ID:
+        if int(uid) not in ADMIN_TELEGRAM_IDS:
             return jsonify(error="Нет доступа к админ-панели"), 403
         return fn(uid, *args, **kwargs)
     return wrapped
@@ -392,7 +411,7 @@ def user_json(con, uid):
         "spins_left": max(0, DAILY_SPIN_LIMIT - int(used)),
         "spin_cost": SPIN_COST,
         "rescue_bonus": rescue,
-        "creator": uid == CREATOR_TELEGRAM_ID,
+        "creator": uid in ADMIN_TELEGRAM_IDS,
         "mythic_mode": bool(user["mythic_mode"]),
         "mythic_queue": int(user["mythic_queue"]),
         "demo": DEMO_MODE,
@@ -443,7 +462,7 @@ def index_file():
 
 @app.get("/health")
 def health():
-    return jsonify(status="ok", db=DB_PATH, version="NOMER CLUB 5.0 REWORK")
+    return jsonify(status="ok", db=DB_PATH, version="NOMER CLUB 6.0 NEON")
 
 
 @app.get("/api/me")
@@ -462,7 +481,7 @@ def bootstrap(uid):
             user=user_json(con, uid),
             spin_cost=SPIN_COST,
             daily_spin_limit=DAILY_SPIN_LIMIT,
-            creator=uid == CREATOR_TELEGRAM_ID,
+            creator=uid in ADMIN_TELEGRAM_IDS,
         )
 
 
@@ -540,22 +559,4 @@ def spin(uid):
         if not bool(user["mythic_mode"]) and int(user["mythic_queue"]) > 0:
             con.execute("UPDATE users SET mythic_queue=mythic_queue-1 WHERE id=?", (uid,))
 
-        if request_id:
-            con.execute(
-                "INSERT OR IGNORE INTO spin_requests(request_id,user_id,plate_id,created_at) VALUES(?,?,?,?)",
-                (request_id, uid, plate["id"], int(time.time())),
-            )
-
-        # Не разрастаем таблицу idempotency бесконечно.
-        con.execute("DELETE FROM spin_requests WHERE created_at<?", (int(time.time()) - 86400 * 7,))
-
-        add_stat(con, uid, "spins", 1)
-        if RARITY_ORDER.get(plate["rarity"], 0) >= RARITY_ORDER["Редкий"]:
-            add_stat(con, uid, "rare_found", 1)
-
-        new_user = user_json(con, uid)
-        return jsonify(
-            ok=True,
-            plate=plate,
-            balance=new_user["balance"],
-        
+        if
