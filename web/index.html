@@ -1,30 +1,701 @@
+
 <!DOCTYPE html>
-<html lang="ru"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,viewport-fit=cover"><title>NOMER CLUB</title><script src="https://telegram.org/js/telegram-web-app.js"></script>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,viewport-fit=cover">
+<title>NOMER CLUB</title>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+
 <style>
-:root{--bg:#050b17;--card:#10223b;--line:#214568;--blue:#20b9ff;--text:#f2f8ff;--muted:#8eacc8}*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at 50% 0,#12395e,var(--bg) 55%);font:15px system-ui,-apple-system,sans-serif;color:var(--text)}main{max-width:600px;margin:auto;padding:18px 15px 110px}header{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px}h1{font-size:25px;letter-spacing:2px;color:#65deff;margin:0}h2{font-size:18px;margin:0 0 15px}.muted{color:var(--muted);font-size:13px}.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:15px 0}.stat,.card{background:linear-gradient(140deg,#102b48,#0b1a2e);border:1px solid var(--line);border-radius:17px;padding:15px}.stat{padding:12px 9px}.stat b{display:block;margin-top:8px;font-size:16px}.card{margin-bottom:13px}.plate{display:flex;justify-content:space-between;align-items:center;background:linear-gradient(#fff,#dfe4e5);border:4px double #151b23;border-radius:10px;color:#111;padding:13px 10px;margin:24px 0 10px;box-shadow:0 12px 24px #0007;white-space:nowrap;font-size:clamp(22px,6vw,38px);font-weight:900;letter-spacing:1px}.region{font-size:14px;letter-spacing:0;border-left:2px solid #333;padding-left:9px;text-align:center}.primary{width:100%;border:0;border-radius:12px;background:linear-gradient(100deg,#0877c1,#24caeb);padding:16px;color:white;font-weight:800;font-size:16px}.primary:disabled{opacity:.45}.row{display:flex;align-items:center;justify-content:space-between;gap:10px}.item{border-bottom:1px solid var(--line);padding:13px 0}.item:last-child{border:0}.item strong{display:block;font-size:18px;margin:5px 0}.tag{color:#6cd9ff;font-size:12px}.smallbtn{background:#1b4667;border:1px solid #31628a;border-radius:10px;color:white;padding:10px 12px;font:inherit;font-size:12px}.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}.empty{text-align:center;color:var(--muted);padding:25px 5px}section{display:none}section.active{display:block}nav{position:fixed;bottom:0;left:0;right:0;display:flex;justify-content:center;background:#07172bea;border-top:1px solid var(--line);padding:8px 4px max(12px,env(safe-area-inset-bottom));backdrop-filter:blur(15px)}nav button{flex:1;max-width:120px;background:transparent;border:0;color:#9ab6d1;font-size:11px;padding:9px 2px;border-radius:12px}nav button.active{background:#153956;color:#62dcff}nav span{display:block;font-size:20px;margin-bottom:3px}#toast{position:fixed;bottom:92px;left:5%;width:90%;background:#173f60;border:1px solid #45bff5;border-radius:12px;padding:13px;display:none;text-align:center;z-index:5}#status{color:#ffcf84;font-size:13px;margin:8px 0;display:none}.center{text-align:center}.profile-line{padding:9px 0;border-bottom:1px solid var(--line)}
-</style></head><body><main>
-<header><div><h1>NOMER CLUB</h1><div class="muted">ТВОЯ КОЛЛЕКЦИЯ. ТВОИ ПРАВИЛА.</div></div><span style="font-size:25px">💎</span></header>
-<div id="status"></div>
-<div class="stats"><div class="stat"><span class="muted">БАЛАНС</span><b id="balance">—</b></div><div class="stat"><span class="muted">УРОВЕНЬ</span><b id="level">—</b></div><div class="stat"><span class="muted">НОМЕРА</span><b id="count">—</b></div></div>
-<section id="home" class="active"><div class="card"><div class="row"><h2>Генератор номеров</h2><span class="tag" id="attempts">—</span></div><div class="plate"><span id="plate-text">A 777 AA</span><span class="region" id="plate-region">77<br>🇷🇺</span></div><p class="muted center" id="result">Найди уникальный номер для коллекции</p><button class="primary" id="spin-btn" disabled>СГЕНЕРИРОВАТЬ</button><p class="muted center">20 попыток в день • сброс в 00:00 UTC</p></div><div class="card"><h2>Как играть</h2><p class="muted">Генерируй номера, собирай коллекцию, продавай находки на маркете и поднимайся в рейтинге.</p></div></section>
-<section id="collection"><div class="card"><h2>Моя коллекция</h2><div id="plates"></div></div></section>
-<section id="market"><div class="card"><h2>Торговая площадка</h2><p class="muted">Комиссия продавца 5%. До 3 объявлений.</p><div id="listings"></div></div></section>
-<section id="top"><div class="card"><h2>Рейтинг коллекционеров</h2><div id="players"></div></div></section>
-<section id="profile"><div class="card"><h2>Мой профиль</h2><div id="profile-data"></div><p class="muted">Все номера и NC виртуальные, без денежного эквивалента.</p></div></section>
-</main><nav><button data-tab="home" class="active"><span>⌂</span>Главная</button><button data-tab="collection"><span>▤</span>Коллекция</button><button data-tab="market"><span>⇄</span>Маркет</button><button data-tab="top"><span>★</span>Рейтинг</button><button data-tab="profile"><span>◉</span>Профиль</button></nav><div id="toast"></div>
+:root {
+  --bg:#050b17;
+  --card:#0d2036;
+  --card2:#112b46;
+  --line:#244462;
+  --blue:#24baff;
+  --cyan:#60e4ff;
+  --text:#f3f8ff;
+  --muted:#8ca8c4;
+  --green:#36dc9a;
+  --red:#ff617a;
+}
+* {
+  box-sizing:border-box;
+  -webkit-tap-highlight-color:transparent;
+}
+html { background:var(--bg); }
+body {
+  margin:0;
+  min-height:100vh;
+  color:var(--text);
+  font-family:system-ui,-apple-system,Arial,sans-serif;
+  background:
+    radial-gradient(circle at 50% 0%,#133b61 0%,transparent 42%),
+    linear-gradient(180deg,#071527,#050b17);
+}
+button,input { font:inherit; }
+button { cursor:pointer; }
+button:disabled { opacity:.45;cursor:not-allowed; }
+main {
+  max-width:600px;
+  margin:auto;
+  padding:18px 15px 110px;
+}
+header {
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:20px;
+}
+.logo {
+  font-size:25px;
+  font-weight:900;
+  letter-spacing:2px;
+  color:var(--cyan);
+}
+.subtitle {
+  color:var(--muted);
+  font-size:11px;
+  letter-spacing:1px;
+}
+h2 { margin:0 0 14px;font-size:19px; }
+.muted { color:var(--muted);font-size:13px; }
+.center { text-align:center; }
+.stats {
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:8px;
+  margin-bottom:17px;
+}
+.stat,.card {
+  background:linear-gradient(145deg,var(--card2),var(--card));
+  border:1px solid var(--line);
+  border-radius:18px;
+}
+.stat {
+  padding:13px 10px;
+  min-width:0;
+}
+.stat-label {
+  color:var(--muted);
+  font-size:11px;
+}
+.stat-value {
+  display:block;
+  margin-top:8px;
+  font-size:16px;
+  font-weight:800;
+  overflow-wrap:anywhere;
+}
+.card {
+  padding:17px;
+  margin-bottom:13px;
+}
+.row {
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:10px;
+}
+.plate {
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:5px;
+  width:100%;
+  max-width:430px;
+  margin:24px auto 15px;
+  padding:12px 11px;
+  color:#101010;
+  background:linear-gradient(#fff,#e4e8e7);
+  border:3px solid #171d24;
+  outline:2px solid #a6b9c7;
+  border-radius:9px;
+  box-shadow:0 12px 25px #0008;
+  white-space:nowrap;
+}
+.plate-number {
+  font-weight:900;
+  font-size:clamp(22px,6vw,38px);
+  letter-spacing:1px;
+}
+.plate-region {
+  border-left:2px solid #333;
+  padding-left:9px;
+  text-align:center;
+  font-size:14px;
+  font-weight:800;
+  color:#111;
+}
+.primary {
+  width:100%;
+  border:0;
+  border-radius:13px;
+  padding:16px;
+  background:linear-gradient(100deg,#087fca,#25c9ee);
+  color:#fff;
+  font-weight:800;
+  font-size:16px;
+  box-shadow:0 8px 24px #0089e533;
+}
+.smallbtn {
+  background:#1c4768;
+  color:#fff;
+  border:1px solid #35658b;
+  border-radius:10px;
+  padding:10px 12px;
+  font-size:12px;
+}
+.danger {
+  background:#643044;
+  border-color:#8a435b;
+}
+.item {
+  border-bottom:1px solid var(--line);
+  padding:14px 0;
+}
+.item:last-child { border-bottom:0; }
+.item-title {
+  font-size:18px;
+  font-weight:800;
+  margin:5px 0;
+}
+.tag {
+  color:var(--cyan);
+  font-size:12px;
+  font-weight:600;
+}
+.actions {
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px;
+  margin-top:10px;
+}
+.empty {
+  padding:30px 8px;
+  color:var(--muted);
+  text-align:center;
+}
+section { display:none; }
+section.active { display:block; }
+nav {
+  position:fixed;
+  bottom:0;
+  left:0;
+  right:0;
+  display:flex;
+  justify-content:center;
+  gap:2px;
+  background:#08182aee;
+  border-top:1px solid var(--line);
+  padding:9px 4px max(12px,env(safe-area-inset-bottom));
+  backdrop-filter:blur(15px);
+  z-index:10;
+}
+nav button {
+  flex:1;
+  max-width:120px;
+  padding:8px 2px;
+  border:0;
+  border-radius:12px;
+  background:transparent;
+  color:#9cb5cf;
+  font-size:11px;
+}
+nav button.active {
+  background:#173a57;
+  color:var(--cyan);
+}
+nav button span {
+  display:block;
+  font-size:20px;
+  margin-bottom:4px;
+}
+#toast {
+  position:fixed;
+  left:5%;
+  bottom:95px;
+  width:90%;
+  padding:13px;
+  background:#173d5b;
+  border:1px solid var(--cyan);
+  border-radius:12px;
+  text-align:center;
+  z-index:30;
+  display:none;
+  box-shadow:0 10px 30px #0008;
+}
+#error-box {
+  display:none;
+  margin-bottom:14px;
+  padding:13px;
+  border:1px solid #a24a60;
+  border-radius:12px;
+  background:#422034;
+  color:#ffd5dc;
+  font-size:13px;
+}
+.profile-line {
+  padding:11px 0;
+  border-bottom:1px solid var(--line);
+}
+.profile-line:last-child { border:0; }
+.loading { opacity:.6; }
+</style>
+</head>
+
+<body>
+<main>
+
+<header>
+  <div>
+    <div class="logo">NOMER CLUB</div>
+    <div class="subtitle">ТВОЯ КОЛЛЕКЦИЯ. ТВОИ ПРАВИЛА.</div>
+  </div>
+  <div style="font-size:26px">💎</div>
+</header>
+
+<div id="error-box"></div>
+
+<div class="stats">
+  <div class="stat">
+    <span class="stat-label">БАЛАНС</span>
+    <strong class="stat-value" id="balance">—</strong>
+  </div>
+  <div class="stat">
+    <span class="stat-label">УРОВЕНЬ</span>
+    <strong class="stat-value" id="level">—</strong>
+  </div>
+  <div class="stat">
+    <span class="stat-label">НОМЕРА</span>
+    <strong class="stat-value" id="count">—</strong>
+  </div>
+</div>
+
+<section id="home" class="active">
+  <div class="card">
+    <div class="row">
+      <h2>Генератор номеров</h2>
+      <span class="tag" id="attempts">—</span>
+    </div>
+
+    <div class="plate">
+      <span class="plate-number" id="plate-text">A 777 AA</span>
+      <span class="plate-region" id="plate-region">77<br>🇷🇺</span>
+    </div>
+
+    <p class="muted center" id="result">
+      Найди уникальный номер для коллекции
+    </p>
+
+    <button class="primary" id="spin-btn" disabled>
+      ПОДКЛЮЧЕНИЕ...
+    </button>
+
+    <p class="muted center">
+      20 бесплатных попыток в день • сброс в 00:00 UTC
+    </p>
+  </div>
+
+  <div class="card">
+    <h2>Как играть</h2>
+    <p class="muted">
+      Генерируй номера, собирай редкие комбинации,
+      продавай находки другим игрокам и поднимайся
+      в рейтинге лучших коллекционеров.
+    </p>
+  </div>
+</section>
+
+<section id="collection">
+  <div class="card">
+    <h2>Моя коллекция</h2>
+    <div id="plates" class="empty">Загрузка...</div>
+  </div>
+</section>
+
+<section id="market">
+  <div class="card">
+    <h2>Торговая площадка</h2>
+    <p class="muted">Комиссия 5% • До 3 объявлений</p>
+    <div id="listings" class="empty">Загрузка...</div>
+  </div>
+</section>
+
+<section id="top">
+  <div class="card">
+    <h2>Рейтинг коллекционеров</h2>
+    <div id="players" class="empty">Загрузка...</div>
+  </div>
+</section>
+
+<section id="profile">
+  <div class="card">
+    <h2>Мой профиль</h2>
+    <div id="profile-data" class="muted">Загрузка...</div>
+    <p class="muted">
+      Все игровые номера и NC являются виртуальными
+      и не имеют денежного эквивалента.
+    </p>
+  </div>
+</section>
+
+</main>
+
+<nav>
+  <button class="active" data-tab="home">
+    <span>⌂</span>Главная
+  </button>
+  <button data-tab="collection">
+    <span>▤</span>Коллекция
+  </button>
+  <button data-tab="market">
+    <span>⇄</span>Маркет
+  </button>
+  <button data-tab="top">
+    <span>★</span>Рейтинг
+  </button>
+  <button data-tab="profile">
+    <span>◉</span>Профиль
+  </button>
+</nav>
+
+<div id="toast"></div>
+
 <script>
-const tg=window.Telegram?.WebApp;tg?.ready();tg?.expand();
-const $=id=>document.getElementById(id),fmt=n=>Number(n).toLocaleString('ru-RU');let me=null,busy=false,toastTimer;
-function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
-function notify(s){$('toast').textContent=s;$('toast').style.display='block';clearTimeout(toastTimer);toastTimer=setTimeout(()=>$('toast').style.display='none',3200)}
-function error(e){notify(e.message);$('status').style.display='block';$('status').textContent=e.message}
-async function api(path,method='GET',data){const r=await fetch('/api/'+path,{method,cache:'no-store',headers:{'Content-Type':'application/json','X-Telegram-Init-Data':tg?.initData||''},body:data===undefined?undefined:JSON.stringify(data)});let j;try{j=await r.json()}catch{throw Error('Сервер вернул некорректный ответ: '+r.status)}if(!r.ok)throw Error(j.error||'Ошибка '+r.status);return j}
-async function refresh(){try{me=await api('me');$('status').style.display='none';$('balance').textContent=fmt(me.balance)+' NC';$('level').textContent=me.level;$('count').textContent=me.collection;$('attempts').textContent=me.spins_left+'/20';$('spin-btn').disabled=busy||me.spins_left<=0;$('profile-data').innerHTML=`<div class="profile-line"><b>${esc(me.name)}</b> ${me.username?'@'+esc(me.username):''}</div><div class="profile-line">Telegram ID: ${me.id}</div><div class="profile-line">Уровень: ${me.level} • XP: ${me.xp}</div><div class="profile-line">Баланс: ${fmt(me.balance)} NC</div><div class="profile-line">Номеров: ${me.collection}</div>${me.demo?'<p class="tag">Демо-режим</p>':''}`;}catch(e){$('spin-btn').disabled=true;error(e)}}
-async function spin(){if(busy)return;busy=true;$('spin-btn').disabled=true;try{const j=await api('spin','POST');const m=j.plate.code.match(/^([A-Z])(\d{3})([A-Z]{2}) (\d{2,3})$/);if(m){$('plate-text').textContent=m[1]+' '+m[2]+' '+m[3];$('plate-region').innerHTML=m[4]+'<br>🇷🇺'}$('result').textContent=j.plate.rarity+' • добавлен в коллекцию';notify('Получен '+j.plate.code);await refresh()}catch(e){error(e)}finally{busy=false;$('spin-btn').disabled=!me||me.spins_left<=0}}
-async function collection(){try{const j=await api('collection');$('plates').innerHTML=j.plates.length?j.plates.map(p=>`<div class="item"><span class="tag">${esc(p.rarity)}</span><strong>${esc(p.code)}</strong><div class="actions">${p.listing_id?`<button class="smallbtn" data-act="cancel" data-id="${p.listing_id}">Снять с продажи</button>`:`<button class="smallbtn" data-act="list" data-id="${p.id}">Выставить</button>${p.rarity==='Обычный'?`<button class="smallbtn" data-act="sell" data-id="${p.id}">Продать системе: 25 NC</button>`:''}`}</div></div>`).join(''):'<div class="empty">Коллекция пока пуста</div>'}catch(e){error(e)}}
-async function market(){try{const j=await api('market');$('listings').innerHTML=j.listings.length?j.listings.map(p=>`<div class="item"><span class="tag">${esc(p.rarity)}</span><strong>${esc(p.code)}</strong><div class="row"><span class="muted">${esc(p.seller)}</span><b>${fmt(p.price)} NC</b></div><div class="actions">${p.seller_id===me?.id?`<button class="smallbtn" data-act="cancel" data-id="${p.id}">Отменить</button>`:`<button class="smallbtn" data-act="buy" data-id="${p.id}" data-price="${p.price}">Купить</button>`}</div></div>`).join(''):'<div class="empty">Объявлений пока нет</div>'}catch(e){error(e)}}
-async function top(){try{const j=await api('top');$('players').innerHTML=j.players.map((p,i)=>`<div class="item row"><div><b>${i+1}. ${esc(p.name)}</b><div class="muted">Номеров: ${p.collection}</div></div><b>${fmt(p.balance)} NC</b></div>`).join('')}catch(e){error(e)}}
-async function action(act,id,price){try{if(act==='list'){const raw=prompt('Цена в NC (100–100000000):');if(raw===null)return;const n=Number(raw);if(!Number.isSafeInteger(n)||n<100||n>100000000)throw Error('Укажи целую цену от 100 до 100000000');await api('list','POST',{plate_id:id,price:n})}else if(act==='cancel'){await api('cancel','POST',{listing_id:id})}else if(act==='buy'){if(!confirm('Купить за '+fmt(price)+' NC?'))return;await api('buy','POST',{listing_id:id})}else if(act==='sell'){if(!confirm('Продать обычный номер системе за 25 NC?'))return;await api('sell-system','POST',{plate_id:id})}notify('Готово!');await refresh();if($('collection').classList.contains('active'))await collection();if($('market').classList.contains('active'))await market()}catch(e){error(e)}}
-document.addEventListener('click',e=>{const b=e.target.closest('[data-act]');if(b)action(b.dataset.act,Number(b.dataset.id),Number(b.dataset.price))});$('spin-btn').addEventListener('click',spin);
-const tabs={home:()=>{},collection,market,top,profile:()=>{}};document.querySelectorAll('nav button').forEach(b=>b.addEventListener('click',()=>{document.querySelectorAll('nav button').forEach(x=>x.classList.toggle('active',x===b));document.querySelectorAll('section').forEach(s=>s.classList.toggle('active',s.id===b.dataset.tab));tabs[b.dataset.tab]()}));refresh();
-</script></body></html>
+"use strict";
+
+const tg = window.Telegram?.WebApp;
+if(tg){
+  tg.ready();
+  tg.expand();
+}
+
+const $ = id => document.getElementById(id);
+const fmt = n => Number(n).toLocaleString("ru-RU");
+
+let me = null;
+let spinning = false;
+let toastTimer = null;
+
+function escapeHTML(value){
+  return String(value ?? "").replace(/[&<>"']/g, char => ({
+    "&":"&amp;",
+    "<":"&lt;",
+    ">":"&gt;",
+    '"':"&quot;",
+    "'":"&#39;"
+  }[char]));
+}
+
+function toast(message){
+  const el = $("toast");
+  el.textContent = message;
+  el.style.display = "block";
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => {
+    el.style.display = "none";
+  }, 3200);
+}
+
+function showError(message){
+  $("error-box").textContent = message;
+  $("error-box").style.display = "block";
+  toast(message);
+}
+
+function clearError(){
+  $("error-box").style.display = "none";
+}
+
+async function api(path, method="GET", data){
+  const response = await fetch("/api/" + path, {
+    method,
+    cache:"no-store",
+    headers:{
+      "Content-Type":"application/json",
+      "X-Telegram-Init-Data":tg?.initData || ""
+    },
+    body:data === undefined ? undefined : JSON.stringify(data)
+  });
+
+  let result;
+  try{
+    result = await response.json();
+  }catch{
+    throw new Error(
+      "Сервер вернул некорректный ответ. HTTP " + response.status
+    );
+  }
+
+  if(!response.ok){
+    throw new Error(result.error || "Ошибка HTTP " + response.status);
+  }
+
+  return result;
+}
+
+function updateSpinButton(){
+  const button = $("spin-btn");
+  button.disabled = spinning || !me || me.spins_left <= 0;
+
+  if(!me){
+    button.textContent = "НЕТ ПОДКЛЮЧЕНИЯ";
+  }else if(spinning){
+    button.textContent = "ГЕНЕРАЦИЯ...";
+  }else if(me.spins_left <= 0){
+    button.textContent = "ПОПЫТКИ ЗАКОНЧИЛИСЬ";
+  }else{
+    button.textContent = "СГЕНЕРИРОВАТЬ";
+  }
+}
+
+async function refresh(){
+  try{
+    me = await api("me");
+    clearError();
+
+    $("balance").textContent = fmt(me.balance) + " NC";
+    $("level").textContent = me.level + " LVL";
+    $("count").textContent = me.collection;
+    $("attempts").textContent = me.spins_left + " / 20";
+
+    $("profile-data").innerHTML = `
+      <div class="profile-line">
+        <b>${escapeHTML(me.name)}</b>
+      </div>
+      <div class="profile-line">
+        ${me.username ? "@" + escapeHTML(me.username) : "Без username"}
+      </div>
+      <div class="profile-line">Telegram ID: ${me.id}</div>
+      <div class="profile-line">Уровень: ${me.level}</div>
+      <div class="profile-line">Опыт: ${me.xp} XP</div>
+      <div class="profile-line">Баланс: ${fmt(me.balance)} NC</div>
+      <div class="profile-line">Номеров: ${me.collection}</div>
+      ${me.demo ? '<p class="tag">Демо-режим</p>' : ""}
+    `;
+
+    updateSpinButton();
+    return true;
+  }catch(e){
+    me = null;
+    updateSpinButton();
+    showError(e.message);
+    return false;
+  }
+}
+
+function displayPlate(code){
+  const match = code.match(/^([A-Z])(\d{3})([A-Z]{2}) (\d{2,3})$/);
+  if(!match)return;
+
+  $("plate-text").textContent =
+    match[1] + " " + match[2] + " " + match[3];
+
+  $("plate-region").innerHTML =
+    escapeHTML(match[4]) + "<br>🇷🇺";
+}
+
+async function spin(){
+  if(spinning || !me || me.spins_left <= 0)return;
+
+  spinning = true;
+  updateSpinButton();
+
+  try{
+    const result = await api("spin", "POST");
+
+    displayPlate(result.plate.code);
+
+    $("result").textContent =
+      result.plate.rarity + " • номер добавлен в коллекцию";
+
+    toast("Получен номер " + result.plate.code);
+    await refresh();
+  }catch(e){
+    showError(e.message);
+  }finally{
+    spinning = false;
+    updateSpinButton();
+  }
+}
+
+async function loadCollection(){
+  try{
+    const data = await api("collection");
+
+    $("plates").innerHTML = data.plates.length
+      ? data.plates.map(p => `
+        <div class="item">
+          <span class="tag">${escapeHTML(p.rarity)}</span>
+          <div class="item-title">${escapeHTML(p.code)}</div>
+          <div class="actions">
+            ${p.listing_id
+              ? `<button class="smallbtn" data-action="cancel"
+                   data-id="${p.listing_id}">
+                   Снять с продажи
+                 </button>`
+              : `<button class="smallbtn" data-action="list"
+                   data-id="${p.id}">
+                   Выставить на маркет
+                 </button>
+                 ${p.rarity === "Обычный"
+                   ? `<button class="smallbtn danger"
+                        data-action="sell" data-id="${p.id}">
+                        Продать системе: 25 NC
+                      </button>`
+                   : ""}`
+            }
+          </div>
+        </div>
+      `).join("")
+      : '<div class="empty">Коллекция пуста. Сгенерируй первый номер!</div>';
+  }catch(e){
+    showError(e.message);
+  }
+}
+
+async function loadMarket(){
+  try{
+    const data = await api("market");
+
+    $("listings").innerHTML = data.listings.length
+      ? data.listings.map(p => `
+        <div class="item">
+          <span class="tag">${escapeHTML(p.rarity)}</span>
+          <div class="item-title">${escapeHTML(p.code)}</div>
+          <div class="row">
+            <span class="muted">${escapeHTML(p.seller)}</span>
+            <b>${fmt(p.price)} NC</b>
+          </div>
+          <div class="actions">
+            ${p.seller_id === me?.id
+              ? `<button class="smallbtn" data-action="cancel"
+                   data-id="${p.id}">Отменить</button>`
+              : `<button class="smallbtn" data-action="buy"
+                   data-id="${p.id}" data-price="${p.price}">
+                   Купить
+                 </button>`
+            }
+          </div>
+        </div>
+      `).join("")
+      : '<div class="empty">На маркете пока нет объявлений</div>';
+  }catch(e){
+    showError(e.message);
+  }
+}
+
+async function loadTop(){
+  try{
+    const data = await api("top");
+
+    $("players").innerHTML = data.players.length
+      ? data.players.map((p,i) => `
+        <div class="item row">
+          <div>
+            <b>${i+1}. ${escapeHTML(p.name)}</b>
+            <div class="muted">Номеров: ${p.collection}</div>
+          </div>
+          <b>${fmt(p.balance)} NC</b>
+        </div>
+      `).join("")
+      : '<div class="empty">Игроков пока нет</div>';
+  }catch(e){
+    showError(e.message);
+  }
+}
+
+async function performAction(action,id,price){
+  try{
+    if(action === "list"){
+      const value = prompt("Укажи цену от 100 до 100000000 NC:");
+      if(value === null)return;
+
+      const amount = Number(value);
+      if(!Number.isSafeInteger(amount) || amount < 100 || amount > 100000000){
+        toast("Введи правильную цену");
+        return;
+      }
+
+      await api("list","POST",{plate_id:id,price:amount});
+      toast("Номер выставлен на маркет");
+    }
+
+    if(action === "cancel"){
+      await api("cancel","POST",{listing_id:id});
+      toast("Объявление отменено");
+    }
+
+    if(action === "buy"){
+      if(!confirm("Купить номер за " + fmt(price) + " NC?"))return;
+      await api("buy","POST",{listing_id:id});
+      toast("Номер успешно куплен");
+    }
+
+    if(action === "sell"){
+      if(!confirm("Продать обычный номер системе за 25 NC?"))return;
+      await api("sell-system","POST",{plate_id:id});
+      toast("Номер продан за 25 NC");
+    }
+
+    await refresh();
+
+    if($("collection").classList.contains("active")){
+      await loadCollection();
+    }
+    if($("market").classList.contains("active")){
+      await loadMarket();
+    }
+  }catch(e){
+    showError(e.message);
+  }
+}
+
+document.addEventListener("click", event => {
+  const button = event.target.closest("[data-action]");
+  if(!button)return;
+
+  performAction(
+    button.dataset.action,
+    Number(button.dataset.id),
+    Number(button.dataset.price || 0)
+  );
+});
+
+$("spin-btn").addEventListener("click",spin);
+
+const tabLoaders = {
+  home:() => {},
+  collection:loadCollection,
+  market:loadMarket,
+  top:loadTop,
+  profile:() => {}
+};
+
+document.querySelectorAll("nav button").forEach(button => {
+  button.addEventListener("click",() => {
+    const tab = button.dataset.tab;
+
+    document.querySelectorAll("nav button").forEach(b => {
+      b.classList.toggle("active",b === button);
+    });
+
+    document.querySelectorAll("section").forEach(section => {
+      section.classList.toggle("active",section.id === tab);
+    });
+
+    tabLoaders[tab]();
+  });
+});
+
+async function start(){
+  updateSpinButton();
+  await refresh();
+}
+
+start();
+</script>
+</body>
+</html>
