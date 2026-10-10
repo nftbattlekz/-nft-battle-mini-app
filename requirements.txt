@@ -1,2 +1,2 @@
-Flask>=3.0,<4
-gunicorn>=22,<24
+Flask==3.1.0
+gunicorn==23.0.0
