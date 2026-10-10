@@ -2,466 +2,600 @@
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
-<meta name="theme-color" content="#07111f">
+
+<meta
+    name="viewport"
+    content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"
+>
 
 <title>NOMER CLUB</title>
 
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 
 <style>
-:root{
-    --bg:#050a12;
-    --bg2:#07111f;
-    --card:#0d1928;
-    --line:#1f3a55;
 
-    --text:#f4f8ff;
-    --muted:#7f95ac;
-
-    --blue:#2ca6ff;
-    --cyan:#64e3ff;
-    --green:#4adf9d;
-    --gold:#ffd166;
-    --red:#ff6680;
-    --purple:#aa84ff;
-}
+/* =========================================================
+   BASE
+========================================================= */
 
 *{
     box-sizing:border-box;
     -webkit-tap-highlight-color:transparent;
 }
 
+:root{
+    --bg:#020811;
+    --bg2:#06111e;
+
+    --card:#071421;
+    --card2:#0b1d2d;
+    --card3:#102a40;
+
+    --line:#173652;
+    --line2:#24577d;
+
+    --blue:#279cff;
+    --cyan:#49d3ff;
+
+    --text:#f4f8ff;
+    --muted:#7890aa;
+
+    --green:#43d6a1;
+    --red:#ff7895;
+    --gold:#ffd465;
+}
+
 html{
-    background:var(--bg);
+    background:#000;
 }
 
 body{
     margin:0;
     min-height:100vh;
 
-    color:var(--text);
-
-    font:
-        14px/1.45
+    font-family:
         -apple-system,
         BlinkMacSystemFont,
         "Segoe UI",
+        Arial,
         sans-serif;
+
+    color:var(--text);
 
     background:
         radial-gradient(
             circle at 50% -10%,
-            rgba(44,166,255,.22),
-            transparent 35%
-        ),
-        linear-gradient(
-            180deg,
-            var(--bg2),
-            var(--bg)
+            #123755 0%,
+            #06111d 35%,
+            #020812 68%
         );
 
     overflow-x:hidden;
 }
 
-button,
-input,
-select{
-    font:inherit;
-}
 
-button{
-    cursor:pointer;
-}
-
-.hidden{
-    display:none!important;
-}
+/* =========================================================
+   APP
+========================================================= */
 
 .app{
-    max-width:680px;
-    margin:auto;
+    width:100%;
+    max-width:700px;
+    min-height:100vh;
 
-    padding:
-        12px
-        10px
-        110px;
+    margin:0 auto;
+
+    padding-bottom:105px;
 }
 
-/* HEADER */
 
-.top{
-    position:sticky;
-    top:0;
+/* =========================================================
+   HEADER
+========================================================= */
 
-    z-index:40;
+.top-header{
+    height:78px;
 
     display:flex;
     align-items:center;
     justify-content:space-between;
 
-    gap:10px;
+    padding:0 18px;
 
-    padding:
-        8px
-        0
-        14px;
+    background:rgba(3,12,23,.94);
 
-    background:
-        linear-gradient(
-            180deg,
-            rgba(7,17,31,.98) 70%,
-            transparent
-        );
+    border-bottom:1px solid #17344d;
+
+    position:sticky;
+    top:0;
+    z-index:100;
 
     backdrop-filter:blur(14px);
 }
 
+
 .brand{
     display:flex;
     align-items:center;
-    gap:10px;
+    gap:12px;
 }
 
+
 .logo{
-    width:42px;
-    height:42px;
+    width:54px;
+    height:54px;
 
-    border-radius:14px;
+    border-radius:17px;
 
-    display:grid;
-    place-items:center;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    font-size:21px;
+    font-weight:1000;
 
     background:
         linear-gradient(
             145deg,
-            #147ce8,
-            #59ddff
+            #1f8eff,
+            #41d7ff
         );
 
-    font-weight:1000;
-
     box-shadow:
-        0 0 28px
-        rgba(44,166,255,.28);
+        0 7px 25px rgba(30,154,255,.25);
 }
 
-.brand h1{
-    font-size:16px;
-    margin:0;
-    letter-spacing:.6px;
+
+.brand-title{
+    font-size:21px;
+    font-weight:1000;
+    letter-spacing:.3px;
 }
 
-.brand small{
-    display:block;
 
-    color:var(--muted);
+.brand-sub{
+    margin-top:3px;
 
-    font-size:9px;
-    letter-spacing:1px;
+    font-size:11px;
+    font-weight:800;
+
+    letter-spacing:2.4px;
+
+    color:#89a1bc;
 }
 
-.top-actions{
+
+.header-right{
     display:flex;
-    gap:6px;
+    align-items:center;
+    gap:8px;
 }
 
-.chip{
-    border:
-        1px
-        solid
-        var(--line);
 
-    background:#0b1725;
+.admin-badge{
+    display:none;
 
-    color:var(--text);
+    padding:10px 13px;
 
-    border-radius:12px;
+    border-radius:13px;
 
-    padding:
-        9px
-        10px;
+    border:1px solid #8c6a16;
 
-    font-weight:900;
+    background:#251d06;
 
-    white-space:nowrap;
+    color:#ffe28a;
+
+    font-size:12px;
+    font-weight:1000;
 }
 
-.admin-chip{
-    color:#ffe18b;
 
-    border-color:#6d5823;
+.balance{
+    min-width:96px;
 
-    background:#211a0c;
+    padding:10px 13px;
+
+    text-align:center;
+
+    border-radius:14px;
+
+    border:1px solid #24445e;
+
+    background:#071421;
+
+    font-size:13px;
+    font-weight:1000;
 }
 
-/* PAGES */
+
+/* =========================================================
+   CONTENT
+========================================================= */
 
 .page{
     display:none;
+
+    padding:18px 14px 25px;
 }
 
 .page.active{
     display:block;
-
-    animation:
-        pageIn
-        .22s
-        ease;
 }
 
-@keyframes pageIn{
-    from{
-        opacity:0;
-        transform:translateY(7px);
-    }
 
-    to{
-        opacity:1;
-        transform:none;
-    }
-}
-
-/* HERO */
+/* =========================================================
+   HERO
+========================================================= */
 
 .hero{
-    position:relative;
-    overflow:hidden;
+    padding:22px 16px;
 
-    border:
-        1px
-        solid
-        #21405e;
-
-    border-radius:25px;
-
-    padding:
-        14px
-        10px;
+    border:1px solid #245274;
+    border-radius:28px;
 
     background:
         linear-gradient(
             145deg,
-            rgba(18,38,61,.96),
-            rgba(7,15,25,.98)
+            #10283c,
+            #081725 62%
         );
 
     box-shadow:
-        0 20px 55px
-        #0006;
+        0 20px 50px rgba(0,0,0,.2);
 }
 
-.hero:before{
-    content:"";
 
-    position:absolute;
+.hero-label{
+    color:#61d5ff;
 
-    width:260px;
-    height:260px;
+    font-size:12px;
+    font-weight:1000;
 
-    right:-115px;
-    top:-145px;
-
-    border-radius:50%;
-
-    background:
-        radial-gradient(
-            circle,
-            rgba(69,183,255,.28),
-            transparent 64%
-        );
+    letter-spacing:2.2px;
 }
 
-.hero>*{
-    position:relative;
-    z-index:1;
+
+.hero h1{
+    margin:14px 0 0;
+
+    font-size:31px;
+    line-height:1.04;
+
+    letter-spacing:-1px;
 }
 
-.eyebrow{
-    color:#72d9ff;
 
-    font-size:10px;
-    font-weight:950;
+.hero-description{
+    margin-top:18px;
 
-    letter-spacing:1.3px;
+    color:#7f97b1;
+
+    font-size:14px;
+    line-height:1.55;
+
+    font-weight:650;
 }
 
-.hero h2{
-    font-size:24px;
 
-    margin:
-        5px
-        0
-        4px;
-}
-
-.muted{
-    color:var(--muted);
-}
-
-.small{
-    font-size:11px;
-}
-
-/* STATS */
+/* =========================================================
+   STATS
+========================================================= */
 
 .stats{
     display:grid;
 
     grid-template-columns:
-        repeat(
-            3,
-            1fr
-        );
+        repeat(3,minmax(0,1fr));
 
-    gap:7px;
+    gap:8px;
 
-    margin:
-        14px
-        0;
+    margin-top:20px;
 }
+
 
 .stat{
-    border:
-        1px
-        solid
-        #29445d88;
+    min-height:80px;
 
-    background:#06101a99;
+    border:1px solid #193a54;
+    border-radius:19px;
 
-    border-radius:14px;
+    padding:13px;
 
-    padding:9px;
+    background:#071521;
 }
 
-.stat span{
-    display:block;
 
-    color:#70869c;
+.stat-name{
+    font-size:11px;
+    font-weight:800;
 
-    font-size:9px;
+    color:#708ba4;
+
+    text-transform:uppercase;
 }
 
-.stat b{
-    display:block;
 
-    margin-top:4px;
+.stat-value{
+    margin-top:10px;
+
+    font-size:20px;
+    font-weight:1000;
 }
 
-/* STAGE */
 
-.stage{
+/* =========================================================
+   PLATE AREA
+========================================================= */
+
+.plate-card{
+    margin-top:17px;
+
+    padding:24px 8px 18px;
+
+    border-radius:28px;
+
+    background:#030d17;
+
+    border:1px solid #112c41;
+}
+
+
+.plate-wrapper{
+    width:100%;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+}
+
+
+/* =========================================================
+   REALISTIC LICENSE PLATE
+========================================================= */
+
+.license-plate{
     position:relative;
 
-    overflow:visible;
-
-    border:
-        1px
-        solid
-        #23415c55;
-
-    border-radius:20px;
-
-    background:#050c15aa;
-
-    padding:
-        15px
-        0
-        18px;
-
-    margin-bottom:10px;
-}
-
-/* =====================================
-   НОМЕР КАК НА ТВОЁМ ПРИМЕРЕ
-===================================== */
-
-.plate{
     width:100%;
-    max-width:760px;
+    max-width:570px;
 
-    aspect-ratio:5.25/1;
+    aspect-ratio:520 / 112;
 
-    margin:
-        6px
-        auto
-        15px;
+    display:flex;
 
-    display:grid;
+    overflow:hidden;
 
-    grid-template-columns:
-        minmax(0,1fr)
-        22%;
-
-    align-items:stretch;
-
-    border:
-        4px
-        solid
-        #111;
-
-    border-radius:17px;
+    color:#050505;
 
     background:
         linear-gradient(
             180deg,
-            #fbfbfa 0%,
-            #f1f1ef 58%,
-            #e2e3e2 100%
+            #ffffff 0%,
+            #f9f9f8 45%,
+            #eeeeec 100%
         );
 
-    color:#0c0c0c;
+    border:3px solid #151515;
+    border-radius:13px;
 
     box-shadow:
-        inset 0 0 0 2px #fff,
-        inset 0 0 0 8px #222,
-        0 20px 42px #0008;
+        inset 0 0 0 2px #aaa,
+        inset 0 0 0 5px #fff,
+        0 5px 14px rgba(0,0,0,.6);
+}
 
-    position:relative;
+
+/* =========================================================
+   LEFT PART
+========================================================= */
+
+.plate-main{
+    width:79%;
+    height:100%;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    gap:0;
+
+    padding:
+        0
+        1%
+        0
+        4%;
+
+    white-space:nowrap;
+}
+
+
+.plate-first{
+    width:18%;
+
+    text-align:center;
+
+    font-family:
+        "Arial Narrow",
+        Arial,
+        sans-serif;
+
+    font-weight:900;
+
+    font-size:clamp(
+        35px,
+        12.4vw,
+        87px
+    );
+
+    line-height:1;
+
+    transform:scaleX(.72);
+}
+
+
+.plate-numbers{
+    width:48%;
+
+    text-align:center;
+
+    font-family:
+        "Arial Narrow",
+        Arial,
+        sans-serif;
+
+    font-weight:900;
+
+    font-size:clamp(
+        43px,
+        13.8vw,
+        101px
+    );
+
+    letter-spacing:-5px;
+
+    line-height:1;
+
+    transform:scaleX(.82);
+}
+
+
+.plate-last{
+    width:34%;
+
+    text-align:center;
+
+    font-family:
+        "Arial Narrow",
+        Arial,
+        sans-serif;
+
+    font-weight:900;
+
+    font-size:clamp(
+        35px,
+        12.4vw,
+        87px
+    );
+
+    letter-spacing:-5px;
+
+    line-height:1;
+
+    transform:scaleX(.72);
+}
+
+
+/* =========================================================
+   REGION
+========================================================= */
+
+.plate-region{
+    width:21%;
+    height:100%;
+
+    border-left:3px solid #111;
+
+    display:flex;
+    flex-direction:column;
+
+    padding:
+        2px
+        4px
+        4px;
+}
+
+
+.region-code{
+    width:100%;
+    height:72%;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    font-family:
+        "Arial Narrow",
+        Arial,
+        sans-serif;
+
+    font-size:clamp(
+        28px,
+        8.4vw,
+        65px
+    );
+
+    font-weight:900;
+
+    line-height:1;
+
+    letter-spacing:-3px;
+
+    transform:scaleX(.83);
+}
+
+
+.region-footer{
+    width:100%;
+    height:28%;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    gap:4px;
+}
+
+
+.rus{
+    font-size:clamp(
+        7px,
+        2.2vw,
+        15px
+    );
+
+    font-weight:900;
+
+    line-height:1;
+}
+
+
+.flag{
+    width:30%;
+    max-width:34px;
+    min-width:20px;
+
+    aspect-ratio:3 / 2;
+
+    border:1px solid #888;
 
     overflow:hidden;
+
+    display:flex;
+    flex-direction:column;
 }
 
-.plate:before{
-    content:"";
 
-    position:absolute;
-
-    inset:10px;
-
-    border:
-        2px
-        solid
-        #6e6f70;
-
-    border-radius:8px;
-
-    pointer-events:none;
-
-    z-index:1;
+.flag span{
+    width:100%;
+    height:33.333%;
 }
 
-.plate:after{
-    content:"";
-
-    position:absolute;
-
-    inset:0;
-
-    background:
-        linear-gradient(
-            112deg,
-            transparent 0 43%,
-            rgba(255,255,255,.45) 49%,
-            transparent 56%
-        );
-
-    opacity:.16;
-
-    pointer-events:none;
-
-    z-index:3;
+.flag span:nth-child(1){
+    background:#fff;
 }
+
+.flag span:nth-child(2){
+    background:#1753a0;
+}
+
+.flag span:nth-child(3){
+    background:#d52b1e;
+}
+
+
+/* =========================================================
+   PLATE BOLTS
+========================================================= */
 
 .bolt{
     position:absolute;
@@ -469,876 +603,494 @@ button{
     width:8px;
     height:8px;
 
-    border-radius:50%;
+    top:50%;
+
+    transform:translateY(-50%);
+
+    border-radius:100%;
+
+    z-index:10;
 
     background:
         radial-gradient(
-            circle at 35% 35%,
+            circle at 35% 30%,
             #fff,
-            #9a9a9a 43%,
-            #444 70%
+            #aaa 35%,
+            #555 68%,
+            #aaa
         );
 
     box-shadow:
-        0 1px 2px
-        #0006;
-
-    z-index:5;
+        0 1px 2px #333;
 }
 
+
 .bolt.left{
-    left:13px;
-
-    top:50%;
-
-    transform:
-        translateY(-50%);
+    left:9px;
 }
 
 .bolt.right{
-    right:13px;
-
-    top:50%;
-
-    transform:
-        translateY(-50%);
+    right:7px;
 }
 
-.plate-main{
-    position:relative;
 
-    z-index:2;
+/* =========================================================
+   RARITY
+========================================================= */
 
-    display:flex;
-
-    align-items:center;
-    justify-content:center;
-
-    min-width:0;
-
+.result-info{
     padding:
-        0
-        2px
-        0
-        12px;
-
-    overflow:hidden;
+        16px
+        8px
+        0;
 }
 
-.plate-code{
-    font-family:
-        "Arial Narrow",
-        "Helvetica Neue Condensed Black",
-        "Arial Black",
-        Arial,
-        sans-serif;
-
-    font-size:
-        clamp(
-            78px,
-            18vw,
-            150px
-        );
-
-    font-weight:900;
-
-    letter-spacing:-4px;
-
-    line-height:.8;
-
-    white-space:nowrap;
-
-    color:#101010;
-
-    transform:
-        scaleX(.76);
-
-    transform-origin:center;
-
-    text-rendering:
-        geometricPrecision;
-}
-
-.plate-region{
-    position:relative;
-
-    z-index:2;
-
-    border-left:
-        4px
-        solid
-        #111;
-
-    display:flex;
-
-    flex-direction:column;
-
-    align-items:center;
-    justify-content:center;
-
-    padding:
-        6px
-        6px
-        8px;
-
-    overflow:hidden;
-}
-
-.region-number{
-    font-family:
-        "Arial Narrow",
-        "Helvetica Neue Condensed Black",
-        "Arial Black",
-        Arial,
-        sans-serif;
-
-    font-size:
-        clamp(
-            58px,
-            14vw,
-            98px
-        );
-
-    font-weight:900;
-
-    line-height:.78;
-
-    letter-spacing:-3px;
-
-    color:#101010;
-
-    transform:
-        scaleX(.86);
-}
-
-.region-bottom{
-    display:flex;
-
-    align-items:center;
-    justify-content:center;
-
-    gap:7px;
-
-    margin-top:12px;
-
-    width:100%;
-}
-
-.plate-country{
-    font-family:
-        Arial,
-        sans-serif;
-
-    font-size:
-        clamp(
-            19px,
-            4.8vw,
-            30px
-        );
-
-    font-weight:800;
-
-    line-height:1;
-
-    color:#111;
-}
-
-.ru-flag{
-    width:
-        clamp(
-            34px,
-            8vw,
-            56px
-        );
-
-    height:
-        clamp(
-            20px,
-            4.7vw,
-            33px
-        );
-
-    border:
-        1px
-        solid
-        #777;
-
-    background:
-        linear-gradient(
-            to bottom,
-            #fff 0 33.33%,
-            #1b56b8 33.33% 66.66%,
-            #d52b1e 66.66% 100%
-        );
-
-    box-shadow:
-        0 0 0 1px
-        #fff
-        inset;
-}
-
-.plate.spinning{
-    animation:
-        shake
-        .085s
-        linear
-        infinite
-        alternate;
-}
-
-@keyframes shake{
-    from{
-        transform:
-            translateX(-2px)
-            scale(.997);
-    }
-
-    to{
-        transform:
-            translateX(2px)
-            scale(1.003);
-    }
-}
-
-/* RESULT */
-
-.result{
-    display:flex;
-
-    justify-content:space-between;
-    align-items:center;
-
-    gap:8px;
-
-    padding:
-        0
-        8px;
-}
 
 .rarity{
     display:inline-flex;
 
-    align-items:center;
-
-    min-height:28px;
-
     padding:
-        0
-        9px;
+        9px
+        13px;
 
-    border:
-        1px
-        solid
-        #2b435b;
+    border-radius:999px;
 
-    border-radius:99px;
+    font-size:12px;
+    font-weight:1000;
 
-    background:#07111c;
+    letter-spacing:.5px;
 
-    font-size:10px;
+    border:1px solid #275173;
 
-    font-weight:950;
+    color:#54dfb4;
 }
 
-.common{
-    color:#c5d0da;
+
+.rarity.common{
+    color:#9cb1c8;
 }
 
-.uncommon{
-    color:#56dfa4;
+.rarity.uncommon{
+    color:#4ae0ac;
 }
 
-.rare{
-    color:#64baff;
+.rarity.rare{
+    color:#4db7ff;
 }
 
-.epic{
-    color:#b28fff;
+.rarity.epic{
+    color:#b585ff;
 }
 
-.legendary{
-    color:#ffda76;
+.rarity.legendary{
+    color:#ffd45c;
 }
 
-.mythic{
-    color:#ff7999;
+.rarity.mythic{
+    color:#ff7197;
 
-    text-shadow:
-        0 0 14px
-        #ff668066;
+    border-color:#963551;
+
+    box-shadow:
+        0 0 20px rgba(255,61,120,.16);
 }
 
-.hint{
-    color:var(--muted);
 
-    font-size:11px;
+.sale-line{
+    margin-top:13px;
 
-    text-align:right;
+    color:#7891ab;
+
+    font-size:14px;
+    font-weight:700;
 }
 
-/* BUTTONS */
 
-.btn{
+/* =========================================================
+   BUTTONS
+========================================================= */
+
+.spin-button{
+    width:100%;
+
+    margin-top:18px;
+
     border:0;
 
-    border-radius:14px;
+    min-height:59px;
 
-    min-height:47px;
+    border-radius:20px;
 
-    padding:
-        0
-        14px;
+    color:white;
 
-    color:#fff;
+    font-size:18px;
+    font-weight:1000;
 
-    font-weight:950;
-
-    transition:.15s;
-
-    position:relative;
-
-    overflow:hidden;
-}
-
-.btn:active{
-    transform:
-        scale(.975);
-}
-
-.btn:disabled{
-    opacity:.4;
-}
-
-.primary{
     background:
         linear-gradient(
-            110deg,
-            #1979e8,
-            #38bcff
+            90deg,
+            #2584ed,
+            #38bdf7
         );
 
     box-shadow:
-        0 10px 28px
-        #2ca6ff33;
+        0 9px 28px rgba(27,146,245,.2);
 }
 
-.secondary{
-    background:#11253b;
 
-    border:
-        1px
-        solid
-        #2d5c87;
+.spin-button:active{
+    transform:scale(.985);
 }
 
-.danger{
-    background:#301721;
 
-    border:
-        1px
-        solid
-        #6b3244;
-
-    color:#ffb0bc;
-}
-
-.ghost{
-    background:#08131f;
-
-    border:
-        1px
-        solid
-        #213d57;
-
-    color:#d9ebfb;
-}
-
-.gold{
-    background:
-        linear-gradient(
-            110deg,
-            #826117,
-            #d4a52b
-        );
-
-    border:
-        1px
-        solid
-        #8e6c23;
-
-    color:#fff4cc;
-}
-
-.full{
-    width:100%;
-}
-
-.smallbtn{
-    min-height:36px;
-
-    border-radius:11px;
-
-    padding:
-        0
-        11px;
-
-    font-size:11px;
-}
-
-.quick{
-    display:none;
+.action-grid{
+    display:grid;
 
     grid-template-columns:
         1fr
         1fr;
 
-    gap:7px;
-
-    margin-top:8px;
-}
-
-.quick.show{
-    display:grid;
-}
-
-/* CARDS */
-
-.section-head{
-    display:flex;
-
-    justify-content:space-between;
-    align-items:flex-end;
-
-    gap:10px;
-
-    margin:
-        18px
-        2px
-        9px;
-}
-
-.section-head h3{
-    margin:0;
-
-    font-size:18px;
-}
-
-.section-head p{
-    margin:
-        2px
-        0
-        0;
-
-    color:var(--muted);
-
-    font-size:10px;
-}
-
-.card{
-    border:
-        1px
-        solid
-        #1c334a;
-
-    border-radius:18px;
-
-    background:
-        linear-gradient(
-            145deg,
-            #0d1a2b,
-            #08111c
-        );
-
-    padding:13px;
-
-    margin-bottom:9px;
-
-    box-shadow:
-        0 12px 30px
-        #0003;
-}
-
-.row{
-    display:flex;
-
-    align-items:center;
-    justify-content:space-between;
-
-    gap:10px;
-}
-
-.grow{
-    flex:1;
-
-    min-width:0;
-}
-
-.title{
-    font-weight:900;
-}
-
-.big{
-    font-size:18px;
-
-    font-weight:1000;
-}
-
-.badge{
-    display:inline-flex;
-
-    align-items:center;
-
-    padding:
-        5px
-        8px;
-
-    border:
-        1px
-        solid
-        #294761;
-
-    border-radius:99px;
-
-    background:#08131f;
-
-    font-size:10px;
-
-    font-weight:900;
-}
-
-.creator{
-    color:#ffdf84;
-
-    border-color:#6f5923;
-
-    background:#211a0c;
-}
-
-.plate-name{
-    font-size:21px;
-
-    font-weight:1000;
-
-    letter-spacing:.7px;
-
-    margin:
-        5px
-        0;
-}
-
-.price{
-    font-weight:950;
-
-    white-space:nowrap;
-}
-
-.actions{
-    display:flex;
-
-    gap:7px;
-
-    flex-wrap:wrap;
+    gap:9px;
 
     margin-top:10px;
 }
 
-/* INPUT */
 
-.toolbar{
-    display:flex;
+.action-btn{
+    min-height:61px;
 
-    gap:7px;
+    border-radius:20px;
 
-    margin-bottom:9px;
+    font-size:16px;
+    font-weight:1000;
+
+    padding:10px;
+
+    background:#0c2133;
+
+    color:#f4f8ff;
+
+    border:1px solid #28638f;
 }
 
-.input,
-.select{
-    width:100%;
 
-    min-height:43px;
+.sell-btn{
+    color:#ff9db2;
 
-    border:
-        1px
-        solid
-        #203c55;
+    border-color:#86384f;
 
-    border-radius:12px;
-
-    background:#07111d;
-
-    color:var(--text);
-
-    padding:
-        0
-        11px;
-
-    outline:0;
+    background:#351520;
 }
 
-.empty{
+
+.help{
+    margin-top:15px;
+
+    padding:0 12px;
+
     text-align:center;
 
-    color:var(--muted);
+    color:#7189a2;
 
-    padding:
-        28px
-        12px;
+    font-size:12px;
 
-    border:
-        1px
-        dashed
-        #28465f;
-
-    border-radius:17px;
+    line-height:1.45;
 }
 
-.progress{
-    height:7px;
 
-    border-radius:99px;
+/* =========================================================
+   OTHER PAGES
+========================================================= */
 
-    background:#050c14;
+.section-title{
+    font-size:28px;
+    font-weight:1000;
 
-    overflow:hidden;
-
-    margin-top:9px;
+    margin:6px 2px 18px;
 }
 
-.progress i{
-    display:block;
 
-    height:100%;
+.empty-card,
+.profile-card,
+.admin-card{
+    padding:20px;
 
-    background:
-        linear-gradient(
-            90deg,
-            #2c94ef,
-            #5bdcff
-        );
-
-    border-radius:99px;
-}
-
-/* PROFILE */
-
-.profile-head{
-    display:flex;
-
-    align-items:center;
-
-    gap:11px;
-}
-
-.avatar{
-    width:54px;
-    height:54px;
-
-    display:grid;
-
-    place-items:center;
-
-    border:
-        1px
-        solid
-        #294b68;
-
-    border-radius:17px;
+    border:1px solid #173b59;
+    border-radius:24px;
 
     background:
         linear-gradient(
             145deg,
-            #183554,
-            #0b1725
+            #0d2132,
+            #06121d
         );
+}
 
-    font-size:21px;
 
+.empty-title{
+    font-size:19px;
     font-weight:1000;
 }
 
-/* ADMIN */
 
-.admin-hero{
-    border-color:#6b5725;
+.empty-text{
+    margin-top:7px;
+
+    color:#7990a8;
+
+    line-height:1.55;
+}
+
+
+/* =========================================================
+   GARAGE
+========================================================= */
+
+.garage-list{
+    display:grid;
+    gap:10px;
+}
+
+
+.garage-item{
+    padding:15px;
+
+    border-radius:20px;
+
+    background:#071521;
+
+    border:1px solid #173a55;
+}
+
+
+.garage-number{
+    font-size:21px;
+    font-weight:1000;
+}
+
+
+.garage-meta{
+    margin-top:5px;
+
+    color:#7690aa;
+
+    font-size:13px;
+}
+
+
+/* =========================================================
+   PROFILE
+========================================================= */
+
+.profile-row{
+    display:flex;
+    gap:14px;
+    align-items:center;
+}
+
+
+.avatar{
+    width:64px;
+    height:64px;
+
+    flex-shrink:0;
+
+    border-radius:20px;
 
     background:
-        radial-gradient(
-            circle at 100% 0,
-            #ffd16620,
-            transparent 36%
-        ),
         linear-gradient(
             145deg,
-            #1a1912,
-            #0d141d
-        );
-}
-
-.admin-stats{
-    display:grid;
-
-    grid-template-columns:
-        repeat(
-            4,
-            1fr
+            #2196f3,
+            #52d4ff
         );
 
-    gap:6px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
 
-    margin-top:12px;
+    font-size:25px;
+    font-weight:1000;
+
+    overflow:hidden;
 }
 
-.admin-stat{
-    padding:
-        9px
-        5px;
 
-    border:
-        1px
-        solid
-        #2b4054;
-
-    border-radius:12px;
-
-    background:#07111b;
-
-    text-align:center;
+.avatar img{
+    width:100%;
+    height:100%;
+    object-fit:cover;
 }
 
-.admin-stat b{
-    display:block;
+
+.profile-name{
+    font-size:20px;
+    font-weight:1000;
 }
 
-.admin-stat span{
-    color:var(--muted);
 
-    font-size:8px;
+.profile-username{
+    margin-top:3px;
+
+    color:#7890aa;
+
+    font-size:13px;
 }
 
-/* NAV */
 
-.nav{
+/* =========================================================
+   ADMIN
+========================================================= */
+
+.admin-card{
+    display:none;
+
+    margin-top:14px;
+}
+
+
+.admin-title{
+    font-size:18px;
+    font-weight:1000;
+}
+
+
+.admin-note{
+    margin-top:6px;
+
+    color:#7790aa;
+
+    font-size:13px;
+}
+
+
+/* =========================================================
+   NAV
+========================================================= */
+
+.bottom-nav{
     position:fixed;
 
     left:50%;
     bottom:0;
 
-    transform:
-        translateX(-50%);
+    transform:translateX(-50%);
 
-    z-index:80;
+    width:100%;
+    max-width:700px;
 
-    width:
-        min(
-            680px,
-            100%
-        );
+    height:90px;
 
-    display:grid;
-
-    grid-template-columns:
-        repeat(
-            5,
-            1fr
-        );
-
-    gap:2px;
-
-    padding:
-        7px
-        7px
-        max(
-            10px,
-            env(safe-area-inset-bottom)
-        );
+    background:
+        rgba(2,10,18,.97);
 
     border-top:
         1px
         solid
-        #1a3046;
+        #173650;
 
-    background:#050b14ee;
+    display:grid;
 
-    backdrop-filter:
-        blur(18px);
+    grid-template-columns:
+        repeat(5,1fr);
+
+    padding:
+        8px
+        8px
+        max(8px,env(safe-area-inset-bottom));
+
+    z-index:1000;
+
+    backdrop-filter:blur(16px);
 }
 
-.nav button{
+
+.nav-btn{
     border:0;
 
     background:transparent;
 
-    color:#70869d;
+    color:#71879e;
 
-    border-radius:12px;
+    border-radius:20px;
 
-    padding:
-        7px
-        1px;
+    display:flex;
+    flex-direction:column;
 
-    font-size:9px;
+    align-items:center;
+    justify-content:center;
 
-    font-weight:900;
+    gap:6px;
+
+    font-size:11px;
+    font-weight:850;
 }
 
-.nav button span{
-    display:block;
 
-    font-size:19px;
+.nav-btn.active{
+    background:#102b40;
 
-    margin-bottom:4px;
+    color:#6ed8ff;
 }
 
-.nav button.active{
-    color:#85d7ff;
 
-    background:#10263c;
+.nav-icon{
+    font-size:22px;
+    line-height:1;
 }
 
-/* TOAST */
+
+/* =========================================================
+   TOAST
+========================================================= */
 
 .toast{
     position:fixed;
 
-    z-index:110;
-
     left:50%;
-    bottom:92px;
+    bottom:105px;
 
     transform:
         translateX(-50%)
-        translateY(20px);
+        translateY(30px);
 
     width:
-        min(
-            600px,
-            92%
-        );
+        calc(100% - 32px);
+
+    max-width:500px;
 
     padding:
-        11px
-        12px;
+        14px
+        16px;
+
+    background:#0d2233;
 
     border:
         1px
         solid
-        #2b4d69;
+        #285678;
 
-    border-radius:15px;
+    border-radius:17px;
 
-    background:#0a1625fa;
+    color:#f5f8ff;
+
+    font-size:14px;
+    font-weight:750;
 
     opacity:0;
 
     pointer-events:none;
 
-    transition:.2s;
+    transition:.25s;
+
+    z-index:5000;
 
     box-shadow:
-        0 18px 44px
-        #0006;
+        0
+        14px
+        40px
+        rgba(0,0,0,.45);
 }
+
 
 .toast.show{
     opacity:1;
@@ -1348,297 +1100,142 @@ button{
         translateY(0);
 }
 
-.toast strong{
-    display:block;
-}
 
-.toast small{
-    color:#8aa3bb;
-}
+/* =========================================================
+   SPIN ANIMATION
+========================================================= */
 
-/* MODAL */
-
-.modal-back{
-    position:fixed;
-
-    inset:0;
-
-    z-index:120;
-
-    background:#000b;
-
-    display:none;
-
-    align-items:flex-end;
-    justify-content:center;
-}
-
-.modal-back.show{
-    display:flex;
-}
-
-.modal{
-    width:
-        min(
-            680px,
-            100%
-        );
-
-    padding:
-        18px
-        14px
-        max(
-            18px,
-            env(safe-area-inset-bottom)
-        );
-
-    border:
-        1px
-        solid
-        #284760;
-
-    border-radius:
-        23px
-        23px
-        0
-        0;
-
-    background:#08131f;
-}
-
-.modal h3{
-    margin:
-        0
-        0
-        5px;
-}
-
-.modal p{
-    margin:
-        0
-        0
-        12px;
-
-    color:var(--muted);
-
-    font-size:11px;
-}
-
-.modal-buttons{
-    display:grid;
-
-    grid-template-columns:
-        1fr
-        1fr;
-
-    gap:7px;
-
-    margin-top:8px;
-}
-
-/* PARTICLES */
-
-.particles{
-    position:fixed;
-
-    inset:0;
-
-    z-index:100;
-
-    pointer-events:none;
-
-    overflow:hidden;
-}
-
-.particle{
-    position:absolute;
-
-    top:-20px;
-
-    width:7px;
-    height:13px;
-
-    border-radius:2px;
-
+.license-plate.spinning{
     animation:
-        fall
-        1.7s
-        ease-out
-        forwards;
+        plateSpin
+        .12s
+        linear
+        infinite;
 }
 
-@keyframes fall{
-    to{
+
+@keyframes plateSpin{
+
+    0%{
         transform:
-            translateY(85vh)
-            rotate(540deg);
-
-        opacity:0;
+            translateX(-3px);
     }
+
+    50%{
+        transform:
+            translateX(3px);
+    }
+
+    100%{
+        transform:
+            translateX(-3px);
+    }
+
 }
 
-/* IPHONE */
 
-@media(max-width:520px){
+/* =========================================================
+   MOBILE
+========================================================= */
 
-    .app{
-        padding-left:7px;
-        padding-right:7px;
+@media(max-width:420px){
+
+    .top-header{
+        height:72px;
+        padding:0 13px;
+    }
+
+    .logo{
+        width:46px;
+        height:46px;
+
+        border-radius:15px;
+
+        font-size:18px;
+    }
+
+    .brand-title{
+        font-size:17px;
+    }
+
+    .brand-sub{
+        font-size:8px;
+        letter-spacing:1.7px;
+    }
+
+    .admin-badge{
+        padding:8px 9px;
+        font-size:10px;
+    }
+
+    .balance{
+        min-width:78px;
+
+        padding:9px 8px;
+
+        font-size:11px;
     }
 
     .hero{
+        padding:20px 14px;
+    }
+
+    .hero h1{
+        font-size:29px;
+    }
+
+    .stats{
+        gap:6px;
+    }
+
+    .stat{
+        min-height:75px;
+        padding:11px 9px;
+    }
+
+    .stat-name{
+        font-size:9px;
+    }
+
+    .stat-value{
+        font-size:17px;
+    }
+
+    .plate-card{
         padding:
-            10px
-            7px;
+            25px
+            6px
+            17px;
     }
 
-    .stage{
-        padding-left:0;
-        padding-right:0;
+    .license-plate{
+        border-radius:10px;
     }
 
-    .plate{
-        aspect-ratio:5.05/1;
-
-        border-width:3px;
-
-        border-radius:13px;
-
-        box-shadow:
-            inset 0 0 0 1px #fff,
-            inset 0 0 0 5px #222,
-            0 16px 32px #0008;
+    .nav-icon{
+        font-size:20px;
     }
 
-    .plate:before{
-        inset:7px;
-
-        border-width:1.5px;
-
-        border-radius:6px;
-    }
-
-    .plate-main{
-        padding:0;
-    }
-
-    .plate-code{
-        font-size:
-            clamp(
-                58px,
-                19vw,
-                90px
-            );
-
-        letter-spacing:-4px;
-
-        transform:
-            scaleX(.72);
-    }
-
-    .plate-region{
-        border-left-width:3px;
-
-        padding:
-            4px
-            2px
-            5px;
-    }
-
-    .region-number{
-        font-size:
-            clamp(
-                46px,
-                15vw,
-                70px
-            );
-
-        letter-spacing:-3px;
-
-        transform:
-            scaleX(.84);
-    }
-
-    .region-bottom{
-        gap:4px;
-
-        margin-top:8px;
-    }
-
-    .plate-country{
-        font-size:
-            clamp(
-                14px,
-                4.5vw,
-                20px
-            );
-    }
-
-    .ru-flag{
-        width:
-            clamp(
-                25px,
-                7.7vw,
-                34px
-            );
-
-        height:
-            clamp(
-                15px,
-                4.5vw,
-                20px
-            );
-    }
-
-    .bolt{
-        width:6px;
-        height:6px;
-    }
-
-    .bolt.left{
-        left:9px;
-    }
-
-    .bolt.right{
-        right:9px;
-    }
-
-    .admin-stats{
-        grid-template-columns:
-            1fr
-            1fr;
-    }
-
-    .chip{
+    .nav-btn{
         font-size:10px;
-
-        padding:8px;
     }
 
-    .result{
-        align-items:flex-start;
-
-        flex-direction:column;
-    }
-
-    .hint{
-        text-align:left;
-    }
 }
+
 </style>
 </head>
 
+
 <body>
-
-<div
-    class="particles"
-    id="particles">
-</div>
-
 
 <div class="app">
 
-<header class="top">
+
+<!-- =====================================================
+     HEADER
+===================================================== -->
+
+<header class="top-header">
 
     <div class="brand">
 
@@ -1648,36 +1245,33 @@ button{
 
         <div>
 
-            <h1>
+            <div class="brand-title">
                 NOMER CLUB
-            </h1>
+            </div>
 
-            <small>
+            <div class="brand-sub">
                 COLLECT • TRADE • RISE
-            </small>
+            </div>
 
         </div>
 
     </div>
 
 
-    <div class="top-actions">
-
-        <button
-            class="chip admin-chip hidden"
-            id="admin-btn">
-
-            ADMIN
-
-        </button>
-
+    <div class="header-right">
 
         <div
-            class="chip"
-            id="balance">
+            class="admin-badge"
+            id="adminBadge"
+        >
+            ADMIN
+        </div>
 
-            — NC
-
+        <div
+            class="balance"
+            id="balance"
+        >
+            10 000 NC
         </div>
 
     </div>
@@ -1685,323 +1279,277 @@ button{
 </header>
 
 
-<!-- HOME -->
+
+<!-- =====================================================
+     HOME
+===================================================== -->
 
 <section
     class="page active"
-    id="page-home">
+    id="page-home"
+>
 
     <div class="hero">
 
-        <div class="eyebrow">
+        <div class="hero-label">
             ГЕНЕРАТОР НОМЕРОВ
         </div>
 
-
-        <h2>
+        <h1>
             Собери лучшую коллекцию
-        </h2>
+        </h1>
 
-
-        <p class="muted small">
-
+        <div class="hero-description">
             Крутить можно
-
-            <b>
-                без ограничений
-            </b>.
-
+            <b>без ограничений</b>.
             Каждая прокрутка стоит
-
-            <b>
-                100 NC
-            </b>.
-
-        </p>
+            <b>100 NC</b>.
+        </div>
 
 
         <div class="stats">
 
             <div class="stat">
 
-                <span>
-                    СТОИМОСТЬ
-                </span>
+                <div class="stat-name">
+                    Стоимость
+                </div>
 
-                <b>
+                <div class="stat-value">
                     100 NC
-                </b>
+                </div>
 
             </div>
 
 
             <div class="stat">
 
-                <span>
-                    УРОВЕНЬ
-                </span>
+                <div class="stat-name">
+                    Уровень
+                </div>
 
-                <b id="level">
-                    —
-                </b>
+                <div
+                    class="stat-value"
+                    id="levelValue"
+                >
+                    1
+                </div>
 
             </div>
 
 
             <div class="stat">
 
-                <span>
-                    НОМЕРА
-                </span>
+                <div class="stat-name">
+                    Номера
+                </div>
 
-                <b id="count">
-                    —
-                </b>
+                <div
+                    class="stat-value"
+                    id="platesCount"
+                >
+                    0
+                </div>
 
             </div>
 
         </div>
 
 
-        <div class="stage">
 
-            <div
-                class="plate"
-                id="plate">
+        <!-- =============================================
+             NUMBER RESULT
+        ============================================== -->
 
-                <span
-                    class="bolt left">
-                </span>
+        <div class="plate-card">
+
+            <div class="plate-wrapper">
+
+                <div
+                    class="license-plate"
+                    id="licensePlate"
+                >
+
+                    <div class="bolt left"></div>
 
 
-                <span
-                    class="bolt right">
-                </span>
+                    <div class="plate-main">
 
+                        <div
+                            class="plate-first"
+                            id="plateFirst"
+                        >
+                            A
+                        </div>
 
-                <div class="plate-main">
+                        <div
+                            class="plate-numbers"
+                            id="plateNumbers"
+                        >
+                            777
+                        </div>
 
-                    <div
-                        class="plate-code"
-                        id="plate-code">
-
-                        A123BC
+                        <div
+                            class="plate-last"
+                            id="plateLast"
+                        >
+                            AA
+                        </div>
 
                     </div>
 
+
+                    <div class="plate-region">
+
+                        <div
+                            class="region-code"
+                            id="plateRegion"
+                        >
+                            77
+                        </div>
+
+
+                        <div class="region-footer">
+
+                            <span class="rus">
+                                RUS
+                            </span>
+
+
+                            <span class="flag">
+
+                                <span></span>
+                                <span></span>
+                                <span></span>
+
+                            </span>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="bolt right"></div>
+
+                </div>
+
+            </div>
+
+
+            <div class="result-info">
+
+                <div
+                    class="rarity uncommon"
+                    id="rarity"
+                >
+                    НЕОБЫЧНЫЙ
                 </div>
 
 
                 <div
-                    class="plate-region"
-                    id="plate-region">
-
-                    <div class="region-number">
-                        77
-                    </div>
-
-
-                    <div class="region-bottom">
-
-                        <span class="plate-country">
-                            RUS
-                        </span>
-
-
-                        <span class="ru-flag"></span>
-
-                    </div>
-
+                    class="sale-line"
+                    id="saleInfo"
+                >
+                    Не сохранён • продажа: 75 NC
                 </div>
 
             </div>
 
-
-            <div class="result">
-
-                <span
-                    class="rarity common"
-                    id="rarity">
-
-                    ГОТОВ
-
-                </span>
-
-
-                <span
-                    class="hint"
-                    id="result-text">
-
-                    Прокрутка стоит 100 NC
-
-                </span>
-
-            </div>
-
         </div>
 
 
+
+        <!-- =============================================
+             BUTTONS
+        ============================================== -->
+
         <button
-            class="btn primary full"
-            id="spin-btn"
-            disabled>
-
+            class="spin-button"
+            id="spinButton"
+            onclick="spinPlate()"
+        >
             КРУТИТЬ • 100 NC
-
         </button>
 
 
-        <div
-            class="quick"
-            id="quick">
+        <div class="action-grid">
 
             <button
-                class="btn secondary"
-                id="keep-btn">
-
+                class="action-btn"
+                onclick="savePlate()"
+            >
                 ОСТАВИТЬ В ГАРАЖЕ
-
             </button>
 
 
             <button
-                class="btn danger"
-                id="sell-btn">
-
-                ПРОДАТЬ
-
+                class="action-btn sell-btn"
+                id="sellButton"
+                onclick="sellPlate()"
+            >
+                ПРОДАТЬ • 75 NC
             </button>
 
         </div>
 
 
-        <div
-            class="muted small"
-            style="
-                text-align:center;
-                margin-top:8px;
-            ">
-
-            Если номер не сохранить
-            и нажать «КРУТИТЬ» ещё раз —
+        <div class="help">
+            Если номер не сохранить и нажать
+            «КРУТИТЬ» ещё раз —
             предыдущий автоматически
-            продастся системе.
-
+            продаётся системе.
         </div>
 
     </div>
 
+</section>
 
-    <div class="section-head">
 
-        <div>
 
-            <h3>
-                Мой аккаунт
-            </h3>
+<!-- =====================================================
+     GARAGE
+===================================================== -->
 
-            <p>
-                Основная информация
-            </p>
+<section
+    class="page"
+    id="page-garage"
+>
 
-        </div>
-
+    <div class="section-title">
+        Гараж
     </div>
-
 
     <div
-        class="card"
-        id="home-profile">
-
-        Загрузка...
-
-    </div>
+        class="garage-list"
+        id="garageList"
+    ></div>
 
 </section>
 
 
-<!-- COLLECTION -->
+
+<!-- =====================================================
+     MARKET
+===================================================== -->
 
 <section
     class="page"
-    id="page-collection">
+    id="page-market"
+>
 
-    <div class="section-head">
+    <div class="section-title">
+        Маркет
+    </div>
 
-        <div>
+    <div class="empty-card">
 
-            <h3>
-                Моя коллекция
-            </h3>
-
-            <p>
-                Все сохранённые номера
-            </p>
-
+        <div class="empty-title">
+            Рынок номеров
         </div>
 
-
-        <span
-            class="badge"
-            id="collection-count">
-
-            0
-
-        </span>
-
-    </div>
-
-
-    <div class="toolbar">
-
-        <input
-            class="input"
-            id="search"
-            placeholder="Поиск номера">
-
-
-        <select
-            class="select"
-            id="rarity-filter"
-            style="max-width:140px">
-
-            <option value="">
-                Все
-            </option>
-
-            <option>
-                Обычный
-            </option>
-
-            <option>
-                Необычный
-            </option>
-
-            <option>
-                Редкий
-            </option>
-
-            <option>
-                Эпический
-            </option>
-
-            <option>
-                Легендарный
-            </option>
-
-            <option>
-                Мифический
-            </option>
-
-        </select>
-
-    </div>
-
-
-    <div id="collection-list">
-
-        <div class="empty">
-            Загрузка...
+        <div class="empty-text">
+            Здесь игроки смогут покупать
+            и продавать номера друг другу.
         </div>
 
     </div>
@@ -2009,42 +1557,29 @@ button{
 </section>
 
 
-<!-- MARKET -->
+
+<!-- =====================================================
+     TASKS
+===================================================== -->
 
 <section
     class="page"
-    id="page-market">
+    id="page-tasks"
+>
 
-    <div class="section-head">
-
-        <div>
-
-            <h3>
-                Маркет
-            </h3>
-
-            <p>
-                Торговля между игроками
-            </p>
-
-        </div>
-
-
-        <button
-            class="btn ghost smallbtn"
-            id="market-refresh">
-
-            ↻
-
-        </button>
-
+    <div class="section-title">
+        Задания
     </div>
 
+    <div class="empty-card">
 
-    <div id="market-list">
+        <div class="empty-title">
+            Ежедневные задания
+        </div>
 
-        <div class="empty">
-            Загрузка...
+        <div class="empty-text">
+            Выполняй задания,
+            получай NC и повышай уровень.
         </div>
 
     </div>
@@ -2052,109 +1587,57 @@ button{
 </section>
 
 
-<!-- TASKS -->
+
+<!-- =====================================================
+     PROFILE
+===================================================== -->
 
 <section
     class="page"
-    id="page-tasks">
+    id="page-profile"
+>
 
-    <div class="section-head">
-
-        <div>
-
-            <h3>
-                Ежедневные задания
-            </h3>
-
-            <p>
-                Прокрутки бесконечные,
-                прогресс считается
-            </p>
-
-        </div>
-
+    <div class="section-title">
+        Профиль
     </div>
 
 
-    <div id="tasks-list">
+    <div class="profile-card">
 
-        <div class="empty">
-            Загрузка...
-        </div>
-
-    </div>
-
-
-    <div class="section-head">
-
-        <div>
-
-            <h3>
-                Достижения
-            </h3>
-
-            <p>
-                Постоянный прогресс
-            </p>
-
-        </div>
-
-    </div>
-
-
-    <div id="achievements-list"></div>
-
-</section>
-
-
-<!-- PROFILE -->
-
-<section
-    class="page"
-    id="page-profile">
-
-    <div class="card">
-
-        <div class="profile-head">
+        <div class="profile-row">
 
             <div
                 class="avatar"
-                id="avatar">
-
-                N
-
+                id="avatar"
+            >
+                NC
             </div>
 
 
-            <div class="grow">
+            <div>
 
                 <div
-                    class="big"
-                    id="profile-name">
-
+                    class="profile-name"
+                    id="profileName"
+                >
                     Игрок
-
                 </div>
 
+                <div
+                    class="profile-username"
+                    id="profileUsername"
+                >
+                    @username
+                </div>
 
                 <div
-                    class="muted small"
-                    id="profile-id">
-
-                    —
-
+                    class="profile-username"
+                    id="profileId"
+                >
+                    ID: —
                 </div>
 
             </div>
-
-
-            <span
-                class="badge creator hidden"
-                id="creator-badge">
-
-                👑 CREATOR
-
-            </span>
 
         </div>
 
@@ -2162,167 +1645,43 @@ button{
 
 
     <div
-        class="card"
-        id="profile-info">
-    </div>
+        class="admin-card"
+        id="adminPanel"
+    >
 
+        <div class="admin-title">
+            Панель администратора
+        </div>
 
-    <div class="section-head">
-
-        <div>
-
-            <h3>
-                Рейтинг
-            </h3>
-
-            <p>
-                Лучшие игроки
-            </p>
-
+        <div class="admin-note">
+            Ваш аккаунт имеет права администратора.
         </div>
 
     </div>
-
-
-    <div id="top-list"></div>
 
 </section>
 
 
-<!-- ADMIN -->
-
-<section
-    class="page"
-    id="page-admin">
-
-    <div class="card admin-hero">
-
-        <div class="row">
-
-            <div>
-
-                <div class="eyebrow">
-                    CREATOR CONTROL
-                </div>
-
-
-                <div class="big">
-                    Админ-панель
-                </div>
-
-
-                <div class="muted small">
-                    ID 8518976778
-                </div>
-
-            </div>
-
-
-            <span class="badge creator">
-                ONLINE
-            </span>
-
-        </div>
-
-
-        <div
-            class="admin-stats"
-            id="admin-stats">
-        </div>
-
-    </div>
-
-
-    <div class="card">
-
-        <div class="title">
-            Управление игроком
-        </div>
-
-
-        <input
-            class="input"
-            id="admin-target"
-            inputmode="numeric"
-            placeholder="Telegram ID"
-            style="margin-top:10px">
-
-
-        <div
-            class="toolbar"
-            style="margin-top:7px">
-
-            <input
-                class="input"
-                id="admin-nc"
-                inputmode="numeric"
-                placeholder="NC">
-
-
-            <input
-                class="input"
-                id="admin-xp"
-                inputmode="numeric"
-                placeholder="XP">
-
-        </div>
-
-
-        <input
-            class="input"
-            id="admin-reason"
-            placeholder="Причина">
-
-
-        <button
-            class="btn gold full"
-            id="admin-grant"
-            style="margin-top:7px">
-
-            ВЫДАТЬ
-
-        </button>
-
-    </div>
-
-
-    <div class="toolbar">
-
-        <input
-            class="input"
-            id="admin-search"
-            placeholder="ID / имя / username">
-
-
-        <button
-            class="btn ghost smallbtn"
-            id="admin-search-btn">
-
-            Найти
-
-        </button>
-
-    </div>
-
-
-    <div id="admin-players"></div>
-
-</section>
 
 </div>
 
 
-<!-- NAV -->
 
-<nav class="nav">
+<!-- =====================================================
+     NAVIGATION
+===================================================== -->
+
+<nav class="bottom-nav">
 
     <button
-        class="active"
-        data-tab="home">
+        class="nav-btn active"
+        data-page="home"
+        onclick="openPage('home',this)"
+    >
 
-        <span>
+        <div class="nav-icon">
             ⌂
-        </span>
+        </div>
 
         Главная
 
@@ -2330,11 +1689,14 @@ button{
 
 
     <button
-        data-tab="collection">
+        class="nav-btn"
+        data-page="garage"
+        onclick="openPage('garage',this)"
+    >
 
-        <span>
+        <div class="nav-icon">
             ▤
-        </span>
+        </div>
 
         Гараж
 
@@ -2342,11 +1704,14 @@ button{
 
 
     <button
-        data-tab="market">
+        class="nav-btn"
+        data-page="market"
+        onclick="openPage('market',this)"
+    >
 
-        <span>
+        <div class="nav-icon">
             ⇄
-        </span>
+        </div>
 
         Маркет
 
@@ -2354,11 +1719,14 @@ button{
 
 
     <button
-        data-tab="tasks">
+        class="nav-btn"
+        data-page="tasks"
+        onclick="openPage('tasks',this)"
+    >
 
-        <span>
+        <div class="nav-icon">
             ✓
-        </span>
+        </div>
 
         Задания
 
@@ -2366,11 +1734,14 @@ button{
 
 
     <button
-        data-tab="profile">
+        class="nav-btn"
+        data-page="profile"
+        onclick="openPage('profile',this)"
+    >
 
-        <span>
+        <div class="nav-icon">
             ◉
-        </span>
+        </div>
 
         Профиль
 
@@ -2379,204 +1750,1372 @@ button{
 </nav>
 
 
-<!-- TOAST -->
+
+<!-- =====================================================
+     TOAST
+===================================================== -->
 
 <div
     class="toast"
-    id="toast">
+    id="toast"
+></div>
 
-    <strong id="toast-title">
-        Готово
-    </strong>
-
-    <small id="toast-text"></small>
-
-</div>
-
-
-<!-- MODAL -->
-
-<div
-    class="modal-back"
-    id="modal-back">
-
-    <div
-        class="modal"
-        id="modal">
-    </div>
-
-</div>
 
 
 <script>
+
+/* =========================================================
+   TELEGRAM
+========================================================= */
+
 const tg =
-    window.Telegram?.WebApp;
+    window.Telegram &&
+    window.Telegram.WebApp
+        ? window.Telegram.WebApp
+        : null;
 
 
-tg?.ready();
-tg?.expand();
+if(tg){
+
+    tg.ready();
+
+    tg.expand();
+
+    try{
+
+        tg.setHeaderColor("#030c17");
+
+        tg.setBackgroundColor("#020811");
+
+    }catch(e){}
+
+}
 
 
-try{
+/* =========================================================
+   SETTINGS
+========================================================= */
 
-    tg?.setHeaderColor?.(
-        "#07111f"
-    );
+const SPIN_PRICE = 100;
 
-
-    tg?.setBackgroundColor?.(
-        "#050a12"
-    );
-
-}catch{}
+const ADMIN_ID = 8518976778;
 
 
-const $ =
-    id =>
-        document.getElementById(
-            id
-        );
+/* =========================================================
+   STATE
+========================================================= */
 
+let state = {
 
-const fmt =
-    n =>
-        Number(
-            n || 0
-        )
-        .toLocaleString(
-            "ru-RU"
-        );
+    balance:10000,
 
+    level:1,
 
-const S = {
+    current:null,
 
-    me:null,
+    garage:[],
 
-    collection:[],
+    spinning:false
 
-    market:[],
-
-    last:null,
-
-    busy:false,
-
-    page:"home"
 };
 
 
-let toastTimer =
-    null;
+/* =========================================================
+   RANDOM DATA
+========================================================= */
+
+const LETTERS = [
+    "A",
+    "B",
+    "E",
+    "K",
+    "M",
+    "H",
+    "O",
+    "P",
+    "C",
+    "T",
+    "Y",
+    "X"
+];
 
 
-let modalResolve =
-    null;
+const REGIONS = [
+
+    "01",
+    "02",
+    "05",
+    "07",
+    "16",
+
+    "50",
+    "77",
+    "78",
+    "95",
+    "96",
+    "97",
+    "98",
+    "99",
+
+    "102",
+    "116",
+    "121",
+    "123",
+    "124",
+    "125",
+    "126",
+
+    "134",
+    "136",
+    "138",
+
+    "150",
+    "152",
+    "154",
+    "159",
+    "161",
+    "163",
+    "164",
+
+    "173",
+    "174",
+    "177",
+    "178",
+
+    "186",
+    "190",
+    "196",
+    "197",
+    "198",
+    "199",
+
+    "716",
+    "750",
+    "761",
+    "763",
+    "774",
+    "777",
+    "790",
+    "797",
+    "799"
+
+];
 
 
-const esc =
-    value =>
-        String(
-            value ?? ""
+/* =========================================================
+   RANDOM HELPERS
+========================================================= */
+
+function randomItem(array){
+
+    return array[
+        Math.floor(
+            Math.random() *
+            array.length
         )
-        .replace(
-            /[&<>"']/g,
+    ];
 
-            char => ({
-                "&":"&amp;",
-                "<":"&lt;",
-                ">":"&gt;",
-                '"':"&quot;",
-                "'":"&#39;"
-            }[char])
+}
+
+
+function randomDigit(){
+
+    return Math.floor(
+        Math.random() * 10
+    );
+
+}
+
+
+/* =========================================================
+   GENERATE NUMBER
+========================================================= */
+
+function generatePlate(){
+
+    const roll =
+        Math.random() * 100;
+
+
+    let rarity;
+
+    let digits;
+
+    let price;
+
+
+    /* =========================
+       MYTHIC
+    ========================= */
+
+    if(roll < 1){
+
+        rarity = {
+            name:"МИФИЧЕСКИЙ",
+            class:"mythic"
+        };
+
+        const mythicalDigits = [
+            "001",
+            "007",
+            "111",
+            "222",
+            "333",
+            "444",
+            "555",
+            "666",
+            "777",
+            "888",
+            "999"
+        ];
+
+        digits =
+            randomItem(
+                mythicalDigits
+            );
+
+        price =
+            Math.floor(
+                2500 +
+                Math.random() *
+                5000
+            );
+
+    }
+
+
+    /* =========================
+       LEGENDARY
+    ========================= */
+
+    else if(roll < 5){
+
+        rarity = {
+            name:"ЛЕГЕНДАРНЫЙ",
+            class:"legendary"
+        };
+
+        const legendaryDigits = [
+            "010",
+            "020",
+            "030",
+            "050",
+            "070",
+            "100",
+            "200",
+            "500",
+            "700",
+            "800",
+            "900"
+        ];
+
+        digits =
+            randomItem(
+                legendaryDigits
+            );
+
+        price =
+            Math.floor(
+                900 +
+                Math.random() *
+                1400
+            );
+
+    }
+
+
+    /* =========================
+       EPIC
+    ========================= */
+
+    else if(roll < 12){
+
+        rarity = {
+            name:"ЭПИЧЕСКИЙ",
+            class:"epic"
+        };
+
+        const a =
+            randomDigit();
+
+        const b =
+            randomDigit();
+
+        digits =
+            `${a}${b}${a}`;
+
+        price =
+            Math.floor(
+                450 +
+                Math.random() *
+                700
+            );
+
+    }
+
+
+    /* =========================
+       RARE
+    ========================= */
+
+    else if(roll < 27){
+
+        rarity = {
+            name:"РЕДКИЙ",
+            class:"rare"
+        };
+
+        const d =
+            randomDigit();
+
+        digits =
+            `${d}${d}${randomDigit()}`;
+
+        price =
+            Math.floor(
+                220 +
+                Math.random() *
+                350
+            );
+
+    }
+
+
+    /* =========================
+       UNCOMMON
+    ========================= */
+
+    else if(roll < 55){
+
+        rarity = {
+            name:"НЕОБЫЧНЫЙ",
+            class:"uncommon"
+        };
+
+        digits =
+            String(
+                Math.floor(
+                    Math.random() *
+                    1000
+                )
+            ).padStart(
+                3,
+                "0"
+            );
+
+        price =
+            Math.floor(
+                70 +
+                Math.random() *
+                130
+            );
+
+    }
+
+
+    /* =========================
+       COMMON
+    ========================= */
+
+    else{
+
+        rarity = {
+            name:"ОБЫЧНЫЙ",
+            class:"common"
+        };
+
+        digits =
+            String(
+                Math.floor(
+                    Math.random() *
+                    1000
+                )
+            ).padStart(
+                3,
+                "0"
+            );
+
+        price =
+            Math.floor(
+                25 +
+                Math.random() *
+                60
+            );
+
+    }
+
+
+    let first =
+        randomItem(
+            LETTERS
         );
 
 
-const rarityClass =
-    rarity =>
-        ({
-            "Обычный":
-                "common",
-
-            "Необычный":
-                "uncommon",
-
-            "Редкий":
-                "rare",
-
-            "Эпический":
-                "epic",
-
-            "Легендарный":
-                "legendary",
-
-            "Мифический":
-                "mythic"
-
-        }[
-            rarity
-        ]
-        ||
-        "common");
+    let last1 =
+        randomItem(
+            LETTERS
+        );
 
 
-const fallbackPrice =
-    rarity =>
-        ({
-            "Обычный":
-                35,
-
-            "Необычный":
-                75,
-
-            "Редкий":
-                220,
-
-            "Эпический":
-                800,
-
-            "Легендарный":
-                3500,
-
-            "Мифический":
-                15000
-
-        }[
-            rarity
-        ]
-        ||
-        1);
+    let last2 =
+        randomItem(
+            LETTERS
+        );
 
 
-function notify(
-    title,
-    text=""
+    /* Более красивые буквенные сочетания
+       для дорогих номеров
+    */
+
+    if(
+        rarity.class === "mythic" ||
+        rarity.class === "legendary"
+    ){
+
+        const letter =
+            randomItem(
+                LETTERS
+            );
+
+        first = letter;
+
+        last1 = letter;
+
+        last2 = letter;
+
+    }
+
+
+    return {
+
+        id:
+            Date.now() +
+            "-" +
+            Math.random(),
+
+        first:first,
+
+        digits:digits,
+
+        last:
+            last1 +
+            last2,
+
+        region:
+            randomItem(
+                REGIONS
+            ),
+
+        rarity:
+            rarity.name,
+
+        rarityClass:
+            rarity.class,
+
+        price:price,
+
+        saved:false
+
+    };
+
+}
+
+
+/* =========================================================
+   DISPLAY PLATE
+========================================================= */
+
+function displayPlate(plate){
+
+    if(!plate){
+        return;
+    }
+
+
+    document
+        .getElementById(
+            "plateFirst"
+        )
+        .textContent =
+        plate.first;
+
+
+    document
+        .getElementById(
+            "plateNumbers"
+        )
+        .textContent =
+        plate.digits;
+
+
+    document
+        .getElementById(
+            "plateLast"
+        )
+        .textContent =
+        plate.last;
+
+
+    document
+        .getElementById(
+            "plateRegion"
+        )
+        .textContent =
+        plate.region;
+
+
+    const rarity =
+        document.getElementById(
+            "rarity"
+        );
+
+
+    rarity.textContent =
+        plate.rarity;
+
+
+    rarity.className =
+        "rarity " +
+        plate.rarityClass;
+
+
+    document
+        .getElementById(
+            "saleInfo"
+        )
+        .textContent =
+        plate.saved
+            ? "Номер сохранён в гараже"
+            : "Не сохранён • продажа: " +
+              formatNumber(
+                  plate.price
+              ) +
+              " NC";
+
+
+    document
+        .getElementById(
+            "sellButton"
+        )
+        .textContent =
+        "ПРОДАТЬ • " +
+        formatNumber(
+            plate.price
+        ) +
+        " NC";
+
+}
+
+
+/* =========================================================
+   SPIN
+========================================================= */
+
+async function spinPlate(){
+
+    if(state.spinning){
+        return;
+    }
+
+
+    /* Если предыдущий номер
+       не сохранён —
+       продаём автоматически
+    */
+
+    if(
+        state.current &&
+        !state.current.saved
+    ){
+
+        state.balance +=
+            state.current.price;
+
+    }
+
+
+    if(
+        state.balance <
+        SPIN_PRICE
+    ){
+
+        showToast(
+            "Недостаточно NC"
+        );
+
+        updateUI();
+
+        return;
+
+    }
+
+
+    state.balance -=
+        SPIN_PRICE;
+
+
+    state.spinning = true;
+
+
+    updateUI();
+
+
+    const plateElement =
+        document.getElementById(
+            "licensePlate"
+        );
+
+
+    plateElement
+        .classList
+        .add(
+            "spinning"
+        );
+
+
+    const spinButton =
+        document.getElementById(
+            "spinButton"
+        );
+
+
+    spinButton.disabled =
+        true;
+
+
+    spinButton.textContent =
+        "КРУТИМ...";
+
+
+    let spins = 0;
+
+
+    const animation =
+        setInterval(
+            function(){
+
+                const temp =
+                    generatePlate();
+
+                displayPlate(
+                    temp
+                );
+
+                spins++;
+
+                if(spins >= 15){
+
+                    clearInterval(
+                        animation
+                    );
+
+                }
+
+            },
+            60
+        );
+
+
+    await sleep(
+        1000
+    );
+
+
+    clearInterval(
+        animation
+    );
+
+
+    state.current =
+        generatePlate();
+
+
+    displayPlate(
+        state.current
+    );
+
+
+    plateElement
+        .classList
+        .remove(
+            "spinning"
+        );
+
+
+    state.spinning =
+        false;
+
+
+    spinButton.disabled =
+        false;
+
+
+    spinButton.textContent =
+        "КРУТИТЬ • 100 NC";
+
+
+    updateUI();
+
+
+    showToast(
+        "Выпал номер " +
+        getPlateText(
+            state.current
+        )
+    );
+
+
+    if(
+        tg &&
+        tg.HapticFeedback
+    ){
+
+        try{
+
+            tg.HapticFeedback
+                .impactOccurred(
+                    "medium"
+                );
+
+        }catch(e){}
+
+    }
+
+}
+
+
+/* =========================================================
+   SAVE PLATE
+========================================================= */
+
+function savePlate(){
+
+    if(!state.current){
+
+        showToast(
+            "Сначала прокрути номер"
+        );
+
+        return;
+
+    }
+
+
+    if(state.current.saved){
+
+        showToast(
+            "Этот номер уже сохранён"
+        );
+
+        return;
+
+    }
+
+
+    state.current.saved =
+        true;
+
+
+    state.garage.unshift(
+        {
+            ...state.current
+        }
+    );
+
+
+    updateUI();
+
+    renderGarage();
+
+    displayPlate(
+        state.current
+    );
+
+
+    showToast(
+        "Номер сохранён в гараже"
+    );
+
+}
+
+
+/* =========================================================
+   SELL PLATE
+========================================================= */
+
+function sellPlate(){
+
+    if(!state.current){
+
+        showToast(
+            "Сначала прокрути номер"
+        );
+
+        return;
+
+    }
+
+
+    if(state.current.saved){
+
+        showToast(
+            "Номер уже находится в гараже"
+        );
+
+        return;
+
+    }
+
+
+    const price =
+        state.current.price;
+
+
+    state.balance +=
+        price;
+
+
+    state.current =
+        null;
+
+
+    updateUI();
+
+
+    showDefaultPlate();
+
+
+    showToast(
+        "Номер продан за " +
+        formatNumber(
+            price
+        ) +
+        " NC"
+    );
+
+}
+
+
+/* =========================================================
+   DEFAULT PLATE
+========================================================= */
+
+function showDefaultPlate(){
+
+    const defaultPlate = {
+
+        first:"A",
+
+        digits:"777",
+
+        last:"AA",
+
+        region:"77",
+
+        rarity:
+            "ГОТОВ К ПРОКРУТКЕ",
+
+        rarityClass:
+            "common",
+
+        price:0,
+
+        saved:false
+
+    };
+
+
+    displayPlate(
+        defaultPlate
+    );
+
+
+    document
+        .getElementById(
+            "saleInfo"
+        )
+        .textContent =
+        "Нажми «Крутить», чтобы получить номер";
+
+
+    document
+        .getElementById(
+            "sellButton"
+        )
+        .textContent =
+        "ПРОДАТЬ";
+
+}
+
+
+/* =========================================================
+   GARAGE RENDER
+========================================================= */
+
+function renderGarage(){
+
+    const box =
+        document.getElementById(
+            "garageList"
+        );
+
+
+    box.innerHTML =
+        "";
+
+
+    if(
+        state.garage.length === 0
+    ){
+
+        box.innerHTML = `
+            <div class="empty-card">
+
+                <div class="empty-title">
+                    Гараж пуст
+                </div>
+
+                <div class="empty-text">
+                    Сохраняй выпавшие номера,
+                    и они появятся здесь.
+                </div>
+
+            </div>
+        `;
+
+        return;
+
+    }
+
+
+    state.garage.forEach(
+        function(plate){
+
+            const item =
+                document.createElement(
+                    "div"
+                );
+
+
+            item.className =
+                "garage-item";
+
+
+            item.innerHTML = `
+
+                <div class="garage-number">
+
+                    ${plate.first}
+                    ${plate.digits}
+                    ${plate.last}
+
+                    • ${plate.region}
+
+                </div>
+
+                <div class="garage-meta">
+
+                    ${plate.rarity}
+
+                    •
+
+                    ${formatNumber(
+                        plate.price
+                    )} NC
+
+                </div>
+
+            `;
+
+
+            box.appendChild(
+                item
+            );
+
+        }
+    );
+
+}
+
+
+/* =========================================================
+   UPDATE UI
+========================================================= */
+
+function updateUI(){
+
+    document
+        .getElementById(
+            "balance"
+        )
+        .textContent =
+        formatNumber(
+            state.balance
+        ) +
+        " NC";
+
+
+    document
+        .getElementById(
+            "levelValue"
+        )
+        .textContent =
+        state.level;
+
+
+    document
+        .getElementById(
+            "platesCount"
+        )
+        .textContent =
+        state.garage.length;
+
+
+    saveLocal();
+
+}
+
+
+/* =========================================================
+   FORMAT
+========================================================= */
+
+function formatNumber(number){
+
+    return Number(
+        number || 0
+    )
+    .toLocaleString(
+        "ru-RU"
+    );
+
+}
+
+
+/* =========================================================
+   PLATE TEXT
+========================================================= */
+
+function getPlateText(plate){
+
+    if(!plate){
+        return "";
+    }
+
+
+    return (
+        plate.first +
+        plate.digits +
+        plate.last +
+        " " +
+        plate.region
+    );
+
+}
+
+
+/* =========================================================
+   NAVIGATION
+========================================================= */
+
+function openPage(
+    page,
+    button
 ){
 
-    $("toast-title")
-    .textContent =
-        title;
+    document
+        .querySelectorAll(
+            ".page"
+        )
+        .forEach(
+            function(el){
+
+                el.classList
+                    .remove(
+                        "active"
+                    );
+
+            }
+        );
 
 
-    $("toast-text")
-    .textContent =
+    const target =
+        document.getElementById(
+            "page-" +
+            page
+        );
+
+
+    if(target){
+
+        target.classList
+            .add(
+                "active"
+            );
+
+    }
+
+
+    document
+        .querySelectorAll(
+            ".nav-btn"
+        )
+        .forEach(
+            function(el){
+
+                el.classList
+                    .remove(
+                        "active"
+                    );
+
+            }
+        );
+
+
+    if(button){
+
+        button.classList
+            .add(
+                "active"
+            );
+
+    }
+
+
+    if(page === "garage"){
+
+        renderGarage();
+
+    }
+
+}
+
+
+/* =========================================================
+   TELEGRAM PROFILE
+========================================================= */
+
+function loadTelegramUser(){
+
+    if(
+        !tg ||
+        !tg.initDataUnsafe ||
+        !tg.initDataUnsafe.user
+    ){
+        return;
+    }
+
+
+    const user =
+        tg.initDataUnsafe.user;
+
+
+    let name =
+        user.first_name ||
+        "Игрок";
+
+
+    if(user.last_name){
+
+        name +=
+            " " +
+            user.last_name;
+
+    }
+
+
+    document
+        .getElementById(
+            "profileName"
+        )
+        .textContent =
+        name;
+
+
+    document
+        .getElementById(
+            "profileUsername"
+        )
+        .textContent =
+        user.username
+            ? "@" +
+              user.username
+            : "Без username";
+
+
+    document
+        .getElementById(
+            "profileId"
+        )
+        .textContent =
+        "ID: " +
+        user.id;
+
+
+    if(user.photo_url){
+
+        document
+            .getElementById(
+                "avatar"
+            )
+            .innerHTML = `
+
+                <img
+                    src="${user.photo_url}"
+                    alt=""
+                >
+
+            `;
+
+    }
+
+
+    if(
+        Number(
+            user.id
+        ) ===
+        Number(
+            ADMIN_ID
+        )
+    ){
+
+        document
+            .getElementById(
+                "adminBadge"
+            )
+            .style.display =
+            "block";
+
+
+        document
+            .getElementById(
+                "adminPanel"
+            )
+            .style.display =
+            "block";
+
+    }
+
+}
+
+
+/* =========================================================
+   LOCAL SAVE
+========================================================= */
+
+function saveLocal(){
+
+    try{
+
+        localStorage.setItem(
+            "nomerClubState",
+            JSON.stringify(
+                state
+            )
+        );
+
+    }catch(e){}
+
+}
+
+
+function loadLocal(){
+
+    try{
+
+        const saved =
+            localStorage.getItem(
+                "nomerClubState"
+            );
+
+
+        if(!saved){
+            return;
+        }
+
+
+        const data =
+            JSON.parse(
+                saved
+            );
+
+
+        if(
+            typeof data.balance ===
+            "number"
+        ){
+
+            state.balance =
+                data.balance;
+
+        }
+
+
+        if(
+            typeof data.level ===
+            "number"
+        ){
+
+            state.level =
+                data.level;
+
+        }
+
+
+        if(
+            Array.isArray(
+                data.garage
+            )
+        ){
+
+            state.garage =
+                data.garage;
+
+        }
+
+
+        if(data.current){
+
+            state.current =
+                data.current;
+
+        }
+
+    }catch(e){
+
+        console.log(
+            "Local save error",
+            e
+        );
+
+    }
+
+}
+
+
+/* =========================================================
+   TOAST
+========================================================= */
+
+let toastTimer = null;
+
+
+function showToast(text){
+
+    const toast =
+        document.getElementById(
+            "toast"
+        );
+
+
+    toast.textContent =
         text;
 
 
-    $("toast")
-    .classList
-    .remove(
-        "show"
-    );
-
-
-    void $("toast")
-        .offsetWidth;
-
-
-    $("toast")
-    .classList
-    .add(
-        "show"
-    );
+    toast.classList
+        .add(
+            "show"
+        );
 
 
     clearTimeout(
@@ -2586,3269 +3125,72 @@ function notify(
 
     toastTimer =
         setTimeout(
-            ()=>{
-
-                $("toast")
-                .classList
-                .remove(
-                    "show"
-                );
-
-            },
-            3000
-        );
-}
-
-
-function fail(
-    error
-){
-
-    console.error(
-        error
-    );
-
-
-    notify(
-        "Ошибка",
-        error?.message
-        ||
-        "Что-то пошло не так"
-    );
-}
-
-
-function requestId(){
-
-    return (
-        crypto?.randomUUID?.()
-
-        ||
-
-        (
-            "spin-"
-            +
-            Date.now()
-            +
-            "-"
-            +
-            Math.random()
-            .toString(36)
-            .slice(2)
-        )
-    );
-}
-
-
-async function api(
-    path,
-    method="GET",
-    data
-){
-
-    const response =
-        await fetch(
-            "/api/" + path,
-            {
-                method,
-
-                cache:
-                    "no-store",
-
-                headers:{
-                    "Content-Type":
-                        "application/json",
-
-                    "X-Telegram-Init-Data":
-                        tg?.initData
-                        ||
-                        "",
-
-                    "X-Client-Version":
-                        "6.4-exact"
-                },
-
-                body:
-                    data === undefined
-
-                    ?
-
-                    undefined
-
-                    :
-
-                    JSON.stringify(
-                        data
-                    )
-            }
-        );
-
-
-    let json;
-
-
-    try{
-
-        json =
-            await response
-            .json();
-
-    }catch{
-
-        throw Error(
-            "Сервер вернул "
-            +
-            response.status
-            +
-            " вместо JSON"
-        );
-    }
-
-
-    if(
-        !response.ok
-    ){
-
-        throw Error(
-            json.error
-            ||
-            (
-                "Ошибка "
-                +
-                response.status
-            )
-        );
-    }
-
-
-    return json;
-}
-
-
-function regionHTML(
-    region
-){
-
-    return `
-
-        <div class="region-number">
-            ${esc(region)}
-        </div>
-
-
-        <div class="region-bottom">
-
-            <span class="plate-country">
-                RUS
-            </span>
-
-
-            <span class="ru-flag"></span>
-
-        </div>
-    `;
-}
-
-
-function showPlate(
-    code,
-    rarity
-){
-
-    const match =
-        String(
-            code || ""
-        )
-        .match(
-            /^([A-Z])(\d{3})([A-Z]{2})\s(\d{2,3})$/
-        );
-
-
-    if(
-        match
-    ){
-
-        $("plate-code")
-        .textContent =
-            match[1]
-            +
-            match[2]
-            +
-            match[3];
-
-
-        $("plate-region")
-        .innerHTML =
-            regionHTML(
-                match[4]
-            );
-    }
-
-
-    if(
-        rarity
-    ){
-
-        $("rarity")
-        .textContent =
-            rarity.toUpperCase();
-
-
-        $("rarity")
-        .className =
-            "rarity "
-            +
-            rarityClass(
-                rarity
-            );
-    }
-}
-
-
-function randomPlate(){
-
-    const letters =
-        "ABEKMHOPCTYX";
-
-
-    const randomLetter =
-        ()=>{
-
-            return letters[
-                Math.floor(
-                    Math.random()
-                    *
-                    letters.length
-                )
-            ];
-        };
-
-
-    const number =
-        String(
-            Math.floor(
-                Math.random()
-                *
-                900
-            )
-            +
-            100
-        );
-
-
-    const regions = [
-        "01",
-        "02",
-        "05",
-        "07",
-        "16",
-        "50",
-        "77",
-        "78",
-        "95",
-        "99",
-        "116",
-        "177",
-        "777"
-    ];
-
-
-    return {
-
-        main:
-            randomLetter()
-            +
-            number
-            +
-            randomLetter()
-            +
-            randomLetter(),
-
-        region:
-            regions[
-                Math.floor(
-                    Math.random()
-                    *
-                    regions.length
-                )
-            ]
-    };
-}
-
-
-function confetti(
-    rarity
-){
-
-    const count =
-
-        rarity ===
-        "Мифический"
-
-        ?
-
-        46
-
-        :
-
-        rarity ===
-        "Легендарный"
-
-        ?
-
-        30
-
-        :
-
-        rarity ===
-        "Эпический"
-
-        ?
-
-        18
-
-        :
-
-        rarity ===
-        "Редкий"
-
-        ?
-
-        10
-
-        :
-
-        0;
-
-
-    if(
-        !count
-    ){
-
-        return;
-    }
-
-
-    const colors =
-
-        rarity ===
-        "Мифический"
-
-        ?
-
-        [
-            "#ff6680",
-            "#a884ff",
-            "#64e3ff",
-            "#fff"
-        ]
-
-        :
-
-        rarity ===
-        "Легендарный"
-
-        ?
-
-        [
-            "#ffd166",
-            "#fff2ad",
-            "#fff"
-        ]
-
-        :
-
-        rarity ===
-        "Эпический"
-
-        ?
-
-        [
-            "#a884ff",
-            "#64e3ff"
-        ]
-
-        :
-
-        [
-            "#2ca6ff",
-            "#bdeaff"
-        ];
-
-
-    for(
-        let i=0;
-        i<count;
-        i++
-    ){
-
-        const particle =
-            document
-            .createElement(
-                "i"
-            );
-
-
-        particle
-        .className =
-            "particle";
-
-
-        particle
-        .style
-        .left =
-            Math.random()
-            *
-            100
-            +
-            "vw";
-
-
-        particle
-        .style
-        .background =
-            colors[
-                Math.floor(
-                    Math.random()
-                    *
-                    colors.length
-                )
-            ];
-
-
-        particle
-        .style
-        .animationDelay =
-            Math.random()
-            *
-            .25
-            +
-            "s";
-
-
-        $("particles")
-        .appendChild(
-            particle
-        );
-
-
-        setTimeout(
-            ()=>{
-
-                particle.remove();
-
-            },
-            2100
-        );
-    }
-}
-
-
-function sync(){
-
-    const me =
-        S.me;
-
-
-    if(
-        !me
-    ){
-
-        return;
-    }
-
-
-    $("balance")
-    .textContent =
-        fmt(
-            me.balance
-        )
-        +
-        " NC";
-
-
-    $("level")
-    .textContent =
-        me.level;
-
-
-    $("count")
-    .textContent =
-        me.collection;
-
-
-    if(
-        Object.prototype
-        .hasOwnProperty
-        .call(
-            me,
-            "pending_plate"
-        )
-    ){
-
-        S.last =
-            me.pending_plate;
-    }
-
-
-    const possibleBalance =
-
-        me.balance
-
-        +
-
-        (
-            S.last
-
-            ?
-
-            Number(
-                S.last.sell_price
-                ||
-                fallbackPrice(
-                    S.last.rarity
-                )
-            )
-
-            :
-
-            0
-        );
-
-
-    $("spin-btn")
-    .disabled =
-
-        S.busy
-
-        ||
-
-        possibleBalance < 100;
-
-
-    $("profile-name")
-    .textContent =
-        me.name
-        ||
-        "Игрок";
-
-
-    $("profile-id")
-    .textContent =
-        (
-            me.username
-
-            ?
-
-            "@"
-            +
-            me.username
-            +
-            " • "
-
-            :
-
-            ""
-        )
-        +
-        "ID "
-        +
-        me.id;
-
-
-    $("avatar")
-    .textContent =
-        (
-            me.name
-            ||
-            "N"
-        )[0]
-        .toUpperCase();
-
-
-    $("creator-badge")
-    .classList
-    .toggle(
-        "hidden",
-        !me.creator
-    );
-
-
-    $("admin-btn")
-    .classList
-    .toggle(
-        "hidden",
-        !me.creator
-    );
-
-
-    $("home-profile")
-    .innerHTML = `
-
-        <div class="row">
-
-            <div>
-
-                <div class="title">
-
-                    ${esc(me.name)}
-
-                    ${
-                        me.creator
-                        ?
-                        "👑"
-                        :
-                        ""
-                    }
-
-                </div>
-
-
-                <div class="muted small">
-
-                    ${
-                        me.username
-
-                        ?
-
-                        "@"
-                        +
-                        esc(
-                            me.username
-                        )
-                        +
-                        " • "
-
-                        :
-
-                        ""
-                    }
-
-                    ID ${me.id}
-
-                </div>
-
-            </div>
-
-
-            <span class="badge">
-
-                ${me.level}
-                LVL
-
-            </span>
-
-        </div>
-
-
-        <div class="actions">
-
-            <span class="badge">
-
-                ${fmt(me.balance)}
-                NC
-
-            </span>
-
-
-            <span class="badge">
-
-                Без лимита прокруток
-
-            </span>
-
-
-            ${
-                me.mythic_mode
-
-                ?
-
-                `
-                    <span
-                        class="badge mythic">
-
-                        100% MYTHIC
-
-                    </span>
-                `
-
-                :
-
-                ""
-            }
-
-
-            ${
-                me.mythic_queue
-
-                ?
-
-                `
-                    <span class="badge">
-
-                        MYTHIC ×${me.mythic_queue}
-
-                    </span>
-                `
-
-                :
-
-                ""
-            }
-
-        </div>
-    `;
-
-
-    $("profile-info")
-    .innerHTML = `
-
-        <div class="row">
-
-            <span class="muted">
-                Баланс
-            </span>
-
-            <b>
-                ${fmt(me.balance)}
-                NC
-            </b>
-
-        </div>
-
-
-        <div
-            class="row"
-            style="margin-top:9px">
-
-            <span class="muted">
-                Уровень / XP
-            </span>
-
-            <b>
-                ${me.level}
-                /
-                ${fmt(me.xp)}
-            </b>
-
-        </div>
-
-
-        <div
-            class="row"
-            style="margin-top:9px">
-
-            <span class="muted">
-                Номеров
-            </span>
-
-            <b>
-                ${me.collection}
-            </b>
-
-        </div>
-
-
-        <div
-            class="row"
-            style="margin-top:9px">
-
-            <span class="muted">
-                Прокрутки
-            </span>
-
-            <b>
-                Без ограничений
-            </b>
-
-        </div>
-    `;
-
-
-    if(
-        me.pending_plate
-    ){
-
-        S.last =
-            me.pending_plate;
-
-
-        showPlate(
-            me.pending_plate.code,
-            me.pending_plate.rarity
-        );
-
-
-        const price =
-            Number(
-                me.pending_plate.sell_price
-                ||
-                fallbackPrice(
-                    me.pending_plate.rarity
-                )
-            );
-
-
-        $("result-text")
-        .textContent =
-            "Не сохранён • продажа: "
-            +
-            fmt(
-                price
-            )
-            +
-            " NC";
-
-
-        $("sell-btn")
-        .textContent =
-            "ПРОДАТЬ • "
-            +
-            fmt(
-                price
-            )
-            +
-            " NC";
-
-
-        $("quick")
-        .classList
-        .add(
-            "show"
-        );
-    }
-}
-
-
-async function refreshMe(){
-
-    S.me =
-        await api(
-            "me"
-        );
-
-
-    sync();
-}
-
-
-async function spin(){
-
-    if(
-        S.busy
-    ){
-
-        return;
-    }
-
-
-    S.busy =
-        true;
-
-
-    sync();
-
-
-    const hadPending =
-        !!S.last;
-
-
-    $("quick")
-    .classList
-    .remove(
-        "show"
-    );
-
-
-    $("plate")
-    .classList
-    .add(
-        "spinning"
-    );
-
-
-    $("result-text")
-    .textContent =
-
-        hadPending
-
-        ?
-
-        "Автопродажа прошлого • новая прокрутка..."
-
-        :
-
-        "Генерация...";
-
-
-    const timer =
-        setInterval(
-            ()=>{
-
-                const plate =
-                    randomPlate();
-
-
-                $("plate-code")
-                .textContent =
-                    plate.main;
-
-
-                $("plate-region")
-                .innerHTML =
-                    regionHTML(
-                        plate.region
+            function(){
+
+                toast.classList
+                    .remove(
+                        "show"
                     );
 
             },
-            55
+            2600
         );
 
-
-    try{
-
-        const result =
-            await api(
-                "spin",
-                "POST",
-                {
-                    request_id:
-                        requestId()
-                }
-            );
-
-
-        await new Promise(
-            resolve =>
-                setTimeout(
-                    resolve,
-                    700
-                )
-        );
-
-
-        clearInterval(
-            timer
-        );
-
-
-        $("plate")
-        .classList
-        .remove(
-            "spinning"
-        );
-
-
-        S.me =
-            result.user;
-
-
-        S.last =
-            result.plate;
-
-
-        showPlate(
-            result.plate.code,
-            result.plate.rarity
-        );
-
-
-        const price =
-            Number(
-                result.plate.sell_price
-                ||
-                fallbackPrice(
-                    result.plate.rarity
-                )
-            );
-
-
-        $("result-text")
-        .textContent =
-            "Продажа системе: "
-            +
-            fmt(
-                price
-            )
-            +
-            " NC";
-
-
-        $("sell-btn")
-        .textContent =
-            "ПРОДАТЬ • "
-            +
-            fmt(
-                price
-            )
-            +
-            " NC";
-
-
-        $("quick")
-        .classList
-        .add(
-            "show"
-        );
-
-
-        confetti(
-            result.plate.rarity
-        );
-
-
-        sync();
-
-
-        notify(
-
-            result.auto_sold
-
-            ?
-
-            "Автопродажа + новая прокрутка"
-
-            :
-
-            result.plate.rarity,
-
-            result.auto_sold
-
-            ?
-
-            (
-                "Предыдущий +"
-                +
-                fmt(
-                    result.auto_sold.reward
-                )
-                +
-                " NC • Новый "
-                +
-                result.plate.code
-            )
-
-            :
-
-            result.plate.code
-        );
-
-
-    }catch(error){
-
-        clearInterval(
-            timer
-        );
-
-
-        $("plate")
-        .classList
-        .remove(
-            "spinning"
-        );
-
-
-        fail(
-            error
-        );
-
-
-    }finally{
-
-        S.busy =
-            false;
-
-
-        sync();
-    }
 }
 
 
-async function keepCurrent(){
-
-    if(
-        !S.last
-    ){
-
-        return;
-    }
-
-
-    try{
-
-        const result =
-            await api(
-                "keep",
-                "POST",
-                {
-                    plate_id:
-                        S.last.id
-                }
-            );
-
-
-        S.me =
-            result.user;
-
-
-        S.last =
-            null;
-
-
-        $("quick")
-        .classList
-        .remove(
-            "show"
-        );
-
-
-        $("result-text")
-        .textContent =
-            "Номер сохранён в гараже";
-
-
-        sync();
-
-
-        notify(
-            "Сохранено",
-            "Номер больше не будет автопродан"
-        );
-
-
-    }catch(error){
-
-        fail(
-            error
-        );
-    }
-}
-
-
-async function sellSystem(
-    id
-){
-
-    try{
-
-        const result =
-            await api(
-                "sell-system",
-                "POST",
-                {
-                    plate_id:
-                        Number(
-                            id
-                        )
-                }
-            );
-
-
-        S.me =
-            result.user;
-
-
-        if(
-            S.last?.id ===
-            Number(
-                id
-            )
-        ){
-
-            S.last =
-                null;
-
-
-            $("quick")
-            .classList
-            .remove(
-                "show"
-            );
-
-
-            $("result-text")
-            .textContent =
-                "Номер продан";
-        }
-
-
-        sync();
-
-
-        notify(
-            "Продано",
-            "+"
-            +
-            fmt(
-                result.reward
-            )
-            +
-            " NC"
-        );
-
-
-        if(
-            S.page ===
-            "collection"
-        ){
-
-            await loadCollection();
-        }
-
-
-    }catch(error){
-
-        fail(
-            error
-        );
-    }
-}
-
-
-function cardPlate(
-    plate
-){
-
-    const price =
-        Number(
-            plate.sell_price
-            ||
-            fallbackPrice(
-                plate.rarity
-            )
-        );
-
-
-    return `
-
-        <div class="card">
-
-            <div class="row">
-
-                <div class="grow">
-
-                    <span
-                        class="
-                            rarity
-                            ${rarityClass(plate.rarity)}
-                        ">
-
-                        ${esc(plate.rarity)}
-
-                    </span>
-
-
-                    <div class="plate-name">
-
-                        ${esc(plate.code)}
-
-                    </div>
-
-
-                    <div class="muted small">
-
-                        Системная цена:
-
-                        <b>
-
-                            ${fmt(price)}
-                            NC
-
-                        </b>
-
-                    </div>
-
-                </div>
-
-
-                <div class="price">
-
-                    #${plate.id}
-
-                </div>
-
-            </div>
-
-
-            <div class="actions">
-
-                ${
-                    plate.listing_id
-
-                    ?
-
-                    `
-                        <button
-                            class="btn ghost smallbtn"
-                            data-act="cancel"
-                            data-id="${plate.listing_id}">
-
-                            Снять с маркета
-
-                        </button>
-                    `
-
-                    :
-
-                    `
-                        <button
-                            class="btn secondary smallbtn"
-                            data-act="list"
-                            data-id="${plate.id}"
-                            data-code="${esc(plate.code)}">
-
-                            На маркет
-
-                        </button>
-
-
-                        <button
-                            class="btn danger smallbtn"
-                            data-act="sell"
-                            data-id="${plate.id}"
-                            data-price="${price}">
-
-                            Продать ${fmt(price)}
-
-                        </button>
-                    `
-                }
-
-            </div>
-
-        </div>
-    `;
-}
-
-
-async function loadCollection(){
-
-    try{
-
-        const result =
-            await api(
-                "collection"
-            );
-
-
-        S.collection =
-            result.plates
-            ||
-            [];
-
-
-        $("collection-count")
-        .textContent =
-            S.collection.length;
-
-
-        renderCollection();
-
-
-    }catch(error){
-
-        fail(
-            error
-        );
-    }
-}
-
-
-function renderCollection(){
-
-    const search =
-        $("search")
-        .value
-        .trim()
-        .toLowerCase();
-
-
-    const rarity =
-        $("rarity-filter")
-        .value;
-
-
-    const rows =
-        S.collection
-        .filter(
-            plate =>
-
-                (
-                    !search
-
-                    ||
-
-                    plate.code
-                    .toLowerCase()
-                    .includes(
-                        search
-                    )
-                )
-
-                &&
-
-                (
-                    !rarity
-
-                    ||
-
-                    plate.rarity ===
-                    rarity
-                )
-        );
-
-
-    $("collection-list")
-    .innerHTML =
-
-        rows.length
-
-        ?
-
-        rows
-        .map(
-            cardPlate
-        )
-        .join("")
-
-        :
-
-        `
-            <div class="empty">
-
-                Ничего не найдено
-
-            </div>
-        `;
-}
-
-
-async function loadMarket(){
-
-    try{
-
-        const result =
-            await api(
-                "market"
-            );
-
-
-        S.market =
-            result.listings
-            ||
-            [];
-
-
-        $("market-list")
-        .innerHTML =
-
-            S.market.length
-
-            ?
-
-            S.market
-            .map(
-                item => `
-
-                    <div class="card">
-
-                        <div class="row">
-
-                            <div class="grow">
-
-                                <span
-                                    class="
-                                        rarity
-                                        ${rarityClass(item.rarity)}
-                                    ">
-
-                                    ${esc(item.rarity)}
-
-                                </span>
-
-
-                                <div class="plate-name">
-
-                                    ${esc(item.code)}
-
-                                </div>
-
-
-                                <div class="muted small">
-
-                                    ${esc(item.seller)}
-
-                                    ${
-                                        item.seller_username
-
-                                        ?
-
-                                        "@"
-                                        +
-                                        esc(
-                                            item.seller_username
-                                        )
-
-                                        :
-
-                                        ""
-                                    }
-
-                                </div>
-
-                            </div>
-
-
-                            <div class="price">
-
-                                ${fmt(item.price)}
-                                NC
-
-                            </div>
-
-                        </div>
-
-
-                        <div class="actions">
-
-                            ${
-                                item.seller_id ===
-                                S.me?.id
-
-                                ?
-
-                                `
-                                    <button
-                                        class="btn ghost smallbtn"
-                                        data-act="cancel"
-                                        data-id="${item.id}">
-
-                                        Отменить
-
-                                    </button>
-                                `
-
-                                :
-
-                                `
-                                    <button
-                                        class="btn primary smallbtn"
-                                        data-act="buy"
-                                        data-id="${item.id}"
-                                        data-price="${item.price}">
-
-                                        Купить
-
-                                    </button>
-                                `
-                            }
-
-                        </div>
-
-                    </div>
-                `
-            )
-            .join("")
-
-            :
-
-            `
-                <div class="empty">
-
-                    На маркете пока пусто
-
-                </div>
-            `;
-
-
-    }catch(error){
-
-        fail(
-            error
-        );
-    }
-}
-
-
-async function loadTasks(){
-
-    try{
-
-        const [
-            tasks,
-            achievements
-        ] =
-            await Promise.all([
-
-                api(
-                    "tasks"
-                ),
-
-                api(
-                    "achievements"
-                )
-            ]);
-
-
-        $("tasks-list")
-        .innerHTML =
-            (
-                tasks.tasks
-                ||
-                []
-            )
-            .map(
-                task =>{
-
-                    const percent =
-                        Math.min(
-                            100,
-
-                            Math.round(
-                                task.progress
-                                /
-                                task.target
-                                *
-                                100
-                            )
-                        );
-
-
-                    return `
-
-                        <div class="card">
-
-                            <div class="row">
-
-                                <div class="grow">
-
-                                    <div class="title">
-
-                                        ${esc(task.title)}
-
-                                    </div>
-
-
-                                    <div class="muted small">
-
-                                        ${task.progress}/${task.target}
-
-                                        •
-
-                                        +${fmt(task.reward_nc)}
-                                        NC
-
-                                        •
-
-                                        +${fmt(task.reward_xp)}
-                                        XP
-
-                                    </div>
-
-                                </div>
-
-
-                                ${
-                                    task.claimed
-
-                                    ?
-
-                                    `
-                                        <span class="badge">
-
-                                            Получено
-
-                                        </span>
-                                    `
-
-                                    :
-
-                                    task.completed
-
-                                    ?
-
-                                    `
-                                        <button
-                                            class="btn primary smallbtn"
-                                            data-act="claim"
-                                            data-key="${esc(task.key)}">
-
-                                            Забрать
-
-                                        </button>
-                                    `
-
-                                    :
-
-                                    `
-                                        <span class="badge">
-
-                                            ${percent}%
-
-                                        </span>
-                                    `
-                                }
-
-                            </div>
-
-
-                            <div class="progress">
-
-                                <i
-                                    style="width:${percent}%">
-                                </i>
-
-                            </div>
-
-                        </div>
-                    `;
-                }
-            )
-            .join("");
-
-
-        $("achievements-list")
-        .innerHTML =
-            (
-                achievements.achievements
-                ||
-                []
-            )
-            .map(
-                item =>{
-
-                    const percent =
-                        Math.min(
-                            100,
-
-                            Math.round(
-                                item.progress
-                                /
-                                item.target
-                                *
-                                100
-                            )
-                        );
-
-
-                    return `
-
-                        <div class="card">
-
-                            <div class="row">
-
-                                <div>
-
-                                    <div class="title">
-
-                                        ${esc(item.title)}
-
-                                    </div>
-
-
-                                    <div class="muted small">
-
-                                        ${item.progress}/${item.target}
-
-                                    </div>
-
-                                </div>
-
-
-                                <span class="badge">
-
-                                    ${
-                                        item.completed
-
-                                        ?
-
-                                        "✓"
-
-                                        :
-
-                                        percent
-                                        +
-                                        "%"
-                                    }
-
-                                </span>
-
-                            </div>
-
-
-                            <div class="progress">
-
-                                <i
-                                    style="width:${percent}%">
-                                </i>
-
-                            </div>
-
-                        </div>
-                    `;
-                }
-            )
-            .join("");
-
-
-    }catch(error){
-
-        fail(
-            error
-        );
-    }
-}
-
-
-async function loadTop(){
-
-    try{
-
-        const result =
-            await api(
-                "top"
-            );
-
-
-        $("top-list")
-        .innerHTML =
-            (
-                result.players
-                ||
-                []
-            )
-            .slice(
-                0,
-                25
-            )
-            .map(
-                (
-                    player,
-                    index
-                ) => `
-
-                    <div class="card">
-
-                        <div class="row">
-
-                            <div class="grow">
-
-                                <div class="title">
-
-                                    ${index + 1}.
-
-                                    ${
-                                        player.creator
-
-                                        ?
-
-                                        "👑 "
-
-                                        :
-
-                                        ""
-                                    }
-
-                                    ${esc(player.name)}
-
-                                </div>
-
-
-                                <div class="muted small">
-
-                                    ${player.collection}
-                                    номеров
-
-                                    •
-
-                                    ${player.level}
-                                    LVL
-
-                                </div>
-
-                            </div>
-
-
-                            <b>
-
-                                ${fmt(player.balance)}
-                                NC
-
-                            </b>
-
-                        </div>
-
-                    </div>
-                `
-            )
-            .join("");
-
-
-    }catch(error){
-
-        fail(
-            error
-        );
-    }
-}
-
-
-async function loadAdmin(
-    query=""
-){
-
-    if(
-        !S.me?.creator
-    ){
-
-        return;
-    }
-
-
-    try{
-
-        const [
-            stats,
-            players
-        ] =
-            await Promise.all([
-
-                api(
-                    "admin/stats"
-                ),
-
-                api(
-                    "admin/players?q="
-                    +
-                    encodeURIComponent(
-                        query
-                    )
-                )
-            ]);
-
-
-        $("admin-stats")
-        .innerHTML = `
-
-            <div class="admin-stat">
-
-                <b>
-                    ${fmt(stats.users)}
-                </b>
-
-                <span>
-                    ИГРОКОВ
-                </span>
-
-            </div>
-
-
-            <div class="admin-stat">
-
-                <b>
-                    ${fmt(stats.plates)}
-                </b>
-
-                <span>
-                    НОМЕРОВ
-                </span>
-
-            </div>
-
-
-            <div class="admin-stat">
-
-                <b>
-                    ${fmt(stats.listings)}
-                </b>
-
-                <span>
-                    МАРКЕТ
-                </span>
-
-            </div>
-
-
-            <div class="admin-stat">
-
-                <b>
-                    ${fmt(stats.mythic)}
-                </b>
-
-                <span>
-                    МИФИКОВ
-                </span>
-
-            </div>
-        `;
-
-
-        $("admin-players")
-        .innerHTML =
-
-            (
-                players.players
-                ||
-                []
-            )
-            .map(
-                player => `
-
-                    <div class="card">
-
-                        <div class="row">
-
-                            <div class="grow">
-
-                                <div class="title">
-
-                                    ${
-                                        player.creator
-
-                                        ?
-
-                                        "👑 "
-
-                                        :
-
-                                        ""
-                                    }
-
-                                    ${esc(player.name)}
-
-                                    ${
-                                        player.username
-
-                                        ?
-
-                                        "@"
-                                        +
-                                        esc(
-                                            player.username
-                                        )
-
-                                        :
-
-                                        ""
-                                    }
-
-                                </div>
-
-
-                                <div class="muted small">
-
-                                    ID ${player.id}
-
-                                    •
-
-                                    ${fmt(player.balance)}
-                                    NC
-
-                                    •
-
-                                    ${player.level}
-                                    LVL
-
-                                    •
-
-                                    ${player.collection}
-                                    номеров
-
-                                </div>
-
-
-                                <div class="muted small">
-
-                                    100% mythic:
-
-                                    <b>
-
-                                        ${
-                                            player.mythic_mode
-
-                                            ?
-
-                                            "ON"
-
-                                            :
-
-                                            "OFF"
-                                        }
-
-                                    </b>
-
-                                    •
-
-                                    очередь:
-
-                                    ${player.mythic_queue || 0}
-
-                                </div>
-
-                            </div>
-
-
-                            <button
-                                class="btn ghost smallbtn"
-                                data-act="admin-select"
-                                data-id="${player.id}">
-
-                                Выбрать
-
-                            </button>
-
-                        </div>
-
-
-                        <div class="actions">
-
-                            <button
-                                class="btn secondary smallbtn"
-                                data-act="admin-fast"
-                                data-id="${player.id}"
-                                data-kind="nc"
-                                data-amount="1000">
-
-                                +1000 NC
-
-                            </button>
-
-
-                            <button
-                                class="btn secondary smallbtn"
-                                data-act="admin-fast"
-                                data-id="${player.id}"
-                                data-kind="xp"
-                                data-amount="1000">
-
-                                +1000 XP
-
-                            </button>
-
-
-                            <button
-                                class="btn gold smallbtn"
-                                data-act="admin-mythic"
-                                data-id="${player.id}"
-                                data-mode="queue"
-                                data-count="1">
-
-                                МИФИК ×1
-
-                            </button>
-
-
-                            <button
-                                class="btn gold smallbtn"
-                                data-act="admin-mythic"
-                                data-id="${player.id}"
-                                data-mode="queue"
-                                data-count="10">
-
-                                МИФИК ×10
-
-                            </button>
-
-
-                            ${
-                                player.mythic_queue
-
-                                ?
-
-                                `
-                                    <button
-                                        class="btn danger smallbtn"
-                                        data-act="admin-mythic"
-                                        data-id="${player.id}"
-                                        data-mode="clear">
-
-                                        СБРОСИТЬ ×${player.mythic_queue}
-
-                                    </button>
-                                `
-
-                                :
-
-                                ""
-                            }
-
-
-                            <button
-                                class="btn gold smallbtn"
-                                data-act="admin-mythic"
-                                data-id="${player.id}"
-                                data-mode="${
-                                    player.mythic_mode
-                                    ?
-                                    "off"
-                                    :
-                                    "on"
-                                }">
-
-                                100%
-
-                                ${
-                                    player.mythic_mode
-
-                                    ?
-
-                                    "OFF"
-
-                                    :
-
-                                    "ON"
-                                }
-
-                            </button>
-
-
-                            ${
-                                (
-                                    player.mythic_mode
-                                    ||
-                                    player.mythic_queue
-                                )
-
-                                ?
-
-                                `
-                                    <button
-                                        class="btn ghost smallbtn"
-                                        data-act="admin-mythic"
-                                        data-id="${player.id}"
-                                        data-mode="all_off">
-
-                                        МИФИКИ OFF
-
-                                    </button>
-                                `
-
-                                :
-
-                                ""
-                            }
-
-                        </div>
-
-                    </div>
-                `
-            )
-            .join("")
-
-            ||
-
-            `
-                <div class="empty">
-
-                    Игроки не найдены
-
-                </div>
-            `;
-
-
-    }catch(error){
-
-        fail(
-            error
-        );
-    }
-}
-
-
-function modal({
-
-    title,
-
-    text="",
-
-    input=false,
-
-    placeholder="",
-
-    value="",
-
-    ok="Готово"
-
-}){
+/* =========================================================
+   SLEEP
+========================================================= */
+
+function sleep(ms){
 
     return new Promise(
-        resolve =>{
+        function(resolve){
 
-            modalResolve =
-                resolve;
-
-
-            $("modal")
-            .innerHTML = `
-
-                <h3>
-                    ${esc(title)}
-                </h3>
-
-
-                ${
-                    text
-
-                    ?
-
-                    `
-                        <p>
-                            ${esc(text)}
-                        </p>
-                    `
-
-                    :
-
-                    ""
-                }
-
-
-                ${
-                    input
-
-                    ?
-
-                    `
-                        <input
-                            class="input"
-                            id="modal-input"
-                            inputmode="numeric"
-                            placeholder="${esc(placeholder)}"
-                            value="${esc(value)}">
-                    `
-
-                    :
-
-                    ""
-                }
-
-
-                <div class="modal-buttons">
-
-                    <button
-                        class="btn ghost"
-                        id="modal-cancel">
-
-                        Отмена
-
-                    </button>
-
-
-                    <button
-                        class="btn primary"
-                        id="modal-ok">
-
-                        ${esc(ok)}
-
-                    </button>
-
-                </div>
-            `;
-
-
-            $("modal-back")
-            .classList
-            .add(
-                "show"
+            setTimeout(
+                resolve,
+                ms
             );
 
-
-            $("modal-cancel")
-            .onclick =
-                ()=>{
-
-                    closeModal(
-                        null
-                    );
-                };
-
-
-            $("modal-ok")
-            .onclick =
-                ()=>{
-
-                    closeModal(
-
-                        input
-
-                        ?
-
-                        $("modal-input")
-                        .value
-
-                        :
-
-                        true
-                    );
-                };
         }
     );
+
 }
 
 
-function closeModal(
-    value
-){
+/* =========================================================
+   START APP
+========================================================= */
 
-    $("modal-back")
-    .classList
-    .remove(
-        "show"
-    );
+function startApp(){
 
+    loadLocal();
 
-    const resolve =
-        modalResolve;
+    loadTelegramUser();
 
+    updateUI();
 
-    modalResolve =
-        null;
+    renderGarage();
 
 
-    resolve?.(
-        value
-    );
+    if(state.current){
+
+        displayPlate(
+            state.current
+        );
+
+    }else{
+
+        showDefaultPlate();
+
+    }
+
 }
 
 
-async function action(
-    button
-){
+startApp();
 
-    const actionName =
-        button.dataset.act;
-
-
-    const id =
-        Number(
-            button.dataset.id
-            ||
-            0
-        );
-
-
-    try{
-
-        if(
-            actionName ===
-            "sell"
-        ){
-
-            const accepted =
-                await modal({
-
-                    title:
-                        "Продать номер?",
-
-                    text:
-                        "Ты получишь "
-                        +
-                        fmt(
-                            button.dataset.price
-                        )
-                        +
-                        " NC",
-
-                    ok:
-                        "Продать"
-                });
-
-
-            if(
-                accepted
-            ){
-
-                await sellSystem(
-                    id
-                );
-            }
-        }
-
-
-        else if(
-            actionName ===
-            "list"
-        ){
-
-            const value =
-                await modal({
-
-                    title:
-                        "Выставить на маркет",
-
-                    text:
-                        button.dataset.code,
-
-                    input:
-                        true,
-
-                    placeholder:
-                        "Цена NC",
-
-                    ok:
-                        "Выставить"
-                });
-
-
-            if(
-                value === null
-            ){
-
-                return;
-            }
-
-
-            const price =
-                Number(
-                    value
-                );
-
-
-            if(
-                !Number.isSafeInteger(
-                    price
-                )
-                ||
-                price < 100
-            ){
-
-                throw Error(
-                    "Цена должна быть от 100 NC"
-                );
-            }
-
-
-            await api(
-                "list",
-                "POST",
-                {
-                    plate_id:
-                        id,
-
-                    price
-                }
-            );
-
-
-            notify(
-                "Маркет",
-                "Номер выставлен"
-            );
-
-
-            await loadCollection();
-
-
-            await refreshMe();
-        }
-
-
-        else if(
-            actionName ===
-            "cancel"
-        ){
-
-            await api(
-                "cancel",
-                "POST",
-                {
-                    listing_id:
-                        id
-                }
-            );
-
-
-            notify(
-                "Маркет",
-                "Объявление снято"
-            );
-
-
-            if(
-                S.page ===
-                "market"
-            ){
-
-                await loadMarket();
-
-            }else{
-
-                await loadCollection();
-            }
-        }
-
-
-        else if(
-            actionName ===
-            "buy"
-        ){
-
-            const accepted =
-                await modal({
-
-                    title:
-                        "Купить номер?",
-
-                    text:
-                        "Цена "
-                        +
-                        fmt(
-                            button.dataset.price
-                        )
-                        +
-                        " NC",
-
-                    ok:
-                        "Купить"
-                });
-
-
-            if(
-                !accepted
-            ){
-
-                return;
-            }
-
-
-            const result =
-                await api(
-                    "buy",
-                    "POST",
-                    {
-                        listing_id:
-                            id
-                    }
-                );
-
-
-            S.me =
-                result.user;
-
-
-            sync();
-
-
-            notify(
-                "Покупка",
-                "Номер добавлен"
-            );
-
-
-            await loadMarket();
-        }
-
-
-        else if(
-            actionName ===
-            "claim"
-        ){
-
-            const result =
-                await api(
-                    "tasks/claim",
-                    "POST",
-                    {
-                        task_key:
-                            button.dataset.key
-                    }
-                );
-
-
-            S.me =
-                result.user;
-
-
-            sync();
-
-
-            notify(
-
-                "Награда",
-
-                "+"
-                +
-                fmt(
-                    result.reward_nc
-                )
-                +
-                " NC • +"
-                +
-                fmt(
-                    result.reward_xp
-                )
-                +
-                " XP"
-            );
-
-
-            await loadTasks();
-        }
-
-
-        else if(
-            actionName ===
-            "admin-select"
-        ){
-
-            $("admin-target")
-            .value =
-                id;
-
-
-            notify(
-                "Игрок выбран",
-                "ID "
-                +
-                id
-            );
-        }
-
-
-        else if(
-            actionName ===
-            "admin-fast"
-        ){
-
-            const body = {
-
-                user_id:
-                    id,
-
-                reason:
-                    "Быстрая выдача"
-            };
-
-
-            body[
-                button.dataset.kind
-            ] =
-                Number(
-                    button.dataset.amount
-                );
-
-
-            await api(
-                "admin/grant",
-                "POST",
-                body
-            );
-
-
-            notify(
-                "Админ",
-                "Выдано "
-                +
-                button.dataset.amount
-                +
-                " "
-                +
-                button.dataset.kind
-                .toUpperCase()
-            );
-
-
-            await loadAdmin(
-                $("admin-search")
-                .value
-            );
-        }
-
-
-        else if(
-            actionName ===
-            "admin-mythic"
-        ){
-
-            await api(
-                "admin/mythic",
-                "POST",
-                {
-                    user_id:
-                        id,
-
-                    mode:
-                        button.dataset.mode,
-
-                    count:
-                        Number(
-                            button.dataset.count
-                            ||
-                            1
-                        )
-                }
-            );
-
-
-            notify(
-
-                "Админ",
-
-                button.dataset.mode ===
-                "clear"
-
-                ?
-
-                "Очередь мификов очищена"
-
-                :
-
-                button.dataset.mode ===
-                "all_off"
-
-                ?
-
-                "Все гарантии мифика отключены"
-
-                :
-
-                button.dataset.mode ===
-                "queue"
-
-                ?
-
-                "Гарантированный мифик добавлен"
-
-                :
-
-                "Режим 100% мифика изменён"
-            );
-
-
-            await loadAdmin(
-                $("admin-search")
-                .value
-            );
-        }
-
-
-    }catch(error){
-
-        fail(
-            error
-        );
-    }
-}
-
-
-async function openPage(
-    page
-){
-
-    if(
-        page ===
-        "admin"
-        &&
-        !S.me?.creator
-    ){
-
-        notify(
-            "Нет доступа"
-        );
-
-        return;
-    }
-
-
-    S.page =
-        page;
-
-
-    document
-    .querySelectorAll(
-        ".page"
-    )
-    .forEach(
-        element =>{
-
-            element
-            .classList
-            .toggle(
-                "active",
-                element.id ===
-                "page-"
-                +
-                page
-            );
-        }
-    );
-
-
-    document
-    .querySelectorAll(
-        ".nav button"
-    )
-    .forEach(
-        button =>{
-
-            button
-            .classList
-            .toggle(
-                "active",
-                button.dataset.tab ===
-                page
-            );
-        }
-    );
-
-
-    window.scrollTo({
-        top:0,
-        behavior:"smooth"
-    });
-
-
-    if(
-        page ===
-        "collection"
-    ){
-
-        await loadCollection();
-    }
-
-
-    if(
-        page ===
-        "market"
-    ){
-
-        await loadMarket();
-    }
-
-
-    if(
-        page ===
-        "tasks"
-    ){
-
-        await loadTasks();
-    }
-
-
-    if(
-        page ===
-        "profile"
-    ){
-
-        await loadTop();
-    }
-
-
-    if(
-        page ===
-        "admin"
-    ){
-
-        await loadAdmin(
-            $("admin-search")
-            .value
-        );
-    }
-}
-
-
-/* EVENTS */
-
-$("spin-btn")
-.onclick =
-    spin;
-
-
-$("keep-btn")
-.onclick =
-    keepCurrent;
-
-
-$("sell-btn")
-.onclick =
-    ()=>{
-
-        if(
-            S.last
-        ){
-
-            sellSystem(
-                S.last.id
-            );
-        }
-    };
-
-
-$("search")
-.oninput =
-    renderCollection;
-
-
-$("rarity-filter")
-.onchange =
-    renderCollection;
-
-
-$("market-refresh")
-.onclick =
-    loadMarket;
-
-
-$("admin-btn")
-.onclick =
-    ()=>{
-
-        openPage(
-            "admin"
-        );
-    };
-
-
-$("admin-search-btn")
-.onclick =
-    ()=>{
-
-        loadAdmin(
-            $("admin-search")
-            .value
-        );
-    };
-
-
-$("admin-search")
-.onkeydown =
-    event =>{
-
-        if(
-            event.key ===
-            "Enter"
-        ){
-
-            loadAdmin(
-                event.target.value
-            );
-        }
-    };
-
-
-$("admin-grant")
-.onclick =
-    async ()=>{
-
-        try{
-
-            const user_id =
-                Number(
-                    $("admin-target")
-                    .value
-                );
-
-
-            const nc =
-                Number(
-                    $("admin-nc")
-                    .value
-                    ||
-                    0
-                );
-
-
-            const xp =
-                Number(
-                    $("admin-xp")
-                    .value
-                    ||
-                    0
-                );
-
-
-            const reason =
-                $("admin-reason")
-                .value
-                ||
-                "Админ-панель";
-
-
-            if(
-                !user_id
-            ){
-
-                throw Error(
-                    "Укажи Telegram ID"
-                );
-            }
-
-
-            if(
-                !nc
-                &&
-                !xp
-            ){
-
-                throw Error(
-                    "Укажи NC или XP"
-                );
-            }
-
-
-            await api(
-                "admin/grant",
-                "POST",
-                {
-                    user_id,
-                    nc,
-                    xp,
-                    reason
-                }
-            );
-
-
-            $("admin-nc")
-            .value =
-                "";
-
-
-            $("admin-xp")
-            .value =
-                "";
-
-
-            notify(
-                "Админ",
-                "Выдача выполнена"
-            );
-
-
-            await loadAdmin(
-                $("admin-search")
-                .value
-            );
-
-
-        }catch(error){
-
-            fail(
-                error
-            );
-        }
-    };
-
-
-document
-.addEventListener(
-    "click",
-    event =>{
-
-        const button =
-            event.target
-            .closest(
-                "[data-act]"
-            );
-
-
-        if(
-            button
-        ){
-
-            action(
-                button
-            );
-        }
-    }
-);
-
-
-document
-.querySelector(
-    ".nav"
-)
-.onclick =
-    event =>{
-
-        const button =
-            event.target
-            .closest(
-                "[data-tab]"
-            );
-
-
-        if(
-            button
-        ){
-
-            openPage(
-                button.dataset.tab
-            );
-        }
-    };
-
-
-$("modal-back")
-.onclick =
-    event =>{
-
-        if(
-            event.target ===
-            $("modal-back")
-        ){
-
-            closeModal(
-                null
-            );
-        }
-    };
-
-
-/* START */
-
-(async()=>{
-
-    try{
-
-        await refreshMe();
-
-
-        if(
-            !S.me?.pending_plate
-        ){
-
-            showPlate(
-                "A123BC 77"
-            );
-        }
-
-
-        if(
-            S.me?.creator
-        ){
-
-            notify(
-                "Creator mode",
-                "Кнопка ADMIN доступна сверху"
-            );
-        }
-
-
-    }catch(error){
-
-        fail(
-            error
-        );
-
-
-        $("home-profile")
-        .innerHTML = `
-
-            <div class="empty">
-
-                Не удалось загрузить аккаунт.
-
-                <br><br>
-
-                Проверь BOT_TOKEN
-                и открой Mini App
-                через Telegram.
-
-            </div>
-        `;
-    }
-
-})();
 </script>
 
 </body>
