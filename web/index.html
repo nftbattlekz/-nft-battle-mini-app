@@ -3,7 +3,6 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-
 <title>NOMER CLUB</title>
 
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
@@ -16,16 +15,20 @@
 
 :root{
     --bg:#020811;
+    --bg2:#06111d;
     --card:#071521;
     --card2:#0c2133;
-    --line:#1d4868;
-    --blue:#279cff;
-    --cyan:#43cfff;
+    --card3:#102b40;
+    --line:#1d4562;
+    --line2:#29678f;
+    --blue:#2497f3;
+    --cyan:#44d1ff;
     --text:#f4f8ff;
     --muted:#7890aa;
-    --green:#43d6a1;
-    --red:#ff7895;
+    --green:#46dda7;
+    --red:#ff7898;
     --gold:#ffd465;
+    --purple:#b787ff;
 }
 
 html{
@@ -35,248 +38,398 @@ html{
 body{
     margin:0;
     min-height:100vh;
-    background:
-        radial-gradient(circle at 50% -10%,#123552 0%,#06111d 36%,#020811 72%);
-    color:var(--text);
-    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;
     overflow-x:hidden;
+
+    font-family:
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        Arial,
+        sans-serif;
+
+    color:var(--text);
+
+    background:
+        radial-gradient(circle at 50% -10%,#153a58 0%,#06111d 34%,#020811 72%);
+}
+
+button,
+input,
+select{
+    font-family:inherit;
 }
 
 button{
-    font-family:inherit;
+    cursor:pointer;
 }
 
 .app{
     width:100%;
-    max-width:700px;
+    max-width:720px;
     min-height:100vh;
     margin:0 auto;
     padding-bottom:105px;
 }
 
-/* HEADER */
+
+/* =====================================================
+   HEADER
+===================================================== */
 
 .header{
-    height:90px;
+    min-height:92px;
+
     display:flex;
     align-items:center;
     justify-content:space-between;
-    padding:0 18px;
-    background:rgba(2,11,20,.96);
-    border-bottom:1px solid #16354e;
+
+    padding:14px 16px;
+
     position:sticky;
     top:0;
-    z-index:100;
-    backdrop-filter:blur(15px);
+    z-index:500;
+
+    background:rgba(2,11,20,.96);
+
+    border-bottom:1px solid #16354d;
+
+    backdrop-filter:blur(18px);
 }
 
 .brand{
     display:flex;
     align-items:center;
-    gap:14px;
+    gap:13px;
+    min-width:0;
 }
 
 .logo{
     width:58px;
     height:58px;
+
+    flex-shrink:0;
+
     border-radius:18px;
+
     display:flex;
     align-items:center;
     justify-content:center;
+
+    background:
+        linear-gradient(
+            145deg,
+            #218fff,
+            #43d8ff
+        );
+
+    color:white;
+
     font-size:22px;
     font-weight:1000;
-    background:linear-gradient(145deg,#218fff,#43d8ff);
-    box-shadow:0 8px 25px rgba(35,163,255,.2);
+
+    box-shadow:
+        0 9px 28px rgba(35,163,255,.22);
 }
 
 .brand-name{
-    font-size:23px;
+    font-size:22px;
     font-weight:1000;
-    letter-spacing:.5px;
+
+    white-space:nowrap;
 }
 
 .brand-sub{
     margin-top:5px;
-    color:#849bb5;
-    font-size:11px;
+
+    color:#879db7;
+
+    font-size:10px;
     font-weight:900;
-    letter-spacing:2.6px;
+
+    letter-spacing:2.3px;
+
+    white-space:nowrap;
 }
 
 .header-right{
     display:flex;
-    gap:9px;
     align-items:center;
+    gap:8px;
 }
 
-.admin{
+.admin-header-btn{
     display:none;
-    padding:11px 14px;
-    border-radius:16px;
-    color:#ffe28a;
-    border:1px solid #997010;
-    background:#2b2108;
-    font-size:12px;
+
+    min-height:44px;
+
+    padding:0 13px;
+
+    border-radius:15px;
+
+    border:1px solid #9b7416;
+
+    background:#2c2107;
+
+    color:#ffe184;
+
+    font-size:11px;
     font-weight:1000;
 }
 
 .balance{
-    padding:11px 15px;
-    border-radius:16px;
+    min-height:44px;
+
+    padding:0 13px;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    border-radius:15px;
+
     border:1px solid #28506e;
+
     background:#071521;
-    font-size:13px;
-    font-weight:1000;
+
     white-space:nowrap;
+
+    font-size:12px;
+    font-weight:1000;
 }
 
-/* PAGES */
+
+/* =====================================================
+   PAGE
+===================================================== */
 
 .page{
     display:none;
-    padding:18px 14px 25px;
+
+    padding:17px 14px 25px;
 }
 
 .page.active{
     display:block;
 }
 
-/* MAIN CARD */
+.section-title{
+    margin:4px 2px 17px;
+
+    font-size:28px;
+    font-weight:1000;
+
+    letter-spacing:-.5px;
+}
+
+
+/* =====================================================
+   MAIN CARD
+===================================================== */
 
 .main-card{
     padding:22px 16px;
+
     border:1px solid #245274;
+
     border-radius:29px;
-    background:linear-gradient(145deg,#10283d,#071724 65%);
-    box-shadow:0 22px 55px rgba(0,0,0,.22);
+
+    background:
+        linear-gradient(
+            145deg,
+            #10283d,
+            #071724 65%
+        );
+
+    box-shadow:
+        0 22px 55px rgba(0,0,0,.22);
 }
 
 .eyebrow{
-    color:#60d5ff;
+    color:#61d5ff;
+
     font-size:12px;
-    letter-spacing:2.3px;
     font-weight:1000;
+
+    letter-spacing:2.2px;
 }
 
 .main-title{
     margin:14px 0 0;
+
     font-size:31px;
     line-height:1.06;
+
     letter-spacing:-1px;
 }
 
 .description{
     margin-top:17px;
-    color:#8097b0;
+
+    color:#8198b1;
+
     font-size:14px;
     font-weight:700;
+
     line-height:1.55;
 }
 
-/* STATS */
+
+/* =====================================================
+   STATS
+===================================================== */
 
 .stats{
     display:grid;
-    grid-template-columns:repeat(3,1fr);
+
+    grid-template-columns:
+        repeat(3,minmax(0,1fr));
+
     gap:8px;
+
     margin-top:19px;
 }
 
 .stat{
     min-height:82px;
-    padding:13px;
+
+    padding:13px 11px;
+
     border-radius:20px;
-    border:1px solid #1d435f;
+
+    border:1px solid #1c425e;
+
     background:#071521;
 }
 
 .stat-label{
-    color:#7991aa;
+    color:#7790a8;
+
     font-size:10px;
     font-weight:900;
+
     text-transform:uppercase;
 }
 
 .stat-value{
     margin-top:10px;
+
     font-size:20px;
     font-weight:1000;
 }
 
-/* RESULT CARD */
+
+/* =====================================================
+   RESULT CARD
+===================================================== */
 
 .result-card{
     margin-top:18px;
-    padding:32px 10px 20px;
-    border:1px solid #133047;
+
+    padding:
+        33px
+        9px
+        20px;
+
+    border:1px solid #143047;
+
     border-radius:29px;
+
     background:#020d16;
+
     overflow:hidden;
 }
 
+
 /* =====================================================
-   РЕАЛИСТИЧНЫЙ РОССИЙСКИЙ НОМЕР
+   RUSSIAN PLATE
 ===================================================== */
 
 .plate-wrap{
     width:100%;
+
     display:flex;
     justify-content:center;
-    align-items:center;
 }
 
 .russian-plate{
     width:100%;
-    max-width:590px;
+    max-width:600px;
+
     aspect-ratio:520 / 112;
+
     position:relative;
 
     display:flex;
-    align-items:stretch;
+
+    overflow:hidden;
+
+    color:#050505;
+
+    border:3px solid #121212;
+    border-radius:12px;
 
     background:
         linear-gradient(
             180deg,
             #ffffff 0%,
-            #fafafa 37%,
-            #f0f0ee 75%,
-            #e8e8e5 100%
+            #fafafa 35%,
+            #efefed 100%
         );
 
-    color:#050505;
-
-    border:3px solid #161616;
-    border-radius:13px;
-
     box-shadow:
-        0 0 0 2px #9b9b96,
+        0 0 0 2px #92928f,
         0 0 0 4px #f5f5f2,
-        0 9px 20px rgba(0,0,0,.55);
-
-    overflow:hidden;
+        0 8px 20px rgba(0,0,0,.55);
 }
 
-/* основная часть */
+.russian-plate::after{
+    content:"";
+
+    position:absolute;
+    inset:0;
+
+    pointer-events:none;
+
+    background:
+        linear-gradient(
+            115deg,
+            rgba(255,255,255,.18),
+            transparent 27%,
+            transparent 70%,
+            rgba(255,255,255,.08)
+        );
+}
+
+
+/* LEFT PLATE */
 
 .plate-left{
     width:80%;
     height:100%;
 
     display:grid;
-    grid-template-columns:19% 48% 33%;
+
+    grid-template-columns:
+        18% 50% 32%;
+
     align-items:center;
 
-    padding-left:3.5%;
-    padding-right:1.5%;
+    padding:
+        0
+        1.5%
+        0
+        3.5%;
 }
 
 .plate-char{
+    width:100%;
     height:100%;
+
     display:flex;
     align-items:center;
     justify-content:center;
 
-    color:#050505;
+    color:#030303;
 
     font-family:
         "Arial Narrow",
@@ -287,36 +440,41 @@ button{
     font-weight:900;
 
     line-height:1;
-
-    text-shadow:
-        .3px .3px 0 #000,
-        -.2px -.2px 0 rgba(0,0,0,.15);
 }
 
-/* первая буква */
+
+/* ПЕРВАЯ РУССКАЯ БУКВА */
 
 .plate-first{
-    font-size:clamp(42px,12.4vw,86px);
-    transform:scaleX(.88);
+    font-size:clamp(41px,12.5vw,88px);
+
+    transform:scaleX(.84);
 }
 
-/* три цифры - ШИРЕ */
+
+/* ШИРОКИЕ ЦИФРЫ */
 
 .plate-digits{
-    font-size:clamp(48px,14vw,99px);
-    transform:scaleX(1.00);
+    font-size:clamp(47px,14.5vw,102px);
+
     letter-spacing:1px;
+
+    transform:scaleX(1.02);
 }
 
-/* последние 2 буквы */
+
+/* ДВЕ РУССКИЕ БУКВЫ */
 
 .plate-last{
-    font-size:clamp(42px,12.2vw,84px);
-    transform:scaleX(.86);
+    font-size:clamp(41px,12.4vw,86px);
+
     letter-spacing:-2px;
+
+    transform:scaleX(.86);
 }
 
-/* регион */
+
+/* REGION */
 
 .plate-region-box{
     width:20%;
@@ -326,67 +484,67 @@ button{
 
     display:flex;
     flex-direction:column;
-    justify-content:center;
-    align-items:center;
 
-    padding:3px 4px 4px;
+    padding:
+        2px
+        4px
+        4px;
 }
 
 .region-number{
-    height:70%;
     width:100%;
+    height:70%;
 
     display:flex;
-    justify-content:center;
     align-items:center;
+    justify-content:center;
 
     font-family:
         "Arial Narrow",
-        "Helvetica Neue",
         Arial,
         sans-serif;
 
-    font-size:clamp(29px,8.2vw,61px);
+    font-size:clamp(28px,8.3vw,62px);
+
     font-weight:900;
 
     letter-spacing:-2px;
+
     line-height:1;
 
-    transform:scaleX(.91);
+    transform:scaleX(.92);
 }
 
 .region-bottom{
-    height:30%;
     width:100%;
+    height:30%;
 
     display:flex;
-    justify-content:center;
     align-items:center;
+    justify-content:center;
 
     gap:4px;
 }
 
 .rus{
-    color:#050505;
-    font-family:Arial,sans-serif;
     font-size:clamp(8px,2.2vw,16px);
+
     font-weight:900;
+
     line-height:1;
 }
 
-/* флаг */
-
 .flag{
     width:31%;
-    max-width:37px;
     min-width:20px;
+    max-width:37px;
 
-    aspect-ratio:3/2;
-
-    border:1px solid #777;
+    aspect-ratio:3 / 2;
 
     display:flex;
     flex-direction:column;
+
+    border:1px solid #777;
 
     overflow:hidden;
 }
@@ -401,14 +559,15 @@ button{
 }
 
 .flag span:nth-child(2){
-    background:#1855a5;
+    background:#1654a3;
 }
 
 .flag span:nth-child(3){
     background:#d52b1e;
 }
 
-/* болты */
+
+/* BOLTS */
 
 .plate-bolt{
     width:9px;
@@ -417,82 +576,74 @@ button{
     position:absolute;
 
     top:50%;
+
     transform:translateY(-50%);
 
     border-radius:50%;
+
+    z-index:5;
 
     background:
         radial-gradient(
             circle at 32% 28%,
             #fff 0%,
-            #ddd 17%,
-            #999 40%,
-            #555 65%,
+            #ddd 18%,
+            #999 42%,
+            #555 68%,
             #aaa 100%
         );
 
     box-shadow:
         0 1px 2px rgba(0,0,0,.8);
-
-    z-index:5;
 }
 
 .plate-bolt.left{
-    left:9px;
+    left:8px;
 }
 
 .plate-bolt.right{
     right:7px;
 }
 
-/* блеск */
 
-.russian-plate::after{
-    content:"";
-
-    position:absolute;
-    inset:0;
-
-    pointer-events:none;
-
-    background:
-        linear-gradient(
-            115deg,
-            rgba(255,255,255,.17),
-            transparent 28%,
-            transparent 68%,
-            rgba(255,255,255,.09)
-        );
-}
-
-/* RESULT DETAILS */
+/* =====================================================
+   RESULT INFO
+===================================================== */
 
 .result-details{
-    padding:18px 8px 0;
+    padding:
+        19px
+        9px
+        0;
 }
 
 .rarity{
     display:inline-flex;
+
     align-items:center;
 
-    padding:10px 15px;
+    padding:
+        10px
+        15px;
 
-    border:1px solid #316384;
     border-radius:999px;
 
-    color:#9eb3c9;
+    border:1px solid #316384;
+
+    color:#a9bdcf;
 
     font-size:12px;
     font-weight:1000;
+
     letter-spacing:.6px;
 }
 
 .rarity.common{
-    color:#aebfd1;
+    color:#abbdd0;
 }
 
 .rarity.uncommon{
-    color:#52dcae;
+    color:#50dda9;
 }
 
 .rarity.rare{
@@ -500,44 +651,61 @@ button{
 }
 
 .rarity.epic{
-    color:#c08aff;
+    color:#bd89ff;
 }
 
 .rarity.legendary{
-    color:#ffd55f;
+    color:#ffd25d;
 }
 
 .rarity.mythic{
-    color:#ff7398;
-    border-color:#9d3855;
-    box-shadow:0 0 23px rgba(255,70,126,.15);
+    color:#ff7798;
+
+    border-color:#9f3a57;
+
+    box-shadow:
+        0 0 22px rgba(255,68,122,.17);
 }
 
 .sale-info{
     margin-top:16px;
-    color:#8299b2;
+
+    color:#8199b2;
+
     font-size:14px;
     font-weight:750;
 }
 
-/* BUTTONS */
+
+/* =====================================================
+   BUTTONS
+===================================================== */
 
 .spin-btn{
     width:100%;
+
     min-height:62px;
+
     margin-top:20px;
 
     border:0;
+
     border-radius:21px;
 
-    background:linear-gradient(90deg,#2787ef,#3ac5fa);
-
-    color:white;
+    color:#fff;
 
     font-size:18px;
     font-weight:1000;
 
-    box-shadow:0 10px 28px rgba(28,150,247,.2);
+    background:
+        linear-gradient(
+            90deg,
+            #2787ef,
+            #3ac5fa
+        );
+
+    box-shadow:
+        0 10px 28px rgba(28,150,247,.2);
 }
 
 .spin-btn:active{
@@ -545,10 +713,14 @@ button{
 }
 
 .actions{
-    margin-top:10px;
     display:grid;
-    grid-template-columns:1fr 1fr;
+
+    grid-template-columns:
+        1fr 1fr;
+
     gap:9px;
+
+    margin-top:10px;
 }
 
 .action-btn{
@@ -561,6 +733,7 @@ button{
     border:1px solid #2a6794;
 
     background:#0b2133;
+
     color:white;
 
     font-size:15px;
@@ -569,63 +742,53 @@ button{
 
 .sell-btn{
     color:#ff9eb6;
+
     border-color:#923c56;
+
     background:#3a1622;
 }
 
 .help{
-    padding:0 10px;
     margin-top:16px;
+
+    padding:0 10px;
 
     text-align:center;
 
     color:#758da6;
 
     font-size:12px;
-    line-height:1.5;
     font-weight:650;
+
+    line-height:1.5;
 }
 
-/* ANIMATION */
 
-.russian-plate.spinning{
-    animation:spinShake .09s linear infinite;
-}
-
-@keyframes spinShake{
-    0%{
-        transform:translateX(-4px);
-    }
-
-    50%{
-        transform:translateX(4px);
-    }
-
-    100%{
-        transform:translateX(-4px);
-    }
-}
-
-/* OTHER PAGES */
-
-.section-title{
-    margin:5px 2px 18px;
-
-    font-size:28px;
-    font-weight:1000;
-}
+/* =====================================================
+   CARDS
+===================================================== */
 
 .card{
-    padding:20px;
+    padding:19px;
 
-    border-radius:24px;
-    border:1px solid #173b59;
+    border-radius:23px;
 
-    background:linear-gradient(145deg,#0d2132,#06121d);
+    border:1px solid #183d59;
+
+    background:
+        linear-gradient(
+            145deg,
+            #0d2132,
+            #06121d
+        );
+}
+
+.card + .card{
+    margin-top:11px;
 }
 
 .card-title{
-    font-size:19px;
+    font-size:18px;
     font-weight:1000;
 }
 
@@ -634,21 +797,40 @@ button{
 
     color:#7990a8;
 
+    font-size:13px;
+
     line-height:1.55;
 }
 
+
+/* =====================================================
+   GARAGE
+===================================================== */
+
 .garage-list{
     display:grid;
+
     gap:10px;
 }
 
 .garage-item{
     padding:16px;
 
-    background:#071521;
+    border:1px solid #183d59;
 
-    border:1px solid #183c58;
     border-radius:20px;
+
+    background:#071521;
+}
+
+.garage-top{
+    display:flex;
+
+    justify-content:space-between;
+
+    gap:10px;
+
+    align-items:center;
 }
 
 .garage-number{
@@ -656,52 +838,258 @@ button{
     font-weight:1000;
 }
 
+.garage-price{
+    color:#55cfff;
+
+    font-size:13px;
+    font-weight:1000;
+}
+
 .garage-meta{
-    margin-top:6px;
+    margin-top:7px;
 
     color:#7891aa;
 
-    font-size:13px;
+    font-size:12px;
 }
+
+.small-danger-btn{
+    margin-top:12px;
+
+    width:100%;
+
+    min-height:43px;
+
+    border-radius:14px;
+
+    border:1px solid #84374f;
+
+    background:#31141e;
+
+    color:#ff9bb2;
+
+    font-size:12px;
+    font-weight:1000;
+}
+
+
+/* =====================================================
+   MARKET
+===================================================== */
+
+.market-grid{
+    display:grid;
+
+    gap:10px;
+}
+
+.market-item{
+    padding:17px;
+
+    border-radius:21px;
+
+    border:1px solid #1b4563;
+
+    background:#071521;
+}
+
+.market-title{
+    font-size:20px;
+    font-weight:1000;
+}
+
+.market-meta{
+    margin-top:7px;
+
+    color:#7d95ae;
+
+    font-size:12px;
+}
+
+.market-buy{
+    width:100%;
+
+    min-height:44px;
+
+    margin-top:13px;
+
+    border:0;
+
+    border-radius:14px;
+
+    background:#143d5b;
+
+    color:#69d8ff;
+
+    font-size:13px;
+    font-weight:1000;
+}
+
+
+/* =====================================================
+   TASKS
+===================================================== */
+
+.task-list{
+    display:grid;
+
+    gap:10px;
+}
+
+.task{
+    padding:17px;
+
+    border-radius:22px;
+
+    border:1px solid #1b425f;
+
+    background:#071521;
+}
+
+.task-top{
+    display:flex;
+
+    align-items:flex-start;
+
+    justify-content:space-between;
+
+    gap:12px;
+}
+
+.task-name{
+    font-size:16px;
+    font-weight:1000;
+}
+
+.task-reward{
+    color:#ffd268;
+
+    white-space:nowrap;
+
+    font-size:12px;
+    font-weight:1000;
+}
+
+.task-desc{
+    margin-top:7px;
+
+    color:#7891aa;
+
+    font-size:12px;
+
+    line-height:1.4;
+}
+
+.task-progress{
+    margin-top:13px;
+
+    height:7px;
+
+    border-radius:999px;
+
+    overflow:hidden;
+
+    background:#0e293d;
+}
+
+.task-progress-fill{
+    height:100%;
+
+    border-radius:999px;
+
+    background:
+        linear-gradient(
+            90deg,
+            #248ef0,
+            #49d2ff
+        );
+}
+
+.task-btn{
+    width:100%;
+
+    min-height:44px;
+
+    margin-top:12px;
+
+    border-radius:14px;
+
+    border:1px solid #2b6a96;
+
+    background:#102d43;
+
+    color:#62d5ff;
+
+    font-size:12px;
+    font-weight:1000;
+}
+
+.task-btn.done{
+    color:#5bddad;
+
+    border-color:#257054;
+
+    background:#0e2b22;
+}
+
+
+/* =====================================================
+   PROFILE
+===================================================== */
 
 .profile-card{
     padding:20px;
 
-    border:1px solid #173b59;
     border-radius:24px;
 
-    background:linear-gradient(145deg,#0d2132,#06121d);
+    border:1px solid #173b59;
+
+    background:
+        linear-gradient(
+            145deg,
+            #0d2132,
+            #06121d
+        );
 }
 
 .profile-row{
     display:flex;
+
     align-items:center;
+
     gap:14px;
 }
 
 .avatar{
-    width:64px;
-    height:64px;
+    width:66px;
+    height:66px;
 
     flex-shrink:0;
+
+    overflow:hidden;
 
     border-radius:20px;
 
     display:flex;
+
     align-items:center;
     justify-content:center;
 
-    overflow:hidden;
+    background:
+        linear-gradient(
+            145deg,
+            #238fff,
+            #4ad7ff
+        );
 
     font-size:23px;
     font-weight:1000;
-
-    background:linear-gradient(145deg,#238fff,#4ad7ff);
 }
 
 .avatar img{
     width:100%;
     height:100%;
+
     object-fit:cover;
 }
 
@@ -718,44 +1106,223 @@ button{
     font-size:13px;
 }
 
+.profile-stats{
+    display:grid;
+
+    grid-template-columns:
+        repeat(2,1fr);
+
+    gap:8px;
+
+    margin-top:17px;
+}
+
+.profile-stat{
+    padding:14px;
+
+    border-radius:17px;
+
+    background:#071521;
+
+    border:1px solid #183c57;
+}
+
+.profile-stat-label{
+    color:#7590a8;
+
+    font-size:10px;
+    font-weight:850;
+
+    text-transform:uppercase;
+}
+
+.profile-stat-value{
+    margin-top:7px;
+
+    font-size:18px;
+    font-weight:1000;
+}
+
+
+/* =====================================================
+   ADMIN PANEL
+===================================================== */
+
 .admin-panel{
     display:none;
 
-    margin-top:14px;
-    padding:20px;
+    margin-top:15px;
 
-    border:1px solid #725a18;
-    border-radius:23px;
+    padding:19px;
 
-    background:#1b1709;
+    border:1px solid #755a17;
+
+    border-radius:24px;
+
+    background:
+        linear-gradient(
+            145deg,
+            #211b08,
+            #0d100a
+        );
 }
 
-/* NAV */
+.admin-title{
+    color:#ffe17a;
+
+    font-size:20px;
+    font-weight:1000;
+}
+
+.admin-description{
+    margin-top:7px;
+
+    color:#a79b73;
+
+    font-size:12px;
+
+    line-height:1.45;
+}
+
+.admin-grid{
+    display:grid;
+
+    grid-template-columns:
+        1fr 1fr;
+
+    gap:8px;
+
+    margin-top:15px;
+}
+
+.admin-btn{
+    min-height:52px;
+
+    padding:10px;
+
+    border-radius:16px;
+
+    border:1px solid #765d1a;
+
+    background:#292008;
+
+    color:#ffe082;
+
+    font-size:12px;
+    font-weight:1000;
+}
+
+.admin-btn.blue{
+    border-color:#296890;
+
+    background:#102d42;
+
+    color:#61d5ff;
+}
+
+.admin-btn.red{
+    border-color:#82394e;
+
+    background:#31141e;
+
+    color:#ff9bb2;
+}
+
+.admin-btn.green{
+    border-color:#287458;
+
+    background:#0f2b22;
+
+    color:#5ce2af;
+}
+
+
+/* TARGET PLAYER */
+
+.admin-subtitle{
+    margin-top:20px;
+
+    color:#f3f7ff;
+
+    font-size:14px;
+    font-weight:1000;
+}
+
+.admin-input{
+    width:100%;
+
+    height:49px;
+
+    margin-top:10px;
+
+    padding:0 14px;
+
+    border-radius:15px;
+
+    outline:none;
+
+    border:1px solid #344a58;
+
+    background:#080e12;
+
+    color:white;
+
+    font-size:14px;
+}
+
+.admin-input::placeholder{
+    color:#596871;
+}
+
+.admin-status{
+    margin-top:13px;
+
+    padding:12px;
+
+    border-radius:15px;
+
+    background:#11140d;
+
+    color:#958c68;
+
+    font-size:11px;
+
+    line-height:1.45;
+}
+
+
+/* =====================================================
+   NAV
+===================================================== */
 
 .bottom-nav{
     width:100%;
-    max-width:700px;
-    height:91px;
+    max-width:720px;
+
+    min-height:91px;
 
     position:fixed;
+
     left:50%;
     bottom:0;
 
     transform:translateX(-50%);
 
     display:grid;
-    grid-template-columns:repeat(5,1fr);
+
+    grid-template-columns:
+        repeat(5,1fr);
 
     padding:
         8px
         8px
         max(8px,env(safe-area-inset-bottom));
 
-    border-top:1px solid #173650;
-
     background:rgba(2,10,18,.98);
 
-    backdrop-filter:blur(16px);
+    border-top:1px solid #173650;
+
+    backdrop-filter:blur(18px);
 
     z-index:1000;
 }
@@ -771,6 +1338,7 @@ button{
 
     display:flex;
     flex-direction:column;
+
     align-items:center;
     justify-content:center;
 
@@ -781,49 +1349,63 @@ button{
 }
 
 .nav-btn.active{
-    background:#102b40;
     color:#69d8ff;
+
+    background:#102b40;
 }
 
 .nav-icon{
     font-size:22px;
+
+    line-height:1;
 }
 
-/* TOAST */
+
+/* =====================================================
+   TOAST
+===================================================== */
 
 .toast{
     position:fixed;
 
     left:50%;
-    bottom:105px;
+    bottom:108px;
 
     transform:
         translateX(-50%)
         translateY(30px);
 
     width:calc(100% - 32px);
-    max-width:500px;
+    max-width:520px;
 
-    padding:14px 16px;
+    overflow:hidden;
+
+    padding:
+        14px
+        16px
+        17px;
+
+    border-radius:17px;
 
     border:1px solid #285678;
-    border-radius:17px;
 
     background:#0d2233;
 
-    color:white;
+    color:#fff;
 
-    font-size:14px;
+    font-size:13px;
     font-weight:800;
 
     opacity:0;
+
     pointer-events:none;
 
     transition:.25s;
 
     z-index:5000;
 
-    box-shadow:0 15px 40px rgba(0,0,0,.5);
+    box-shadow:
+        0 15px 40px rgba(0,0,0,.5);
 }
 
 .toast.show{
@@ -834,46 +1416,128 @@ button{
         translateY(0);
 }
 
-/* MOBILE */
+.toast::after{
+    content:"";
 
-@media(max-width:430px){
+    position:absolute;
+
+    left:0;
+    bottom:0;
+
+    height:3px;
+
+    width:0%;
+
+    background:#44cfff;
+}
+
+.toast.show::after{
+    animation:
+        toastProgress
+        3s
+        linear
+        forwards;
+}
+
+@keyframes toastProgress{
+    from{
+        width:100%;
+    }
+
+    to{
+        width:0%;
+    }
+}
+
+
+/* =====================================================
+   SPIN
+===================================================== */
+
+.russian-plate.spinning{
+    animation:
+        spinShake
+        .09s
+        linear
+        infinite;
+}
+
+@keyframes spinShake{
+    0%{
+        transform:translateX(-4px);
+    }
+
+    50%{
+        transform:translateX(4px);
+    }
+
+    100%{
+        transform:translateX(-4px);
+    }
+}
+
+
+/* =====================================================
+   MOBILE
+===================================================== */
+
+@media(max-width:450px){
 
     .header{
-        height:82px;
-        padding:0 12px;
+        min-height:82px;
+
+        padding:
+            11px
+            11px;
     }
 
     .logo{
-        width:50px;
-        height:50px;
-        border-radius:16px;
-    }
+        width:49px;
+        height:49px;
 
-    .brand-name{
+        border-radius:15px;
+
         font-size:18px;
     }
 
-    .brand-sub{
-        font-size:8px;
-        letter-spacing:1.6px;
+    .brand{
+        gap:9px;
     }
 
-    .admin{
-        padding:8px 9px;
-        font-size:10px;
+    .brand-name{
+        font-size:17px;
+    }
+
+    .brand-sub{
+        font-size:7px;
+
+        letter-spacing:1.5px;
+    }
+
+    .admin-header-btn{
+        min-height:39px;
+
+        padding:0 9px;
+
+        font-size:9px;
     }
 
     .balance{
-        padding:9px 9px;
-        font-size:11px;
+        min-height:39px;
+
+        padding:0 8px;
+
+        font-size:10px;
     }
 
     .main-card{
-        padding:19px 14px;
+        padding:
+            19px
+            13px;
     }
 
     .main-title{
-        font-size:29px;
+        font-size:28px;
     }
 
     .stats{
@@ -881,27 +1545,48 @@ button{
     }
 
     .stat{
-        padding:11px 9px;
-        min-height:77px;
+        min-height:76px;
+
+        padding:
+            11px
+            8px;
     }
 
     .stat-label{
-        font-size:9px;
+        font-size:8px;
     }
 
     .stat-value{
-        font-size:18px;
+        font-size:17px;
     }
 
     .result-card{
         padding:
             30px
-            8px
+            7px
             18px;
     }
 
     .russian-plate{
-        border-radius:10px;
+        border-radius:9px;
+    }
+
+    .plate-left{
+        grid-template-columns:
+            18% 50% 32%;
+    }
+
+    .nav-btn{
+        font-size:9px;
+    }
+
+    .nav-icon{
+        font-size:20px;
+    }
+
+    .admin-grid{
+        grid-template-columns:
+            1fr 1fr;
     }
 }
 
@@ -912,6 +1597,11 @@ button{
 
 <div class="app">
 
+
+<!-- =====================================================
+     HEADER
+===================================================== -->
+
 <header class="header">
 
     <div class="brand">
@@ -921,6 +1611,7 @@ button{
         </div>
 
         <div>
+
             <div class="brand-name">
                 NOMER CLUB
             </div>
@@ -928,18 +1619,21 @@ button{
             <div class="brand-sub">
                 COLLECT • TRADE • RISE
             </div>
+
         </div>
 
     </div>
 
+
     <div class="header-right">
 
-        <div
-            class="admin"
-            id="adminBadge"
+        <button
+            class="admin-header-btn"
+            id="adminHeaderButton"
+            onclick="openAdmin()"
         >
             ADMIN
-        </div>
+        </button>
 
         <div
             class="balance"
@@ -953,7 +1647,10 @@ button{
 </header>
 
 
-<!-- HOME -->
+
+<!-- =====================================================
+     HOME
+===================================================== -->
 
 <section
     class="page active"
@@ -975,6 +1672,7 @@ button{
             Каждая прокрутка стоит <b>100 NC</b>.
         </div>
 
+
         <div class="stats">
 
             <div class="stat">
@@ -988,6 +1686,7 @@ button{
                 </div>
 
             </div>
+
 
             <div class="stat">
 
@@ -1003,6 +1702,7 @@ button{
                 </div>
 
             </div>
+
 
             <div class="stat">
 
@@ -1022,6 +1722,8 @@ button{
         </div>
 
 
+        <!-- НОМЕР -->
+
         <div class="result-card">
 
             <div class="plate-wrap">
@@ -1032,6 +1734,7 @@ button{
                 >
 
                     <div class="plate-bolt left"></div>
+
 
                     <div class="plate-left">
 
@@ -1077,14 +1780,17 @@ button{
 
 
                             <span class="flag">
+
                                 <span></span>
                                 <span></span>
                                 <span></span>
+
                             </span>
 
                         </div>
 
                     </div>
+
 
                     <div class="plate-bolt right"></div>
 
@@ -1146,8 +1852,9 @@ button{
 
 
         <div class="help">
-            Если номер не сохранить и нажать «КРУТИТЬ» ещё раз —
-            предыдущий номер автоматически продастся системе.
+            Если номер не сохранить и нажать
+            «КРУТИТЬ» ещё раз —
+            предыдущий автоматически продастся системе.
         </div>
 
     </div>
@@ -1155,7 +1862,10 @@ button{
 </section>
 
 
-<!-- GARAGE -->
+
+<!-- =====================================================
+     GARAGE
+===================================================== -->
 
 <section
     class="page"
@@ -1174,7 +1884,10 @@ button{
 </section>
 
 
-<!-- MARKET -->
+
+<!-- =====================================================
+     MARKET
+===================================================== -->
 
 <section
     class="page"
@@ -1188,19 +1901,30 @@ button{
     <div class="card">
 
         <div class="card-title">
-            Маркет номеров
+            Рынок игроков
         </div>
 
         <div class="card-text">
-            Здесь игроки смогут покупать и продавать номера.
+            Покупай номера других игроков.
+            Ниже показаны тестовые предложения.
         </div>
 
     </div>
 
+
+    <div
+        class="market-grid"
+        id="marketGrid"
+        style="margin-top:11px"
+    ></div>
+
 </section>
 
 
-<!-- TASKS -->
+
+<!-- =====================================================
+     TASKS
+===================================================== -->
 
 <section
     class="page"
@@ -1211,22 +1935,18 @@ button{
         Задания
     </div>
 
-    <div class="card">
-
-        <div class="card-title">
-            Ежедневные задания
-        </div>
-
-        <div class="card-text">
-            Выполняй задания и зарабатывай NC.
-        </div>
-
-    </div>
+    <div
+        class="task-list"
+        id="taskList"
+    ></div>
 
 </section>
 
 
-<!-- PROFILE -->
+
+<!-- =====================================================
+     PROFILE
+===================================================== -->
 
 <section
     class="page"
@@ -1236,6 +1956,7 @@ button{
     <div class="section-title">
         Профиль
     </div>
+
 
     <div class="profile-card">
 
@@ -1247,6 +1968,7 @@ button{
             >
                 NC
             </div>
+
 
             <div>
 
@@ -1275,20 +1997,194 @@ button{
 
         </div>
 
+
+        <div class="profile-stats">
+
+            <div class="profile-stat">
+
+                <div class="profile-stat-label">
+                    Баланс
+                </div>
+
+                <div
+                    class="profile-stat-value"
+                    id="profileBalance"
+                >
+                    0 NC
+                </div>
+
+            </div>
+
+
+            <div class="profile-stat">
+
+                <div class="profile-stat-label">
+                    Уровень
+                </div>
+
+                <div
+                    class="profile-stat-value"
+                    id="profileLevel"
+                >
+                    1
+                </div>
+
+            </div>
+
+
+            <div class="profile-stat">
+
+                <div class="profile-stat-label">
+                    В гараже
+                </div>
+
+                <div
+                    class="profile-stat-value"
+                    id="profileGarage"
+                >
+                    0
+                </div>
+
+            </div>
+
+
+            <div class="profile-stat">
+
+                <div class="profile-stat-label">
+                    Прокрутки
+                </div>
+
+                <div
+                    class="profile-stat-value"
+                    id="profileSpins"
+                >
+                    0
+                </div>
+
+            </div>
+
+        </div>
+
     </div>
 
+
+
+    <!-- ADMIN -->
 
     <div
         class="admin-panel"
         id="adminPanel"
     >
 
-        <div class="card-title">
-            Панель администратора
+        <div class="admin-title">
+            👑 ADMIN PANEL
         </div>
 
-        <div class="card-text">
-            Ваш аккаунт имеет права администратора.
+        <div class="admin-description">
+            Панель доступна только администратору.
+            Здесь можно тестировать экономику
+            и выпадение номеров.
+        </div>
+
+
+        <div class="admin-grid">
+
+            <button
+                class="admin-btn green"
+                onclick="adminAddMoney(1000)"
+            >
+                +1 000 NC
+            </button>
+
+            <button
+                class="admin-btn green"
+                onclick="adminAddMoney(10000)"
+            >
+                +10 000 NC
+            </button>
+
+            <button
+                class="admin-btn blue"
+                onclick="adminNextMythic()"
+            >
+                МИФИК СЛЕДУЮЩИЙ
+            </button>
+
+            <button
+                class="admin-btn blue"
+                id="mythicModeBtn"
+                onclick="toggleMythicMode()"
+            >
+                МИФИК РЕЖИМ: OFF
+            </button>
+
+            <button
+                class="admin-btn"
+                onclick="adminLevelUp()"
+            >
+                +1 УРОВЕНЬ
+            </button>
+
+            <button
+                class="admin-btn red"
+                onclick="adminClearGarage()"
+            >
+                ОЧИСТИТЬ ГАРАЖ
+            </button>
+
+        </div>
+
+
+        <div class="admin-subtitle">
+            Управление игроком
+        </div>
+
+
+        <input
+            class="admin-input"
+            id="adminTargetId"
+            type="number"
+            inputmode="numeric"
+            placeholder="Telegram ID игрока"
+        >
+
+
+        <div class="admin-grid">
+
+            <button
+                class="admin-btn blue"
+                onclick="sendAdminPlayerAction('mythic')"
+            >
+                ВЫДАТЬ 100% МИФИК
+            </button>
+
+            <button
+                class="admin-btn"
+                onclick="sendAdminPlayerAction('remove_mythic')"
+            >
+                УБРАТЬ МИФИК
+            </button>
+
+            <button
+                class="admin-btn green"
+                onclick="sendAdminPlayerAction('money')"
+            >
+                ВЫДАТЬ 10 000 NC
+            </button>
+
+            <button
+                class="admin-btn red"
+                onclick="sendAdminPlayerAction('reset')"
+            >
+                СБРОС ИГРОКА
+            </button>
+
+        </div>
+
+
+        <div class="admin-status">
+            Локальные кнопки сверху работают прямо в этом интерфейсе.
+            Действия для другого Telegram ID отправляются на сервер.
         </div>
 
     </div>
@@ -1298,48 +2194,85 @@ button{
 </div>
 
 
-<!-- NAV -->
+
+<!-- =====================================================
+     NAV
+===================================================== -->
 
 <nav class="bottom-nav">
 
     <button
         class="nav-btn active"
+        id="nav-home"
         onclick="openPage('home',this)"
     >
-        <span class="nav-icon">⌂</span>
+
+        <span class="nav-icon">
+            ⌂
+        </span>
+
         Главная
+
     </button>
+
 
     <button
         class="nav-btn"
+        id="nav-garage"
         onclick="openPage('garage',this)"
     >
-        <span class="nav-icon">▤</span>
+
+        <span class="nav-icon">
+            ▤
+        </span>
+
         Гараж
+
     </button>
+
 
     <button
         class="nav-btn"
+        id="nav-market"
         onclick="openPage('market',this)"
     >
-        <span class="nav-icon">⇄</span>
+
+        <span class="nav-icon">
+            ⇄
+        </span>
+
         Маркет
+
     </button>
+
 
     <button
         class="nav-btn"
+        id="nav-tasks"
         onclick="openPage('tasks',this)"
     >
-        <span class="nav-icon">✓</span>
+
+        <span class="nav-icon">
+            ✓
+        </span>
+
         Задания
+
     </button>
+
 
     <button
         class="nav-btn"
+        id="nav-profile"
         onclick="openPage('profile',this)"
     >
-        <span class="nav-icon">◉</span>
+
+        <span class="nav-icon">
+            ◉
+        </span>
+
         Профиль
+
     </button>
 
 </nav>
@@ -1351,9 +2284,12 @@ button{
 ></div>
 
 
+
 <script>
 
-/* TELEGRAM */
+/* =====================================================
+   TELEGRAM
+===================================================== */
 
 const tg =
     window.Telegram &&
@@ -1361,54 +2297,49 @@ const tg =
         ? window.Telegram.WebApp
         : null;
 
+
 if(tg){
 
     tg.ready();
+
     tg.expand();
 
     try{
-        tg.setHeaderColor("#020b14");
-        tg.setBackgroundColor("#020811");
+
+        tg.setHeaderColor(
+            "#020b14"
+        );
+
+        tg.setBackgroundColor(
+            "#020811"
+        );
+
     }catch(e){}
 
 }
 
 
-/* SETTINGS */
 
-const ADMIN_ID = 8518976778;
+/* =====================================================
+   CONFIG
+===================================================== */
 
-const SPIN_PRICE = 100;
+const ADMIN_ID =
+    8518976778;
 
 
-/* СОСТОЯНИЕ */
-
-let state = {
-
-    balance:10000,
-
-    level:1,
-
-    garage:[],
-
-    current:null,
-
-    spinning:false
-
-};
+const SPIN_PRICE =
+    100;
 
 
 /*
-========================================================
-РУССКИЕ БУКВЫ, КОТОРЫЕ ИСПОЛЬЗУЮТСЯ
-НА РОССИЙСКИХ НОМЕРАХ
-
-ВАЖНО:
-здесь именно кириллица, а не латиница.
-========================================================
+Русские буквы,
+разрешённые на автомобильных номерах.
+ИМЕННО КИРИЛЛИЦА.
 */
 
 const LETTERS = [
+
     "А",
     "В",
     "Е",
@@ -1421,6 +2352,7 @@ const LETTERS = [
     "Т",
     "У",
     "Х"
+
 ];
 
 
@@ -1444,6 +2376,7 @@ const REGIONS = [
 
     "102",
     "116",
+
     "121",
     "123",
     "124",
@@ -1478,11 +2411,16 @@ const REGIONS = [
     "199",
 
     "716",
+
     "750",
+
     "761",
     "763",
+
     "774",
+
     "777",
+
     "790",
     "797",
     "799"
@@ -1490,7 +2428,93 @@ const REGIONS = [
 ];
 
 
-/* HELPERS */
+
+/* =====================================================
+   STATE
+===================================================== */
+
+let state = {
+
+    balance:10000,
+
+    level:1,
+
+    spins:0,
+
+    current:null,
+
+    garage:[],
+
+    spinning:false,
+
+    forceNextMythic:false,
+
+    mythicMode:false,
+
+    tasks:{
+
+        spin5:false,
+
+        save3:false,
+
+        sell3:false,
+
+        spin20:false
+
+    },
+
+    stats:{
+
+        sold:0,
+
+        saved:0
+
+    }
+
+};
+
+
+
+/* =====================================================
+   MARKET DATA
+===================================================== */
+
+const marketItems = [
+
+    {
+        first:"А",
+        digits:"777",
+        last:"АА",
+        region:"77",
+        rarity:"МИФИЧЕСКИЙ",
+        price:6500
+    },
+
+    {
+        first:"М",
+        digits:"001",
+        last:"ММ",
+        region:"99",
+        rarity:"ЛЕГЕНДАРНЫЙ",
+        price:3200
+    },
+
+    {
+        first:"У",
+        digits:"555",
+        last:"ХХ",
+        region:"777",
+        rarity:"ЭПИЧЕСКИЙ",
+        price:1850
+    }
+
+];
+
+
+
+/* =====================================================
+   HELPERS
+===================================================== */
 
 function randomItem(array){
 
@@ -1507,37 +2531,86 @@ function randomItem(array){
 function randomDigit(){
 
     return Math.floor(
-        Math.random() * 10
+        Math.random() *
+        10
     );
 
 }
 
 
-/* GENERATOR */
+function formatNumber(number){
+
+    return Number(
+        number || 0
+    ).toLocaleString(
+        "ru-RU"
+    );
+
+}
+
+
+function sleep(ms){
+
+    return new Promise(
+        resolve =>
+            setTimeout(
+                resolve,
+                ms
+            )
+    );
+
+}
+
+
+
+/* =====================================================
+   GENERATOR
+===================================================== */
 
 function generatePlate(){
 
-    const chance =
-        Math.random() * 100;
+    let roll =
+        Math.random() *
+        100;
+
+
+    if(
+        state.forceNextMythic ||
+        state.mythicMode
+    ){
+
+        roll =
+            0;
+
+    }
 
 
     let rarity;
+
     let digits;
+
     let price;
 
 
-    if(chance < 1){
+    /* MYTHIC */
+
+    if(roll < 1){
 
         rarity = {
+
             name:"МИФИЧЕСКИЙ",
+
             class:"mythic"
+
         };
 
 
         digits =
             randomItem([
+
                 "001",
                 "007",
+
                 "111",
                 "222",
                 "333",
@@ -1547,6 +2620,7 @@ function generatePlate(){
                 "777",
                 "888",
                 "999"
+
             ]);
 
 
@@ -1560,27 +2634,35 @@ function generatePlate(){
     }
 
 
-    else if(chance < 5){
+    /* LEGENDARY */
+
+    else if(roll < 5){
 
         rarity = {
+
             name:"ЛЕГЕНДАРНЫЙ",
+
             class:"legendary"
+
         };
 
 
         digits =
             randomItem([
+
                 "010",
                 "020",
                 "030",
                 "050",
                 "070",
+
                 "100",
                 "200",
                 "500",
                 "700",
                 "800",
                 "900"
+
             ]);
 
 
@@ -1588,17 +2670,22 @@ function generatePlate(){
             Math.floor(
                 1000 +
                 Math.random() *
-                1700
+                1800
             );
 
     }
 
 
-    else if(chance < 13){
+    /* EPIC */
+
+    else if(roll < 13){
 
         rarity = {
+
             name:"ЭПИЧЕСКИЙ",
+
             class:"epic"
+
         };
 
 
@@ -1618,17 +2705,22 @@ function generatePlate(){
             Math.floor(
                 500 +
                 Math.random() *
-                700
+                750
             );
 
     }
 
 
-    else if(chance < 28){
+    /* RARE */
+
+    else if(roll < 28){
 
         rarity = {
+
             name:"РЕДКИЙ",
+
             class:"rare"
+
         };
 
 
@@ -1650,11 +2742,16 @@ function generatePlate(){
     }
 
 
-    else if(chance < 56){
+    /* UNCOMMON */
+
+    else if(roll < 56){
 
         rarity = {
+
             name:"НЕОБЫЧНЫЙ",
+
             class:"uncommon"
+
         };
 
 
@@ -1674,17 +2771,22 @@ function generatePlate(){
             Math.floor(
                 75 +
                 Math.random() *
-                140
+                145
             );
 
     }
 
 
+    /* COMMON */
+
     else{
 
         rarity = {
+
             name:"ОБЫЧНЫЙ",
+
             class:"common"
+
         };
 
 
@@ -1728,29 +2830,27 @@ function generatePlate(){
         );
 
 
-    /*
-    Красивые дорогие номера:
-    одинаковые буквы
-    */
+    /* красивые буквенные сочетания */
 
     if(
-        rarity.class === "mythic"
+        rarity.class ===
+        "mythic"
     ){
 
-        const letter =
+        const same =
             randomItem(
                 LETTERS
             );
 
 
         first =
-            letter;
+            same;
 
         last1 =
-            letter;
+            same;
 
         last2 =
-            letter;
+            same;
 
     }
 
@@ -1790,9 +2890,14 @@ function generatePlate(){
 }
 
 
-/* DISPLAY */
 
-function displayPlate(plate){
+/* =====================================================
+   DISPLAY
+===================================================== */
+
+function displayPlate(
+    plate
+){
 
     if(!plate){
         return;
@@ -1852,12 +2957,14 @@ function displayPlate(plate){
         )
         .textContent =
         plate.saved
-            ? "Номер сохранён в гараже"
-            : "Не сохранён • продажа: " +
-              formatNumber(
-                  plate.price
-              ) +
-              " NC";
+            ?
+            "Номер сохранён в гараже"
+            :
+            "Не сохранён • продажа: " +
+            formatNumber(
+                plate.price
+            ) +
+            " NC";
 
 
     document
@@ -1865,16 +2972,23 @@ function displayPlate(plate){
             "sellButton"
         )
         .textContent =
-        "ПРОДАТЬ • " +
-        formatNumber(
-            plate.price
-        ) +
-        " NC";
+        plate.saved
+            ?
+            "НОМЕР В ГАРАЖЕ"
+            :
+            "ПРОДАТЬ • " +
+            formatNumber(
+                plate.price
+            ) +
+            " NC";
 
 }
 
 
-/* SPIN */
+
+/* =====================================================
+   SPIN
+===================================================== */
 
 async function spinPlate(){
 
@@ -1884,8 +2998,8 @@ async function spinPlate(){
 
 
     /*
-    Предыдущий номер автоматически
-    продаётся если не был сохранён.
+    Старый номер не сохранили:
+    продаём автоматически.
     */
 
     if(
@@ -1895,6 +3009,9 @@ async function spinPlate(){
 
         state.balance +=
             state.current.price;
+
+
+        state.stats.sold++;
 
     }
 
@@ -1923,10 +3040,7 @@ async function spinPlate(){
         true;
 
 
-    updateUI();
-
-
-    const plate =
+    const plateElement =
         document.getElementById(
             "licensePlate"
         );
@@ -1938,9 +3052,11 @@ async function spinPlate(){
         );
 
 
-    plate.classList.add(
-        "spinning"
-    );
+    plateElement
+        .classList
+        .add(
+            "spinning"
+        );
 
 
     button.disabled =
@@ -1951,7 +3067,10 @@ async function spinPlate(){
         "КРУТИМ...";
 
 
-    let animationCount =
+    updateUI();
+
+
+    let count =
         0;
 
 
@@ -1964,11 +3083,11 @@ async function spinPlate(){
                 );
 
 
-                animationCount++;
+                count++;
 
 
                 if(
-                    animationCount >
+                    count >=
                     17
                 ){
 
@@ -1997,14 +3116,34 @@ async function spinPlate(){
         generatePlate();
 
 
+    state.spins++;
+
+
+    /*
+    Одноразовый админ мифик
+    отключаем после выпадения.
+    */
+
+    if(
+        state.forceNextMythic
+    ){
+
+        state.forceNextMythic =
+            false;
+
+    }
+
+
     displayPlate(
         state.current
     );
 
 
-    plate.classList.remove(
-        "spinning"
-    );
+    plateElement
+        .classList
+        .remove(
+            "spinning"
+        );
 
 
     state.spinning =
@@ -2020,6 +3159,8 @@ async function spinPlate(){
 
 
     updateUI();
+
+    renderTasks();
 
 
     showToast(
@@ -2039,7 +3180,11 @@ async function spinPlate(){
 
             tg.HapticFeedback
                 .impactOccurred(
-                    "medium"
+                    state.current.rarityClass === "mythic"
+                        ?
+                        "heavy"
+                        :
+                        "medium"
                 );
 
         }catch(e){}
@@ -2049,7 +3194,10 @@ async function spinPlate(){
 }
 
 
-/* SAVE */
+
+/* =====================================================
+   SAVE
+===================================================== */
 
 function savePlate(){
 
@@ -2086,23 +3234,32 @@ function savePlate(){
     );
 
 
-    updateUI();
+    state.stats.saved++;
 
-    renderGarage();
 
     displayPlate(
         state.current
     );
 
 
+    renderGarage();
+
+    renderTasks();
+
+    updateUI();
+
+
     showToast(
-        "Номер сохранён в гараже"
+        "Номер добавлен в гараж"
     );
 
 }
 
 
-/* SELL */
+
+/* =====================================================
+   SELL CURRENT
+===================================================== */
 
 function sellPlate(){
 
@@ -2120,7 +3277,7 @@ function sellPlate(){
     if(state.current.saved){
 
         showToast(
-            "Номер уже сохранён"
+            "Этот номер уже находится в гараже"
         );
 
         return;
@@ -2136,14 +3293,18 @@ function sellPlate(){
         price;
 
 
+    state.stats.sold++;
+
+
     state.current =
         null;
 
 
-    updateUI();
-
-
     defaultPlate();
+
+    renderTasks();
+
+    updateUI();
 
 
     showToast(
@@ -2157,7 +3318,93 @@ function sellPlate(){
 }
 
 
-/* DEFAULT */
+
+/* =====================================================
+   SELL GARAGE
+===================================================== */
+
+function sellGaragePlate(
+    id
+){
+
+    const index =
+        state.garage
+            .findIndex(
+                item =>
+                    String(
+                        item.id
+                    ) ===
+                    String(
+                        id
+                    )
+            );
+
+
+    if(index === -1){
+        return;
+    }
+
+
+    const item =
+        state.garage[
+            index
+        ];
+
+
+    state.balance +=
+        item.price;
+
+
+    state.stats.sold++;
+
+
+    state.garage.splice(
+        index,
+        1
+    );
+
+
+    if(
+        state.current &&
+        String(
+            state.current.id
+        ) ===
+        String(
+            item.id
+        )
+    ){
+
+        state.current =
+            null;
+
+
+        defaultPlate();
+
+    }
+
+
+    renderGarage();
+
+    renderTasks();
+
+    updateUI();
+
+
+    showToast(
+        "Номер продан за " +
+        formatNumber(
+            item.price
+        ) +
+        " NC"
+    );
+
+}
+
+
+
+/* =====================================================
+   DEFAULT PLATE
+===================================================== */
 
 function defaultPlate(){
 
@@ -2200,7 +3447,10 @@ function defaultPlate(){
 }
 
 
-/* GARAGE */
+
+/* =====================================================
+   GARAGE
+===================================================== */
 
 function renderGarage(){
 
@@ -2215,7 +3465,8 @@ function renderGarage(){
 
 
     if(
-        state.garage.length === 0
+        state.garage.length ===
+        0
     ){
 
         list.innerHTML = `
@@ -2227,13 +3478,14 @@ function renderGarage(){
                 </div>
 
                 <div class="card-text">
-                    Сохраняй номера после прокрутки,
-                    и они появятся здесь.
+                    Сохрани выпавший номер,
+                    и он появится здесь.
                 </div>
 
             </div>
 
         `;
+
 
         return;
 
@@ -2241,7 +3493,7 @@ function renderGarage(){
 
 
     state.garage.forEach(
-        function(plate){
+        function(item){
 
             const element =
                 document.createElement(
@@ -2255,27 +3507,43 @@ function renderGarage(){
 
             element.innerHTML = `
 
-                <div class="garage-number">
+                <div class="garage-top">
 
-                    ${plate.first}
-                    ${plate.digits}
-                    ${plate.last}
+                    <div class="garage-number">
 
-                    ${plate.region}
+                        ${item.first}
+                        ${item.digits}
+                        ${item.last}
+
+                        ${item.region}
+
+                    </div>
+
+
+                    <div class="garage-price">
+
+                        ${formatNumber(
+                            item.price
+                        )} NC
+
+                    </div>
 
                 </div>
+
 
                 <div class="garage-meta">
 
-                    ${plate.rarity}
-
-                    •
-
-                    ${formatNumber(
-                        plate.price
-                    )} NC
+                    ${item.rarity}
 
                 </div>
+
+
+                <button
+                    class="small-danger-btn"
+                    onclick="sellGaragePlate('${item.id}')"
+                >
+                    ПРОДАТЬ НОМЕР
+                </button>
 
             `;
 
@@ -2290,70 +3558,859 @@ function renderGarage(){
 }
 
 
-/* NAV */
 
-function openPage(
-    page,
-    button
+/* =====================================================
+   MARKET
+===================================================== */
+
+function renderMarket(){
+
+    const grid =
+        document.getElementById(
+            "marketGrid"
+        );
+
+
+    grid.innerHTML =
+        "";
+
+
+    marketItems.forEach(
+        function(item,index){
+
+            const element =
+                document.createElement(
+                    "div"
+                );
+
+
+            element.className =
+                "market-item";
+
+
+            element.innerHTML = `
+
+                <div class="market-title">
+
+                    ${item.first}
+                    ${item.digits}
+                    ${item.last}
+
+                    ${item.region}
+
+                </div>
+
+
+                <div class="market-meta">
+
+                    ${item.rarity}
+
+                    •
+
+                    ${formatNumber(
+                        item.price
+                    )} NC
+
+                </div>
+
+
+                <button
+                    class="market-buy"
+                    onclick="buyMarketItem(${index})"
+                >
+                    КУПИТЬ
+                </button>
+
+            `;
+
+
+            grid.appendChild(
+                element
+            );
+
+        }
+    );
+
+}
+
+
+function buyMarketItem(
+    index
 ){
 
-    document
-        .querySelectorAll(
-            ".page"
-        )
-        .forEach(
-            function(el){
+    const item =
+        marketItems[
+            index
+        ];
 
-                el.classList.remove(
-                    "active"
+
+    if(!item){
+        return;
+    }
+
+
+    if(
+        state.balance <
+        item.price
+    ){
+
+        showToast(
+            "Недостаточно NC"
+        );
+
+        return;
+
+    }
+
+
+    state.balance -=
+        item.price;
+
+
+    const newItem = {
+
+        ...item,
+
+        id:
+            Date.now() +
+            "-" +
+            Math.random(),
+
+        rarityClass:
+            item.rarity === "МИФИЧЕСКИЙ"
+                ?
+                "mythic"
+                :
+                item.rarity === "ЛЕГЕНДАРНЫЙ"
+                    ?
+                    "legendary"
+                    :
+                    "epic",
+
+        saved:true
+
+    };
+
+
+    state.garage.unshift(
+        newItem
+    );
+
+
+    updateUI();
+
+    renderGarage();
+
+
+    showToast(
+        "Номер куплен"
+    );
+
+}
+
+
+
+/* =====================================================
+   TASKS
+===================================================== */
+
+function taskData(){
+
+    return [
+
+        {
+
+            id:"spin5",
+
+            name:"5 прокруток",
+
+            desc:
+                "Сделай 5 прокруток номеров.",
+
+            current:
+                Math.min(
+                    state.spins,
+                    5
+                ),
+
+            max:5,
+
+            reward:300
+
+        },
+
+
+        {
+
+            id:"save3",
+
+            name:"Сохрани 3 номера",
+
+            desc:
+                "Добавь 3 выпавших номера в гараж.",
+
+            current:
+                Math.min(
+                    state.stats.saved,
+                    3
+                ),
+
+            max:3,
+
+            reward:450
+
+        },
+
+
+        {
+
+            id:"sell3",
+
+            name:"Продай 3 номера",
+
+            desc:
+                "Продай системе 3 номера.",
+
+            current:
+                Math.min(
+                    state.stats.sold,
+                    3
+                ),
+
+            max:3,
+
+            reward:350
+
+        },
+
+
+        {
+
+            id:"spin20",
+
+            name:"20 прокруток",
+
+            desc:
+                "Сделай 20 прокруток.",
+
+            current:
+                Math.min(
+                    state.spins,
+                    20
+                ),
+
+            max:20,
+
+            reward:1200
+
+        }
+
+    ];
+
+}
+
+
+function renderTasks(){
+
+    const list =
+        document.getElementById(
+            "taskList"
+        );
+
+
+    list.innerHTML =
+        "";
+
+
+    taskData()
+        .forEach(
+            function(task){
+
+                const claimed =
+                    state.tasks[
+                        task.id
+                    ];
+
+
+                const complete =
+                    task.current >=
+                    task.max;
+
+
+                const percent =
+                    Math.min(
+                        100,
+                        Math.round(
+                            task.current /
+                            task.max *
+                            100
+                        )
+                    );
+
+
+                const element =
+                    document.createElement(
+                        "div"
+                    );
+
+
+                element.className =
+                    "task";
+
+
+                element.innerHTML = `
+
+                    <div class="task-top">
+
+                        <div>
+
+                            <div class="task-name">
+                                ${task.name}
+                            </div>
+
+                            <div class="task-desc">
+                                ${task.desc}
+                            </div>
+
+                        </div>
+
+
+                        <div class="task-reward">
+
+                            +${task.reward} NC
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="task-progress">
+
+                        <div
+                            class="task-progress-fill"
+                            style="width:${percent}%"
+                        ></div>
+
+                    </div>
+
+
+                    <div class="task-desc">
+
+                        ${task.current} / ${task.max}
+
+                    </div>
+
+
+                    <button
+                        class="task-btn
+                        ${claimed ? "done" : ""}"
+                        onclick="claimTask('${task.id}')"
+                        ${claimed ? "disabled" : ""}
+                    >
+
+                        ${
+                            claimed
+                                ?
+                                "ПОЛУЧЕНО"
+                                :
+                                complete
+                                    ?
+                                    "ЗАБРАТЬ НАГРАДУ"
+                                    :
+                                    "НЕ ВЫПОЛНЕНО"
+                        }
+
+                    </button>
+
+                `;
+
+
+                list.appendChild(
+                    element
                 );
 
             }
         );
+
+}
+
+
+function claimTask(
+    id
+){
+
+    const task =
+        taskData()
+            .find(
+                item =>
+                    item.id ===
+                    id
+            );
+
+
+    if(!task){
+        return;
+    }
+
+
+    if(
+        state.tasks[
+            id
+        ]
+    ){
+
+        showToast(
+            "Награда уже получена"
+        );
+
+        return;
+
+    }
+
+
+    if(
+        task.current <
+        task.max
+    ){
+
+        showToast(
+            "Задание ещё не выполнено"
+        );
+
+        return;
+
+    }
+
+
+    state.tasks[
+        id
+    ] =
+        true;
+
+
+    state.balance +=
+        task.reward;
+
+
+    renderTasks();
+
+    updateUI();
+
+
+    showToast(
+        "+" +
+        task.reward +
+        " NC"
+    );
+
+}
+
+
+
+/* =====================================================
+   ADMIN
+===================================================== */
+
+function isAdmin(){
+
+    /*
+    В Telegram проверяем реальный ID.
+
+    В обычном браузере доступ не даём.
+    */
+
+    if(
+        tg &&
+        tg.initDataUnsafe &&
+        tg.initDataUnsafe.user
+    ){
+
+        return (
+            Number(
+                tg.initDataUnsafe.user.id
+            ) ===
+            Number(
+                ADMIN_ID
+            )
+        );
+
+    }
+
+
+    return false;
+
+}
+
+
+function updateAdminUI(){
+
+    const allowed =
+        isAdmin();
 
 
     document
         .getElementById(
-            "page-" +
-            page
+            "adminHeaderButton"
         )
-        .classList.add(
-            "active"
-        );
+        .style.display =
+        allowed
+            ?
+            "block"
+            :
+            "none";
 
 
     document
-        .querySelectorAll(
-            ".nav-btn"
+        .getElementById(
+            "adminPanel"
         )
-        .forEach(
-            function(el){
+        .style.display =
+        allowed
+            ?
+            "block"
+            :
+            "none";
 
-                el.classList.remove(
-                    "active"
-                );
 
-            }
+    updateMythicButton();
+
+}
+
+
+function openAdmin(){
+
+    if(
+        !isAdmin()
+    ){
+
+        showToast(
+            "Нет прав администратора"
         );
 
+        return;
 
-    button.classList.add(
-        "active"
+    }
+
+
+    openPage(
+        "profile",
+        document.getElementById(
+            "nav-profile"
+        )
     );
 
 
-    if(
-        page === "garage"
-    ){
+    setTimeout(
+        function(){
 
-        renderGarage();
+            document
+                .getElementById(
+                    "adminPanel"
+                )
+                .scrollIntoView({
+
+                    behavior:"smooth",
+
+                    block:"start"
+
+                });
+
+        },
+        100
+    );
+
+}
+
+
+function adminAddMoney(
+    amount
+){
+
+    if(
+        !isAdmin()
+    ){
+        return;
+    }
+
+
+    state.balance +=
+        amount;
+
+
+    updateUI();
+
+
+    showToast(
+        "ADMIN: +" +
+        formatNumber(
+            amount
+        ) +
+        " NC"
+    );
+
+}
+
+
+function adminLevelUp(){
+
+    if(
+        !isAdmin()
+    ){
+        return;
+    }
+
+
+    state.level++;
+
+
+    updateUI();
+
+
+    showToast(
+        "ADMIN: уровень повышен"
+    );
+
+}
+
+
+function adminNextMythic(){
+
+    if(
+        !isAdmin()
+    ){
+        return;
+    }
+
+
+    state.forceNextMythic =
+        true;
+
+
+    updateUI();
+
+
+    showToast(
+        "Следующая прокрутка — мифическая"
+    );
+
+}
+
+
+function toggleMythicMode(){
+
+    if(
+        !isAdmin()
+    ){
+        return;
+    }
+
+
+    state.mythicMode =
+        !state.mythicMode;
+
+
+    updateMythicButton();
+
+    updateUI();
+
+
+    showToast(
+        state.mythicMode
+            ?
+            "Мифический режим включён"
+            :
+            "Мифический режим выключен"
+    );
+
+}
+
+
+function updateMythicButton(){
+
+    const button =
+        document.getElementById(
+            "mythicModeBtn"
+        );
+
+
+    if(!button){
+        return;
+    }
+
+
+    button.textContent =
+        state.mythicMode
+            ?
+            "МИФИК РЕЖИМ: ON"
+            :
+            "МИФИК РЕЖИМ: OFF";
+
+}
+
+
+function adminClearGarage(){
+
+    if(
+        !isAdmin()
+    ){
+        return;
+    }
+
+
+    state.garage =
+        [];
+
+
+    state.current =
+        null;
+
+
+    defaultPlate();
+
+    renderGarage();
+
+    updateUI();
+
+
+    showToast(
+        "Гараж очищен"
+    );
+
+}
+
+
+
+/* =====================================================
+   SERVER ADMIN ACTION
+===================================================== */
+
+async function sendAdminPlayerAction(
+    action
+){
+
+    if(
+        !isAdmin()
+    ){
+        return;
+    }
+
+
+    const target =
+        document
+            .getElementById(
+                "adminTargetId"
+            )
+            .value
+            .trim();
+
+
+    if(!target){
+
+        showToast(
+            "Введите Telegram ID"
+        );
+
+        return;
+
+    }
+
+
+    /*
+    Отправляем запрос серверу.
+    Если таких API ещё нет,
+    интерфейс не сломается.
+    */
+
+    try{
+
+        const response =
+            await fetch(
+                "/api/admin/player-action",
+                {
+
+                    method:"POST",
+
+                    headers:{
+
+                        "Content-Type":
+                            "application/json"
+
+                    },
+
+                    body:
+                        JSON.stringify({
+
+                            target_id:
+                                target,
+
+                            action:
+                                action,
+
+                            amount:
+                                action ===
+                                "money"
+                                    ?
+                                    10000
+                                    :
+                                    0,
+
+                            initData:
+                                tg
+                                    ?
+                                    tg.initData
+                                    :
+                                    ""
+
+                        })
+
+                }
+            );
+
+
+        let data = {};
+
+
+        try{
+
+            data =
+                await response.json();
+
+        }catch(e){}
+
+
+        if(
+            response.ok
+        ){
+
+            showToast(
+                data.message ||
+                "Админ-действие выполнено"
+            );
+
+        }else{
+
+            showToast(
+                data.error ||
+                "Для этой кнопки нужен серверный API"
+            );
+
+        }
+
+    }catch(e){
+
+        showToast(
+            "Не удалось связаться с сервером"
+        );
 
     }
 
 }
 
 
-/* TELEGRAM USER */
+
+/* =====================================================
+   TELEGRAM USER
+===================================================== */
 
 function loadTelegramUser(){
 
@@ -2362,6 +4419,30 @@ function loadTelegramUser(){
         !tg.initDataUnsafe ||
         !tg.initDataUnsafe.user
     ){
+
+        document
+            .getElementById(
+                "profileName"
+            )
+            .textContent =
+            "Игрок";
+
+
+        document
+            .getElementById(
+                "profileUsername"
+            )
+            .textContent =
+            "Откройте через Telegram";
+
+
+        document
+            .getElementById(
+                "profileId"
+            )
+            .textContent =
+            "ID: —";
+
 
         return;
 
@@ -2377,7 +4458,9 @@ function loadTelegramUser(){
         "Игрок";
 
 
-    if(user.last_name){
+    if(
+        user.last_name
+    ){
 
         name +=
             " " +
@@ -2400,9 +4483,11 @@ function loadTelegramUser(){
         )
         .textContent =
         user.username
-            ? "@" +
-              user.username
-            : "Без username";
+            ?
+            "@" +
+            user.username
+            :
+            "Без username";
 
 
     document
@@ -2414,7 +4499,9 @@ function loadTelegramUser(){
         user.id;
 
 
-    if(user.photo_url){
+    if(
+        user.photo_url
+    ){
 
         document
             .getElementById(
@@ -2431,37 +4518,168 @@ function loadTelegramUser(){
 
     }
 
+}
+
+
+
+/* =====================================================
+   PAGE NAVIGATION
+===================================================== */
+
+function openPage(
+    page,
+    button
+){
+
+    document
+        .querySelectorAll(
+            ".page"
+        )
+        .forEach(
+            function(element){
+
+                element
+                    .classList
+                    .remove(
+                        "active"
+                    );
+
+            }
+        );
+
+
+    const target =
+        document.getElementById(
+            "page-" +
+            page
+        );
+
 
     if(
-        Number(
-            user.id
-        ) ===
-        Number(
-            ADMIN_ID
-        )
+        target
     ){
 
-        document
-            .getElementById(
-                "adminBadge"
-            )
-            .style.display =
-            "block";
-
-
-        document
-            .getElementById(
-                "adminPanel"
-            )
-            .style.display =
-            "block";
+        target
+            .classList
+            .add(
+                "active"
+            );
 
     }
+
+
+    document
+        .querySelectorAll(
+            ".nav-btn"
+        )
+        .forEach(
+            function(element){
+
+                element
+                    .classList
+                    .remove(
+                        "active"
+                    );
+
+            }
+        );
+
+
+    if(
+        button
+    ){
+
+        button
+            .classList
+            .add(
+                "active"
+            );
+
+    }
+
+
+    if(
+        page ===
+        "garage"
+    ){
+
+        renderGarage();
+
+    }
+
+
+    if(
+        page ===
+        "market"
+    ){
+
+        renderMarket();
+
+    }
+
+
+    if(
+        page ===
+        "tasks"
+    ){
+
+        renderTasks();
+
+    }
+
+
+    if(
+        page ===
+        "profile"
+    ){
+
+        updateUI();
+
+        updateAdminUI();
+
+    }
+
+
+    window.scrollTo({
+
+        top:0,
+
+        behavior:"smooth"
+
+    });
 
 }
 
 
-/* UI */
+
+/* =====================================================
+   PLATE TEXT
+===================================================== */
+
+function plateText(
+    plate
+){
+
+    if(!plate){
+        return "";
+    }
+
+
+    return (
+        plate.first +
+        plate.digits +
+        plate.last +
+        " " +
+        plate.region
+    );
+
+}
+
+
+
+/* =====================================================
+   UPDATE UI
+===================================================== */
 
 function updateUI(){
 
@@ -2492,23 +4710,65 @@ function updateUI(){
         state.garage.length;
 
 
+    document
+        .getElementById(
+            "profileBalance"
+        )
+        .textContent =
+        formatNumber(
+            state.balance
+        ) +
+        " NC";
+
+
+    document
+        .getElementById(
+            "profileLevel"
+        )
+        .textContent =
+        state.level;
+
+
+    document
+        .getElementById(
+            "profileGarage"
+        )
+        .textContent =
+        state.garage.length;
+
+
+    document
+        .getElementById(
+            "profileSpins"
+        )
+        .textContent =
+        state.spins;
+
+
+    updateMythicButton();
+
+
     saveLocal();
 
 }
 
 
-/* SAVE LOCAL */
+
+/* =====================================================
+   LOCAL STORAGE
+===================================================== */
 
 function saveLocal(){
 
     try{
 
-        localStorage.setItem(
-            "nomerClubState",
-            JSON.stringify(
-                state
-            )
-        );
+        localStorage
+            .setItem(
+                "nomerClubStateV3",
+                JSON.stringify(
+                    state
+                )
+            );
 
     }catch(e){}
 
@@ -2520,9 +4780,10 @@ function loadLocal(){
     try{
 
         const saved =
-            localStorage.getItem(
-                "nomerClubState"
-            );
+            localStorage
+                .getItem(
+                    "nomerClubStateV3"
+                );
 
 
         if(!saved){
@@ -2559,6 +4820,27 @@ function loadLocal(){
 
 
         if(
+            typeof data.spins ===
+            "number"
+        ){
+
+            state.spins =
+                data.spins;
+
+        }
+
+
+        if(
+            data.current
+        ){
+
+            state.current =
+                data.current;
+
+        }
+
+
+        if(
             Array.isArray(
                 data.garage
             )
@@ -2570,57 +4852,81 @@ function loadLocal(){
         }
 
 
-        if(data.current){
+        if(
+            typeof data.mythicMode ===
+            "boolean"
+        ){
 
-            state.current =
-                data.current;
+            state.mythicMode =
+                data.mythicMode;
 
         }
 
-    }catch(e){}
 
-}
+        if(
+            typeof data.forceNextMythic ===
+            "boolean"
+        ){
 
+            state.forceNextMythic =
+                data.forceNextMythic;
 
-/* FORMAT */
-
-function formatNumber(number){
-
-    return Number(
-        number || 0
-    ).toLocaleString(
-        "ru-RU"
-    );
-
-}
+        }
 
 
-/* TEXT */
+        if(
+            data.tasks
+        ){
 
-function plateText(plate){
+            state.tasks =
+                {
 
-    if(!plate){
-        return "";
+                    ...state.tasks,
+
+                    ...data.tasks
+
+                };
+
+        }
+
+
+        if(
+            data.stats
+        ){
+
+            state.stats =
+                {
+
+                    ...state.stats,
+
+                    ...data.stats
+
+                };
+
+        }
+
+    }catch(e){
+
+        console.log(
+            e
+        );
+
     }
 
-
-    return (
-        plate.first +
-        plate.digits +
-        plate.last +
-        " " +
-        plate.region
-    );
-
 }
 
 
-/* TOAST */
 
-let toastTimer;
+/* =====================================================
+   TOAST
+===================================================== */
+
+let toastTimer = null;
 
 
-function showToast(text){
+function showToast(
+    text
+){
 
     const toast =
         document.getElementById(
@@ -2632,9 +4938,19 @@ function showToast(text){
         text;
 
 
-    toast.classList.add(
-        "show"
-    );
+    toast.classList
+        .remove(
+            "show"
+        );
+
+
+    void toast.offsetWidth;
+
+
+    toast.classList
+        .add(
+            "show"
+        );
 
 
     clearTimeout(
@@ -2646,46 +4962,43 @@ function showToast(text){
         setTimeout(
             function(){
 
-                toast.classList.remove(
-                    "show"
-                );
+                toast.classList
+                    .remove(
+                        "show"
+                    );
 
             },
-            2600
+            3000
         );
 
 }
 
 
-/* SLEEP */
 
-function sleep(ms){
-
-    return new Promise(
-        resolve =>
-            setTimeout(
-                resolve,
-                ms
-            )
-    );
-
-}
-
-
-/* START */
+/* =====================================================
+   START
+===================================================== */
 
 function start(){
 
     loadLocal();
 
+
     loadTelegramUser();
 
-    updateUI();
 
     renderGarage();
 
 
-    if(state.current){
+    renderMarket();
+
+
+    renderTasks();
+
+
+    if(
+        state.current
+    ){
 
         displayPlate(
             state.current
@@ -2696,6 +5009,12 @@ function start(){
         defaultPlate();
 
     }
+
+
+    updateUI();
+
+
+    updateAdminUI();
 
 }
 
