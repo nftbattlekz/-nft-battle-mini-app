@@ -2,16 +2,8 @@
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
-
-<meta
-    name="viewport"
-    content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover"
->
-
-<meta
-    name="theme-color"
-    content="#07111f"
->
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="theme-color" content="#07111f">
 
 <title>NOMER CLUB</title>
 
@@ -21,24 +13,15 @@
 :root{
     --bg:#050a12;
     --bg2:#07111f;
-
     --card:#0d1928;
-    --card2:#111f31;
-
     --line:#1f3a55;
-
     --text:#f4f8ff;
     --muted:#7f95ac;
-
     --blue:#2ca6ff;
     --cyan:#64e3ff;
-
     --green:#4adf9d;
-
     --gold:#ffd166;
-
     --red:#ff6680;
-
     --purple:#aa84ff;
 }
 
@@ -53,7 +36,6 @@ html{
 
 body{
     margin:0;
-
     min-height:100vh;
 
     color:var(--text);
@@ -94,32 +76,26 @@ button{
     display:none!important;
 }
 
-/* APP */
-
 .app{
-    max-width:660px;
-
+    max-width:680px;
     margin:auto;
 
     padding:
         12px
         12px
-        108px;
+        110px;
 }
 
 /* HEADER */
 
 .top{
     position:sticky;
-
     top:0;
 
     z-index:40;
 
     display:flex;
-
     align-items:center;
-
     justify-content:space-between;
 
     gap:10px;
@@ -136,15 +112,12 @@ button{
             transparent
         );
 
-    backdrop-filter:
-        blur(14px);
+    backdrop-filter:blur(14px);
 }
 
 .brand{
     display:flex;
-
     align-items:center;
-
     gap:10px;
 }
 
@@ -155,7 +128,6 @@ button{
     border-radius:14px;
 
     display:grid;
-
     place-items:center;
 
     background:
@@ -170,61 +142,11 @@ button{
     box-shadow:
         0 0 28px
         rgba(44,166,255,.28);
-
-    position:relative;
-
-    overflow:hidden;
-}
-
-.logo:after{
-    content:"";
-
-    position:absolute;
-
-    inset:-30px;
-
-    width:28px;
-
-    background:
-        linear-gradient(
-            90deg,
-            transparent,
-            #fff7,
-            transparent
-        );
-
-    transform:
-        translateX(-65px)
-        rotate(20deg);
-
-    animation:
-        shine
-        4s
-        infinite;
-}
-
-@keyframes shine{
-
-    0%,
-    55%{
-        transform:
-            translateX(-65px)
-            rotate(20deg);
-    }
-
-    85%,
-    100%{
-        transform:
-            translateX(95px)
-            rotate(20deg);
-    }
 }
 
 .brand h1{
     font-size:16px;
-
     margin:0;
-
     letter-spacing:.6px;
 }
 
@@ -234,13 +156,11 @@ button{
     color:var(--muted);
 
     font-size:9px;
-
     letter-spacing:1px;
 }
 
 .top-actions{
     display:flex;
-
     gap:6px;
 }
 
@@ -273,7 +193,7 @@ button{
     background:#211a0c;
 }
 
-/* PAGE */
+/* PAGES */
 
 .page{
     display:none;
@@ -292,14 +212,11 @@ button{
 
     from{
         opacity:0;
-
-        transform:
-            translateY(7px);
+        transform:translateY(7px);
     }
 
     to{
         opacity:1;
-
         transform:none;
     }
 }
@@ -337,12 +254,11 @@ button{
 
     position:absolute;
 
-    width:240px;
-    height:240px;
+    width:260px;
+    height:260px;
 
-    right:-110px;
-
-    top:-130px;
+    right:-115px;
+    top:-145px;
 
     border-radius:50%;
 
@@ -356,7 +272,6 @@ button{
 
 .hero>*{
     position:relative;
-
     z-index:1;
 }
 
@@ -364,7 +279,6 @@ button{
     color:#72d9ff;
 
     font-size:10px;
-
     font-weight:950;
 
     letter-spacing:1.3px;
@@ -432,12 +346,12 @@ button{
     margin-top:4px;
 }
 
-/* STAGE */
+/* NUMBER STAGE */
 
 .stage{
     position:relative;
 
-    overflow:hidden;
+    overflow:visible;
 
     border:
         1px
@@ -449,107 +363,58 @@ button{
     background:#050c15aa;
 
     padding:
-        12px
+        16px
         8px
-        14px;
+        18px;
+
+    margin-bottom:10px;
 }
 
-.stage:before{
-    content:"";
-
-    position:absolute;
-
-    left:-20%;
-
-    right:-20%;
-
-    height:1px;
-
-    background:
-        linear-gradient(
-            90deg,
-            transparent,
-            #61dfff,
-            transparent
-        );
-
-    animation:
-        scan
-        3s
-        linear
-        infinite;
-}
-
-@keyframes scan{
-
-    from{
-        top:0;
-
-        opacity:0;
-    }
-
-    15%{
-        opacity:.8;
-    }
-
-    to{
-        top:100%;
-
-        opacity:0;
-    }
-}
-
-/* NUMBER */
+/* ==============================
+   БОЛЬШОЙ РЕАЛИСТИЧНЫЙ НОМЕР
+============================== */
 
 .plate{
-    width:
-        min(
-            100%,
-            500px
-        );
+    width:100%;
 
-    aspect-ratio:
-        5.2/1;
+    max-width:620px;
 
-    min-height:88px;
+    height:142px;
 
     margin:
-        12px
-        auto;
+        8px
+        auto
+        14px;
 
-    display:flex;
+    display:grid;
 
-    align-items:center;
+    grid-template-columns:
+        minmax(0,1fr)
+        132px;
 
-    justify-content:space-between;
-
-    padding:
-        10px
-        12px
-        10px
-        22px;
+    align-items:stretch;
 
     border:
-        2px
+        3px
         solid
-        #111;
+        #1a1a1a;
 
-    border-radius:9px;
+    border-radius:13px;
 
     background:
         linear-gradient(
             180deg,
-            #fdfdfb 0%,
-            #f2f2ee 58%,
-            #e3e5e5 100%
+            #ffffff 0%,
+            #f4f4f0 55%,
+            #e4e6e5 100%
         );
 
-    color:#0c0c0c;
+    color:#0b0b0b;
 
     box-shadow:
-        inset 0 0 0 2px #cfd3d4,
+        inset 0 0 0 2px #b7bcbe,
         inset 0 1px 0 #fff,
-        0 18px 35px #0008;
+        0 22px 44px #0008;
 
     position:relative;
 
@@ -561,17 +426,16 @@ button{
 
     position:absolute;
 
-    inset:4px;
+    inset:6px;
 
     border:
-        1px
+        2px
         solid
-        #73797d;
+        #666b6d;
 
-    border-radius:5px;
+    border-radius:7px;
 
-    box-shadow:
-        inset 0 0 0 1px #fff9;
+    pointer-events:none;
 }
 
 .plate:after{
@@ -583,13 +447,13 @@ button{
 
     background:
         linear-gradient(
-            105deg,
+            110deg,
             transparent 0 42%,
-            rgba(255,255,255,.72) 49%,
+            rgba(255,255,255,.65) 49%,
             transparent 56%
         );
 
-    opacity:.28;
+    opacity:.2;
 
     pointer-events:none;
 }
@@ -597,8 +461,8 @@ button{
 .bolt{
     position:absolute;
 
-    width:6px;
-    height:6px;
+    width:10px;
+    height:10px;
 
     border-radius:50%;
 
@@ -606,19 +470,19 @@ button{
         radial-gradient(
             circle at 35% 35%,
             #fff,
-            #8a8f92 45%,
-            #42474a 70%
+            #9fa4a6 40%,
+            #484d4f 68%
         );
 
     box-shadow:
-        0 1px 1px
-        #0004;
+        0 1px 2px
+        #0006;
 
-    z-index:3;
+    z-index:4;
 }
 
 .bolt.left{
-    left:8px;
+    left:10px;
 
     top:50%;
 
@@ -627,7 +491,7 @@ button{
 }
 
 .bolt.right{
-    right:7px;
+    right:10px;
 
     top:50%;
 
@@ -635,11 +499,23 @@ button{
         translateY(-50%);
 }
 
-.plate-code,
-.plate-region{
+.plate-main{
     position:relative;
 
     z-index:2;
+
+    display:flex;
+
+    align-items:center;
+    justify-content:center;
+
+    padding:
+        0
+        16px
+        0
+        24px;
+
+    min-width:0;
 }
 
 .plate-code{
@@ -651,79 +527,91 @@ button{
 
     font-size:
         clamp(
-            31px,
-            8vw,
-            50px
+            54px,
+            14vw,
+            92px
         );
 
     font-weight:900;
 
-    letter-spacing:1.6px;
+    letter-spacing:3px;
 
-    line-height:1;
+    line-height:.95;
 
     white-space:nowrap;
 
-    text-shadow:
-        .35px
-        .35px
-        0
-        #000;
+    transform:
+        scaleX(.92);
+
+    transform-origin:center;
 }
 
 .plate-region{
-    min-width:78px;
+    position:relative;
 
-    height:58px;
+    z-index:2;
 
     border-left:
-        2px
-        solid
-        #151515;
-
-    text-align:center;
-
-    font-family:
-        Arial,
-        sans-serif;
-
-    font-size:19px;
-
-    font-weight:900;
-
-    line-height:1;
-
-    padding:
-        3px
         4px
-        0
-        9px;
+        solid
+        #171717;
 
     display:flex;
 
     flex-direction:column;
 
+    align-items:center;
     justify-content:center;
 
+    padding:
+        5px
+        10px
+        6px;
+}
+
+.region-number{
+    font-family:
+        Arial,
+        sans-serif;
+
+    font-size:
+        clamp(
+            42px,
+            10vw,
+            66px
+        );
+
+    font-weight:900;
+
+    line-height:.9;
+
+    letter-spacing:1px;
+}
+
+.region-bottom{
+    display:flex;
+
     align-items:center;
+    justify-content:center;
+
+    gap:6px;
+
+    margin-top:8px;
 }
 
 .plate-country{
-    font-size:8px;
+    font:
+        900
+        18px/1
+        Arial,
+        sans-serif;
 
     letter-spacing:.7px;
-
-    margin-top:4px;
-
-    font-weight:700;
 }
 
 .ru-flag{
-    width:18px;
-
-    height:11px;
-
-    margin-top:3px;
+    width:32px;
+    height:20px;
 
     border:
         1px
@@ -747,7 +635,7 @@ button{
 .plate.spinning{
     animation:
         shake
-        .09s
+        .085s
         linear
         infinite
         alternate;
@@ -758,13 +646,13 @@ button{
     from{
         transform:
             translateX(-2px)
-            scale(.996);
+            scale(.997);
     }
 
     to{
         transform:
             translateX(2px)
-            scale(1.004);
+            scale(1.003);
     }
 }
 
@@ -774,7 +662,6 @@ button{
     display:flex;
 
     justify-content:space-between;
-
     align-items:center;
 
     gap:8px;
@@ -854,7 +741,7 @@ button{
         0
         14px;
 
-    color:white;
+    color:#fff;
 
     font-weight:950;
 
@@ -964,37 +851,14 @@ button{
 
 .quick.show{
     display:grid;
-
-    animation:
-        pop
-        .25s
-        ease;
 }
 
-@keyframes pop{
-
-    from{
-        opacity:0;
-
-        transform:
-            translateY(5px)
-            scale(.98);
-    }
-
-    to{
-        opacity:1;
-
-        transform:none;
-    }
-}
-
-/* CARDS */
+/* SECTIONS */
 
 .section-head{
     display:flex;
 
     justify-content:space-between;
-
     align-items:flex-end;
 
     gap:10px;
@@ -1044,34 +908,12 @@ button{
     box-shadow:
         0 12px 30px
         #0003;
-
-    animation:
-        cardIn
-        .2s
-        ease;
-}
-
-@keyframes cardIn{
-
-    from{
-        opacity:0;
-
-        transform:
-            translateY(5px);
-    }
-
-    to{
-        opacity:1;
-
-        transform:none;
-    }
 }
 
 .row{
     display:flex;
 
     align-items:center;
-
     justify-content:space-between;
 
     gap:10px;
@@ -1184,15 +1026,6 @@ button{
     outline:0;
 }
 
-.input:focus,
-.select:focus{
-    border-color:#2f83bf;
-
-    box-shadow:
-        0 0 0 3px
-        #2ca6ff14;
-}
-
 .empty{
     text-align:center;
 
@@ -1237,6 +1070,8 @@ button{
     border-radius:99px;
 }
 
+/* PROFILE */
+
 .profile-head{
     display:flex;
 
@@ -1247,7 +1082,6 @@ button{
 
 .avatar{
     width:54px;
-
     height:54px;
 
     display:grid;
@@ -1332,13 +1166,12 @@ button{
     font-size:8px;
 }
 
-/* NAV */
+/* NAVIGATION */
 
 .nav{
     position:fixed;
 
     left:50%;
-
     bottom:0;
 
     transform:
@@ -1348,7 +1181,7 @@ button{
 
     width:
         min(
-            660px,
+            680px,
             100%
         );
 
@@ -1421,7 +1254,6 @@ button{
     z-index:110;
 
     left:50%;
-
     bottom:92px;
 
     transform:
@@ -1488,7 +1320,6 @@ button{
     display:none;
 
     align-items:flex-end;
-
     justify-content:center;
 }
 
@@ -1499,7 +1330,7 @@ button{
 .modal{
     width:
         min(
-            660px,
+            680px,
             100%
         );
 
@@ -1575,7 +1406,6 @@ button{
     top:-20px;
 
     width:7px;
-
     height:13px;
 
     border-radius:2px;
@@ -1598,24 +1428,55 @@ button{
     }
 }
 
-@media(max-width:400px){
+/* MOBILE */
+
+@media(max-width:520px){
 
     .app{
-        padding-left:9px;
+        padding-left:8px;
 
-        padding-right:9px;
+        padding-right:8px;
     }
 
     .hero{
-        padding:13px;
+        padding:11px;
+    }
+
+    .plate{
+        height:118px;
+
+        grid-template-columns:
+            minmax(0,1fr)
+            105px;
     }
 
     .plate-code{
-        font-size:29px;
+        font-size:
+            clamp(
+                44px,
+                13vw,
+                68px
+            );
+
+        letter-spacing:1.6px;
     }
 
-    .plate-region{
-        min-width:60px;
+    .region-number{
+        font-size:
+            clamp(
+                38px,
+                10vw,
+                54px
+            );
+    }
+
+    .plate-country{
+        font-size:14px;
+    }
+
+    .ru-flag{
+        width:27px;
+        height:17px;
     }
 
     .admin-stats{
@@ -1628,6 +1489,16 @@ button{
         font-size:10px;
 
         padding:8px;
+    }
+
+    .result{
+        align-items:flex-start;
+
+        flex-direction:column;
+    }
+
+    .hint{
+        text-align:left;
     }
 }
 </style>
@@ -1670,19 +1541,26 @@ button{
         <button
             class="chip admin-chip hidden"
             id="admin-btn">
+
             ADMIN
+
         </button>
+
 
         <div
             class="chip"
             id="balance">
+
             — NC
+
         </div>
 
     </div>
 
 </header>
 
+
+<!-- HOME -->
 
 <section
     class="page active"
@@ -1694,15 +1572,26 @@ button{
             ГЕНЕРАТОР НОМЕРОВ
         </div>
 
+
         <h2>
             Собери лучшую коллекцию
         </h2>
 
+
         <p class="muted small">
+
             Крутить можно
-            <b>без ограничений</b>.
+
+            <b>
+                без ограничений
+            </b>.
+
             Каждая прокрутка стоит
-            <b>100 NC</b>.
+
+            <b>
+                100 NC
+            </b>.
+
         </p>
 
 
@@ -1755,16 +1644,25 @@ button{
                 class="plate"
                 id="plate">
 
-                <span class="bolt left"></span>
+                <span
+                    class="bolt left">
+                </span>
 
-                <span class="bolt right"></span>
+
+                <span
+                    class="bolt right">
+                </span>
 
 
-                <div
-                    class="plate-code"
-                    id="plate-code">
+                <div class="plate-main">
 
-                    A 777 AA
+                    <div
+                        class="plate-code"
+                        id="plate-code">
+
+                        A 123 BC
+
+                    </div>
 
                 </div>
 
@@ -1773,15 +1671,21 @@ button{
                     class="plate-region"
                     id="plate-region">
 
-                    <b>
+                    <div class="region-number">
                         77
-                    </b>
+                    </div>
 
-                    <span class="plate-country">
-                        RUS
-                    </span>
 
-                    <span class="ru-flag"></span>
+                    <div class="region-bottom">
+
+                        <span class="plate-country">
+                            RUS
+                        </span>
+
+
+                        <span class="ru-flag"></span>
+
+                    </div>
 
                 </div>
 
@@ -1891,6 +1795,8 @@ button{
 </section>
 
 
+<!-- COLLECTION -->
+
 <section
     class="page"
     id="page-collection">
@@ -1978,6 +1884,8 @@ button{
 </section>
 
 
+<!-- MARKET -->
+
 <section
     class="page"
     id="page-market">
@@ -2019,6 +1927,8 @@ button{
 </section>
 
 
+<!-- TASKS -->
+
 <section
     class="page"
     id="page-tasks">
@@ -2033,7 +1943,7 @@ button{
 
             <p>
                 Прокрутки бесконечные,
-                прогресс заданий считается
+                прогресс считается
             </p>
 
         </div>
@@ -2071,6 +1981,8 @@ button{
 
 </section>
 
+
+<!-- PROFILE -->
 
 <section
     class="page"
@@ -2152,6 +2064,8 @@ button{
 </section>
 
 
+<!-- ADMIN -->
+
 <section
     class="page"
     id="page-admin">
@@ -2166,9 +2080,11 @@ button{
                     CREATOR CONTROL
                 </div>
 
+
                 <div class="big">
                     Админ-панель
                 </div>
+
 
                 <div class="muted small">
                     ID 8518976778
@@ -2178,7 +2094,9 @@ button{
 
 
             <span class="badge creator">
+
                 ONLINE
+
             </span>
 
         </div>
@@ -2270,6 +2188,8 @@ button{
 
 </div>
 
+
+<!-- NAVIGATION -->
 
 <nav class="nav">
 
@@ -2619,7 +2539,7 @@ async function api(
                         "",
 
                     "X-Client-Version":
-                        "6.4"
+                        "6.4-big"
                 },
 
                 body:
@@ -2685,15 +2605,19 @@ function regionHTML(
 
     return `
 
-        <b>
+        <div class="region-number">
             ${esc(region)}
-        </b>
+        </div>
 
-        <span class="plate-country">
-            RUS
-        </span>
+        <div class="region-bottom">
 
-        <span class="ru-flag"></span>
+            <span class="plate-country">
+                RUS
+            </span>
+
+            <span class="ru-flag"></span>
+
+        </div>
     `;
 }
 
@@ -3141,7 +3065,13 @@ function sync(){
 
                     ${esc(me.name)}
 
-                    ${me.creator ? "👑" : ""}
+                    ${
+                        me.creator
+                        ?
+                        "👑"
+                        :
+                        ""
+                    }
 
                 </div>
 
@@ -3546,32 +3476,38 @@ async function spin(){
         sync();
 
 
-        if(
+        notify(
+
             result.auto_sold
-        ){
 
-            notify(
+            ?
 
-                "Автопродажа + новая прокрутка",
+            "Автопродажа + новая прокрутка"
 
-                "Предыдущий: +"
+            :
+
+            result.plate.rarity,
+
+            result.auto_sold
+
+            ?
+
+            (
+                "Предыдущий +"
                 +
                 fmt(
                     result.auto_sold.reward
                 )
                 +
-                " NC • Новый: "
+                " NC • Новый "
                 +
                 result.plate.code
-            );
+            )
 
-        }else{
+            :
 
-            notify(
-                result.plate.rarity,
-                result.plate.code
-            );
-        }
+            result.plate.code
+        );
 
 
     }catch(error){
@@ -3677,7 +3613,9 @@ async function sellSystem(
                 "POST",
                 {
                     plate_id:
-                        Number(id)
+                        Number(
+                            id
+                        )
                 }
             );
 
@@ -3688,7 +3626,9 @@ async function sellSystem(
 
         if(
             S.last?.id ===
-            Number(id)
+            Number(
+                id
+            )
         ){
 
             S.last =
@@ -4115,6 +4055,7 @@ async function loadTasks(){
             achievements
         ] =
             await Promise.all([
+
                 api(
                     "tasks"
                 ),
@@ -4903,6 +4844,7 @@ function modal({
                 ()=>{
 
                     closeModal(
+
                         input
 
                         ?
@@ -5315,37 +5257,8 @@ async function action(
 
 
             notify(
-
                 "Админ",
-
-                button.dataset.mode ===
-                "clear"
-
-                ?
-
-                "Очередь мификов очищена"
-
-                :
-
-                button.dataset.mode ===
-                "all_off"
-
-                ?
-
-                "Все гарантии мифика отключены"
-
-                :
-
-                button.dataset.mode ===
-                "queue"
-
-                ?
-
-                "Гарантированный мифик добавлен"
-
-                :
-
-                "Режим 100% мифика изменён"
+                "Настройка мифика изменена"
             );
 
 
@@ -5730,41 +5643,6 @@ $("modal-back")
 
     try{
 
-        const health =
-            await fetch(
-                "/health",
-                {
-                    cache:
-                        "no-store"
-                }
-            )
-            .then(
-                response =>
-                    response.json()
-            )
-            .catch(
-                ()=>null
-            );
-
-
-        if(
-            health?.version
-            &&
-            !String(
-                health.version
-            )
-            .includes(
-                "6.4"
-            )
-        ){
-
-            notify(
-                "Внимание",
-                "Render запустил старый server.py"
-            );
-        }
-
-
         await refreshMe();
 
 
@@ -5773,7 +5651,7 @@ $("modal-back")
         ){
 
             showPlate(
-                "A777AA 77"
+                "A123BC 77"
             );
         }
 
