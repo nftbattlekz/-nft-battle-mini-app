@@ -2,14 +2,8 @@
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
-
-<meta
-  name="viewport"
-  content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover"
->
-
-<meta name="theme-color" content="#050b14">
-
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="theme-color" content="#07101d">
 <title>NOMER CLUB</title>
 
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
@@ -17,22 +11,19 @@
 <style>
 :root{
     --bg:#050a12;
-    --bg2:#07111e;
     --card:#0d1928;
     --card2:#111f31;
-    --line:#1d3854;
+    --line:#1e3a56;
 
     --text:#f4f8ff;
     --muted:#7d94ad;
 
-    --blue:#279cff;
-    --cyan:#5cdcff;
-    --green:#48df9b;
-    --yellow:#ffd166;
-    --red:#ff637d;
-    --purple:#a77cff;
-
-    --shadow:0 20px 60px rgba(0,0,0,.35);
+    --blue:#2ca6ff;
+    --cyan:#64e3ff;
+    --green:#4adf9d;
+    --gold:#ffd166;
+    --red:#ff6680;
+    --purple:#a884ff;
 }
 
 *{
@@ -47,12 +38,10 @@ html{
 body{
     margin:0;
     min-height:100vh;
-    overflow-x:hidden;
-
     color:var(--text);
 
-    font-family:
-        Inter,
+    font:
+        14px/1.45
         -apple-system,
         BlinkMacSystemFont,
         "Segoe UI",
@@ -61,50 +50,16 @@ body{
     background:
         radial-gradient(
             circle at 50% -10%,
-            rgba(38,145,255,.20),
-            transparent 35%
-        ),
-        radial-gradient(
-            circle at 110% 20%,
-            rgba(72,225,255,.09),
-            transparent 27%
+            rgba(44,166,255,.2),
+            transparent 34%
         ),
         linear-gradient(
             180deg,
-            var(--bg2),
+            #07111f,
             var(--bg)
         );
-}
 
-body::before{
-    content:"";
-
-    position:fixed;
-    inset:0;
-
-    pointer-events:none;
-
-    opacity:.17;
-
-    background-image:
-        linear-gradient(
-            rgba(255,255,255,.025) 1px,
-            transparent 1px
-        ),
-        linear-gradient(
-            90deg,
-            rgba(255,255,255,.025) 1px,
-            transparent 1px
-        );
-
-    background-size:30px 30px;
-
-    mask-image:
-        linear-gradient(
-            to bottom,
-            black,
-            transparent 75%
-        );
+    overflow-x:hidden;
 }
 
 button,
@@ -118,54 +73,43 @@ button{
 }
 
 .hidden{
-    display:none !important;
+    display:none!important;
 }
 
-/* =========================
-   APP
-========================= */
+/* APP */
 
 .app{
-    position:relative;
-    z-index:2;
-
-    max-width:650px;
-
-    margin:0 auto;
-
+    max-width:660px;
+    margin:auto;
     padding:
         12px
         12px
-        112px;
+        108px;
 }
 
-/* =========================
-   HEADER
-========================= */
+/* HEADER */
 
-.header{
+.top{
     position:sticky;
-
     top:0;
-
-    z-index:50;
+    z-index:30;
 
     display:flex;
-    justify-content:space-between;
     align-items:center;
+    justify-content:space-between;
 
     gap:10px;
 
     padding:
         8px
         0
-        15px;
+        14px;
 
     background:
         linear-gradient(
             180deg,
-            rgba(7,17,30,.98) 72%,
-            rgba(7,17,30,0)
+            rgba(7,17,31,.98) 70%,
+            transparent
         );
 
     backdrop-filter:blur(14px);
@@ -174,160 +118,126 @@ button{
 .brand{
     display:flex;
     align-items:center;
-
     gap:10px;
 }
 
 .logo{
-    position:relative;
+    width:42px;
+    height:42px;
 
-    width:43px;
-    height:43px;
+    border-radius:14px;
 
     display:grid;
     place-items:center;
 
-    overflow:hidden;
-
-    border-radius:14px;
-
     background:
         linear-gradient(
             145deg,
-            #147be7,
-            #55d8ff
+            #147ce8,
+            #59ddff
         );
 
-    font-size:15px;
     font-weight:1000;
 
     box-shadow:
-        0 0 28px rgba(39,156,255,.30);
+        0 0 28px
+        rgba(44,166,255,.28);
+
+    position:relative;
+    overflow:hidden;
 }
 
-.logo::after{
+.logo:after{
     content:"";
 
     position:absolute;
 
-    top:-30px;
-    bottom:-30px;
+    inset:-30px;
 
-    width:35px;
+    width:28px;
 
     background:
         linear-gradient(
             90deg,
             transparent,
-            rgba(255,255,255,.45),
+            #fff7,
             transparent
         );
 
     transform:
-        translateX(-70px)
+        translateX(-65px)
         rotate(20deg);
 
     animation:
-        logoLight
+        shine
         4s
         infinite;
 }
 
-@keyframes logoLight{
+@keyframes shine{
     0%,55%{
         transform:
-            translateX(-70px)
+            translateX(-65px)
             rotate(20deg);
     }
 
     85%,100%{
         transform:
-            translateX(80px)
+            translateX(95px)
             rotate(20deg);
     }
 }
 
-.brand-title{
+.brand h1{
+    font-size:16px;
     margin:0;
-
-    font-size:17px;
-    font-weight:950;
-
     letter-spacing:.6px;
 }
 
-.brand-sub{
-    margin-top:2px;
+.brand small{
+    display:block;
 
     color:var(--muted);
 
     font-size:9px;
-
-    letter-spacing:1.1px;
+    letter-spacing:1px;
 }
 
-.header-actions{
+.top-actions{
     display:flex;
-    align-items:center;
-
     gap:6px;
 }
 
-.balance{
-    padding:
-        9px
-        10px;
-
-    white-space:nowrap;
-
+.chip{
     border:
         1px
         solid
         var(--line);
 
+    background:#0b1725;
+
+    color:var(--text);
+
     border-radius:12px;
-
-    background:
-        rgba(13,25,40,.92);
-
-    font-size:12px;
-    font-weight:900;
-}
-
-.admin-button{
-    min-height:37px;
 
     padding:
-        0
-        11px;
+        9px
+        10px;
 
-    border:
-        1px
-        solid
-        #745b20;
+    font-weight:900;
 
-    border-radius:12px;
-
-    color:#ffe08a;
-
-    background:
-        linear-gradient(
-            145deg,
-            #2a210d,
-            #18150d
-        );
-
-    font-size:10px;
-    font-weight:950;
-
-    box-shadow:
-        0 0 20px
-        rgba(255,208,95,.10);
+    white-space:nowrap;
 }
 
-/* =========================
-   PAGES
-========================= */
+.admin-chip{
+    color:#ffe18b;
+
+    border-color:#6d5823;
+
+    background:#211a0c;
+}
+
+/* PAGES */
 
 .page{
     display:none;
@@ -337,16 +247,15 @@ button{
     display:block;
 
     animation:
-        pageShow
-        .24s
+        pageIn
+        .22s
         ease;
 }
 
-@keyframes pageShow{
+@keyframes pageIn{
     from{
         opacity:0;
-        transform:
-            translateY(7px);
+        transform:translateY(7px);
     }
 
     to{
@@ -355,112 +264,86 @@ button{
     }
 }
 
-/* =========================
-   HERO
-========================= */
+/* HERO */
 
 .hero{
     position:relative;
 
     overflow:hidden;
 
-    padding:16px;
-
     border:
         1px
         solid
-        #203c5a;
+        #21405e;
 
     border-radius:25px;
+
+    padding:16px;
 
     background:
         linear-gradient(
             145deg,
-            rgba(17,36,59,.96),
-            rgba(7,15,25,.97)
+            rgba(18,38,61,.96),
+            rgba(7,15,25,.98)
         );
 
-    box-shadow:var(--shadow);
+    box-shadow:
+        0 20px 55px #0006;
 }
 
-.hero::before{
+.hero:before{
     content:"";
 
     position:absolute;
 
-    width:250px;
-    height:250px;
+    width:240px;
+    height:240px;
 
-    top:-145px;
     right:-110px;
+    top:-130px;
 
     border-radius:50%;
 
     background:
         radial-gradient(
             circle,
-            rgba(54,174,255,.32),
-            transparent 65%
+            rgba(69,183,255,.28),
+            transparent 64%
         );
 }
 
-.hero::after{
-    content:"";
-
-    position:absolute;
-
-    width:200px;
-    height:200px;
-
-    bottom:-120px;
-    left:-90px;
-
-    border-radius:50%;
-
-    background:
-        radial-gradient(
-            circle,
-            rgba(75,225,255,.12),
-            transparent 65%
-        );
-}
-
-.hero-content{
+.hero>*{
     position:relative;
-    z-index:2;
+    z-index:1;
 }
 
 .eyebrow{
-    color:#74d9ff;
+    color:#72d9ff;
 
     font-size:10px;
-    font-weight:900;
+    font-weight:950;
 
-    letter-spacing:1.4px;
+    letter-spacing:1.3px;
 }
 
 .hero h2{
+    font-size:24px;
+
     margin:
         5px
         0
         4px;
-
-    font-size:24px;
-
-    line-height:1.1;
 }
 
-.hero-description{
-    margin:0;
-
+.muted{
     color:var(--muted);
-
-    font-size:12px;
 }
 
-/* =========================
-   STATS
-========================= */
+.small{
+    font-size:11px;
+}
+
+/* STATS */
 
 .stats{
     display:grid;
@@ -479,65 +362,56 @@ button{
 }
 
 .stat{
-    padding:9px;
-
     border:
         1px
         solid
-        rgba(98,151,199,.22);
+        #29445d88;
+
+    background:#06101a99;
 
     border-radius:14px;
 
-    background:
-        rgba(4,11,19,.52);
+    padding:9px;
 }
 
 .stat span{
     display:block;
 
-    color:#7189a1;
+    color:#70869c;
 
     font-size:9px;
-
-    letter-spacing:.7px;
 }
 
-.stat strong{
+.stat b{
     display:block;
-
     margin-top:4px;
-
-    font-size:14px;
 }
 
-/* =========================
-   PLATE AREA
-========================= */
+/* SPIN STAGE */
 
-.spin-area{
+.stage{
     position:relative;
 
     overflow:hidden;
 
-    padding:
-        12px
-        8px
-        13px;
-
-    margin-bottom:10px;
-
     border:
         1px
         solid
-        rgba(83,132,175,.18);
+        #23415c55;
 
     border-radius:20px;
 
-    background:
-        rgba(3,9,16,.52);
+    background:#050c15aa;
+
+    padding:
+        12px
+        8px
+        14px;
 }
 
-.scanner{
+.stage:before{
+    content:"";
+
     position:absolute;
 
     left:-20%;
@@ -545,29 +419,24 @@ button{
 
     height:1px;
 
-    top:5px;
-
-    pointer-events:none;
-
     background:
         linear-gradient(
             90deg,
             transparent,
-            rgba(89,215,255,.75),
+            #61dfff,
             transparent
         );
 
     animation:
         scan
-        3.2s
+        3s
         linear
         infinite;
 }
 
 @keyframes scan{
-    0%{
-        transform:
-            translateY(0);
+    from{
+        top:0;
         opacity:0;
     }
 
@@ -575,16 +444,15 @@ button{
         opacity:.8;
     }
 
-    100%{
-        transform:
-            translateY(145px);
+    to{
+        top:100%;
         opacity:0;
     }
 }
 
-.plate{
-    position:relative;
+/* NUMBER PLATE */
 
+.plate{
     width:
         min(
             100%,
@@ -594,7 +462,7 @@ button{
     min-height:96px;
 
     margin:
-        9px
+        10px
         auto;
 
     display:flex;
@@ -607,30 +475,29 @@ button{
         12px
         18px;
 
-    overflow:hidden;
-
-    color:#0a0d10;
-
     border:
         3px
         solid
-        #14191e;
+        #171c22;
 
     border-radius:14px;
 
     background:
         linear-gradient(
-            180deg,
-            #ffffff,
+            #fff,
             #e7ecf0
         );
 
+    color:#111;
+
     box-shadow:
-        inset 0 0 0 2px white,
-        0 18px 36px rgba(0,0,0,.40);
+        inset 0 0 0 2px #fff,
+        0 18px 35px #0007;
+
+    position:relative;
 }
 
-.plate::before{
+.plate:before{
     content:"";
 
     position:absolute;
@@ -643,241 +510,82 @@ button{
         #aab5bf;
 
     border-radius:8px;
+}
 
-    pointer-events:none;
+.plate-code,
+.plate-region{
+    position:relative;
+    z-index:2;
 }
 
 .plate-code{
-    position:relative;
-
-    z-index:2;
-
-    white-space:nowrap;
-
     font-size:
         clamp(
             29px,
             8vw,
-            47px
+            48px
         );
 
     font-weight:1000;
 
     letter-spacing:1px;
+
+    white-space:nowrap;
 }
 
 .plate-region{
-    position:relative;
-
-    z-index:2;
-
-    min-width:73px;
-
-    padding-left:9px;
-
-    text-align:center;
+    min-width:70px;
 
     border-left:
         2px
         solid
-        #14181c;
+        #111;
 
-    font-size:19px;
+    text-align:center;
+
+    font-size:18px;
     font-weight:1000;
-
-    line-height:1;
 }
 
 .plate-region small{
     display:block;
 
-    margin-top:5px;
-
     font-size:8px;
 
-    letter-spacing:.4px;
+    margin-top:4px;
 }
 
 .plate.spinning{
     animation:
-        plateShake
-        .10s
+        shake
+        .09s
         linear
         infinite
         alternate;
 }
 
-@keyframes plateShake{
+@keyframes shake{
     from{
         transform:
             translateX(-2px)
-            scale(.995);
+            scale(.996);
     }
 
     to{
         transform:
             translateX(2px)
-            scale(1.005);
+            scale(1.004);
     }
 }
 
-/* =========================
-   WIN EFFECT
-========================= */
-
-.win-flash{
-    position:absolute;
-
-    inset:0;
-
-    opacity:0;
-
-    pointer-events:none;
-}
-
-.spin-area.common .win-flash{
-    animation:
-        flash
-        .6s;
-
-    background:
-        radial-gradient(
-            circle,
-            rgba(255,255,255,.20),
-            transparent 58%
-        );
-}
-
-.spin-area.uncommon .win-flash{
-    animation:
-        flash
-        .8s;
-
-    background:
-        radial-gradient(
-            circle,
-            rgba(66,223,155,.35),
-            transparent 58%
-        );
-}
-
-.spin-area.rare .win-flash{
-    animation:
-        flash
-        1s;
-
-    background:
-        radial-gradient(
-            circle,
-            rgba(39,156,255,.46),
-            transparent 58%
-        );
-}
-
-.spin-area.epic .win-flash{
-    animation:
-        flash
-        1.2s;
-
-    background:
-        radial-gradient(
-            circle,
-            rgba(167,124,255,.50),
-            transparent 60%
-        );
-}
-
-.spin-area.legendary .win-flash{
-    animation:
-        legendaryFlash
-        1.5s;
-
-    background:
-        radial-gradient(
-            circle,
-            rgba(255,209,102,.60),
-            transparent 63%
-        );
-}
-
-.spin-area.mythic .win-flash{
-    animation:
-        mythicFlash
-        1.8s;
-
-    background:
-        radial-gradient(
-            circle,
-            rgba(255,83,128,.62),
-            rgba(150,93,255,.30),
-            transparent 65%
-        );
-}
-
-@keyframes flash{
-    0%{
-        opacity:0;
-    }
-
-    25%{
-        opacity:1;
-    }
-
-    100%{
-        opacity:0;
-    }
-}
-
-@keyframes legendaryFlash{
-    0%{
-        opacity:0;
-        transform:
-            scale(.7);
-    }
-
-    25%{
-        opacity:1;
-    }
-
-    100%{
-        opacity:0;
-        transform:
-            scale(1.45);
-    }
-}
-
-@keyframes mythicFlash{
-    0%{
-        opacity:0;
-        transform:
-            scale(.6)
-            rotate(-5deg);
-    }
-
-    25%{
-        opacity:1;
-    }
-
-    100%{
-        opacity:0;
-        transform:
-            scale(1.55)
-            rotate(8deg);
-    }
-}
-
-/* =========================
-   RESULT
-========================= */
+/* RESULT */
 
 .result{
     display:flex;
-    align-items:center;
     justify-content:space-between;
+    align-items:center;
 
     gap:8px;
-
-    margin-top:7px;
 }
 
 .rarity{
@@ -900,45 +608,38 @@ button{
     background:#07111c;
 
     font-size:10px;
-    font-weight:900;
+    font-weight:950;
 }
 
-.rarity-common{
-    color:#c3ced9;
+.common{
+    color:#c5d0da;
 }
 
-.rarity-uncommon{
-    color:#4ee0a0;
-    border-color:#24523e;
+.uncommon{
+    color:#56dfa4;
 }
 
-.rarity-rare{
-    color:#5bb9ff;
-    border-color:#285779;
+.rare{
+    color:#64baff;
 }
 
-.rarity-epic{
-    color:#ae8cff;
-    border-color:#534579;
+.epic{
+    color:#b28fff;
 }
 
-.rarity-legendary{
+.legendary{
     color:#ffda76;
-    border-color:#6c5725;
-    text-shadow:
-        0 0 12px
-        rgba(255,209,102,.32);
 }
 
-.rarity-mythic{
-    color:#ff7699;
-    border-color:#79293f;
+.mythic{
+    color:#ff7999;
+
     text-shadow:
         0 0 14px
-        rgba(255,99,125,.40);
+        #ff668066;
 }
 
-.result-hint{
+.hint{
     color:var(--muted);
 
     font-size:11px;
@@ -946,14 +647,12 @@ button{
     text-align:right;
 }
 
-/* =========================
-   BUTTONS
-========================= */
+/* BUTTONS */
 
 .btn{
-    position:relative;
+    border:0;
 
-    overflow:hidden;
+    border-radius:14px;
 
     min-height:47px;
 
@@ -961,148 +660,102 @@ button{
         0
         14px;
 
-    border:0;
-
-    border-radius:14px;
-
     color:white;
 
-    font-weight:900;
+    font-weight:950;
 
-    transition:
-        transform .15s,
-        opacity .15s,
-        filter .15s;
+    transition:.15s;
+
+    position:relative;
+
+    overflow:hidden;
 }
 
 .btn:active{
-    transform:
-        scale(.975);
+    transform:scale(.975);
 }
 
 .btn:disabled{
     opacity:.4;
-    cursor:default;
 }
 
-.btn-primary{
+.primary{
     background:
         linear-gradient(
             110deg,
-            #1877e8,
-            #35baff
+            #1979e8,
+            #38bcff
         );
 
     box-shadow:
-        0 11px 28px
-        rgba(39,156,255,.22);
+        0 10px 28px
+        #2ca6ff33;
 }
 
-.btn-primary::after{
-    content:"";
-
-    position:absolute;
-
-    top:-30%;
-    bottom:-30%;
-
-    width:60px;
-
-    left:-90px;
-
-    background:
-        linear-gradient(
-            90deg,
-            transparent,
-            rgba(255,255,255,.28),
-            transparent
-        );
-
-    transform:
-        skewX(-18deg);
-
-    animation:
-        buttonShine
-        3.5s
-        infinite;
-}
-
-@keyframes buttonShine{
-    0%,55%{
-        left:-90px;
-    }
-
-    85%,100%{
-        left:120%;
-    }
-}
-
-.btn-secondary{
-    color:#dceeff;
+.secondary{
+    background:#11253b;
 
     border:
         1px
         solid
-        #285177;
-
-    background:#102239;
+        #2d5c87;
 }
 
-.btn-danger{
-    color:#ffafbc;
+.danger{
+    background:#301721;
 
     border:
         1px
         solid
-        #693144;
+        #6b3244;
 
-    background:#301723;
+    color:#ffb0bc;
 }
 
-.btn-gold{
-    color:#fff4cf;
+.ghost{
+    background:#08131f;
 
     border:
         1px
         solid
-        #947124;
+        #213d57;
 
+    color:#d9ebfb;
+}
+
+.gold{
     background:
         linear-gradient(
             110deg,
-            #806116,
-            #c99a28
+            #826117,
+            #d4a52b
         );
-}
-
-.btn-ghost{
-    color:#d6e7f7;
 
     border:
         1px
         solid
-        #203a54;
+        #8e6c23;
 
-    background:#08121e;
-}
-
-.btn-small{
-    min-height:36px;
-
-    padding:
-        0
-        11px;
-
-    border-radius:11px;
-
-    font-size:11px;
+    color:#fff4cc;
 }
 
 .full{
     width:100%;
 }
 
-.quick-actions{
+.smallbtn{
+    min-height:36px;
+
+    border-radius:11px;
+
+    padding:
+        0
+        11px;
+
+    font-size:11px;
+}
+
+.quick{
     display:none;
 
     grid-template-columns:
@@ -1114,20 +767,21 @@ button{
     margin-top:8px;
 }
 
-.quick-actions.show{
+.quick.show{
     display:grid;
 
     animation:
-        quickShow
+        pop
         .25s
         ease;
 }
 
-@keyframes quickShow{
+@keyframes pop{
     from{
         opacity:0;
+
         transform:
-            translateY(6px)
+            translateY(5px)
             scale(.98);
     }
 
@@ -1137,12 +791,11 @@ button{
     }
 }
 
-/* =========================
-   CARDS
-========================= */
+/* CARDS */
 
-.section-title{
+.section-head{
     display:flex;
+
     justify-content:space-between;
     align-items:flex-end;
 
@@ -1154,13 +807,12 @@ button{
         9px;
 }
 
-.section-title h3{
+.section-head h3{
     margin:0;
-
     font-size:18px;
 }
 
-.section-title p{
+.section-head p{
     margin:
         2px
         0
@@ -1172,39 +824,38 @@ button{
 }
 
 .card{
-    padding:13px;
-
-    margin-bottom:9px;
-
     border:
         1px
         solid
-        #1c3249;
+        #1c334a;
 
     border-radius:18px;
 
     background:
         linear-gradient(
             145deg,
-            rgba(13,26,43,.97),
-            rgba(7,15,25,.98)
+            #0d1a2b,
+            #08111c
         );
+
+    padding:13px;
+
+    margin-bottom:9px;
 
     box-shadow:
         0 12px 30px
-        rgba(0,0,0,.14);
+        #0003;
 
     animation:
-        cardShow
-        .22s
+        cardIn
+        .2s
         ease;
 }
 
-@keyframes cardShow{
+@keyframes cardIn{
     from{
         opacity:0;
-        transform:
-            translateY(5px);
+        transform:translateY(5px);
     }
 
     to{
@@ -1232,25 +883,7 @@ button{
 
 .big{
     font-size:18px;
-    font-weight:950;
-}
-
-.muted{
-    color:var(--muted);
-}
-
-.small{
-    font-size:11px;
-}
-
-.actions{
-    display:flex;
-
-    gap:7px;
-
-    flex-wrap:wrap;
-
-    margin-top:10px;
+    font-weight:1000;
 }
 
 .badge{
@@ -1264,7 +897,7 @@ button{
     border:
         1px
         solid
-        #29445e;
+        #294761;
 
     border-radius:99px;
 
@@ -1274,27 +907,42 @@ button{
     font-weight:900;
 }
 
-.plate-name{
-    margin:
-        5px
-        0;
+.creator{
+    color:#ffdf84;
 
+    border-color:#6f5923;
+
+    background:#211a0c;
+}
+
+.plate-name{
     font-size:21px;
     font-weight:1000;
 
-    letter-spacing:.8px;
+    letter-spacing:.7px;
+
+    margin:
+        5px
+        0;
 }
 
 .price{
-    white-space:nowrap;
-
-    font-size:14px;
     font-weight:950;
+
+    white-space:nowrap;
 }
 
-/* =========================
-   INPUTS
-========================= */
+.actions{
+    display:flex;
+
+    gap:7px;
+
+    flex-wrap:wrap;
+
+    margin-top:10px;
+}
+
+/* INPUTS */
 
 .toolbar{
     display:flex;
@@ -1310,46 +958,46 @@ button{
 
     min-height:43px;
 
+    border:
+        1px
+        solid
+        #203c55;
+
+    border-radius:12px;
+
+    background:#07111d;
+
+    color:var(--text);
+
     padding:
         0
         11px;
 
     outline:0;
-
-    color:var(--text);
-
-    border:
-        1px
-        solid
-        #203a53;
-
-    border-radius:12px;
-
-    background:#07111d;
 }
 
 .input:focus,
 .select:focus{
-    border-color:#2f80bb;
+    border-color:#2f83bf;
 
     box-shadow:
         0 0 0 3px
-        rgba(39,156,255,.08);
+        #2ca6ff14;
 }
 
 .empty{
-    padding:
-        28px
-        12px;
-
     text-align:center;
 
     color:var(--muted);
 
+    padding:
+        28px
+        12px;
+
     border:
         1px
         dashed
-        #27435e;
+        #28465f;
 
     border-radius:17px;
 }
@@ -1357,21 +1005,19 @@ button{
 .progress{
     height:7px;
 
-    margin-top:9px;
-
-    overflow:hidden;
-
     border-radius:99px;
 
     background:#050c14;
+
+    overflow:hidden;
+
+    margin-top:9px;
 }
 
-.progress span{
+.progress i{
     display:block;
 
     height:100%;
-
-    border-radius:99px;
 
     background:
         linear-gradient(
@@ -1380,14 +1026,10 @@ button{
             #5bdcff
         );
 
-    transition:
-        width
-        .5s;
+    border-radius:99px;
 }
 
-/* =========================
-   PROFILE
-========================= */
+/* PROFILE */
 
 .profile-head{
     display:flex;
@@ -1402,8 +1044,6 @@ button{
 
     display:grid;
     place-items:center;
-
-    flex:0 0 auto;
 
     border:
         1px
@@ -1423,72 +1063,22 @@ button{
     font-weight:1000;
 }
 
-.creator{
-    color:#ffde7f;
+/* ADMIN */
 
-    border-color:#6e5922;
-
-    background:#211a0c;
-}
-
-/* =========================
-   ADMIN
-========================= */
-
-.admin-card{
+.admin-hero{
     border-color:#6b5725;
 
     background:
         radial-gradient(
             circle at 100% 0,
-            rgba(255,207,92,.15),
-            transparent 35%
+            #ffd16620,
+            transparent 36%
         ),
         linear-gradient(
             145deg,
-            #1a1a14,
+            #1a1912,
             #0d141d
         );
-}
-
-.admin-live{
-    display:inline-flex;
-    align-items:center;
-
-    gap:6px;
-
-    color:#7df0b1;
-
-    font-size:10px;
-    font-weight:900;
-}
-
-.admin-live::before{
-    content:"";
-
-    width:7px;
-    height:7px;
-
-    border-radius:50%;
-
-    background:#4ae49c;
-
-    box-shadow:
-        0 0 12px
-        #4ae49c;
-
-    animation:
-        pulse
-        1.5s
-        infinite;
-}
-
-@keyframes pulse{
-    50%{
-        opacity:.35;
-        transform:
-            scale(.7);
-    }
 }
 
 .admin-stats{
@@ -1506,24 +1096,24 @@ button{
 }
 
 .admin-stat{
-    padding:9px 5px;
-
-    text-align:center;
+    padding:
+        9px
+        5px;
 
     border:
         1px
         solid
-        #293e52;
+        #2b4054;
 
     border-radius:12px;
 
-    background:#08111b;
+    background:#07111b;
+
+    text-align:center;
 }
 
-.admin-stat strong{
+.admin-stat b{
     display:block;
-
-    font-size:15px;
 }
 
 .admin-stat span{
@@ -1532,9 +1122,7 @@ button{
     font-size:8px;
 }
 
-/* =========================
-   NAV
-========================= */
+/* NAV */
 
 .nav{
     position:fixed;
@@ -1549,7 +1137,7 @@ button{
 
     width:
         min(
-            650px,
+            660px,
             100%
         );
 
@@ -1567,4 +1155,3960 @@ button{
         7px
         7px
         max(
-      
+            10px,
+            env(safe-area-inset-bottom)
+        );
+
+    border-top:
+        1px
+        solid
+        #1a3046;
+
+    background:#050b14ee;
+
+    backdrop-filter:blur(18px);
+}
+
+.nav button{
+    border:0;
+
+    background:transparent;
+
+    color:#70869d;
+
+    border-radius:12px;
+
+    padding:
+        7px
+        1px;
+
+    font-size:9px;
+
+    font-weight:900;
+}
+
+.nav button span{
+    display:block;
+
+    font-size:19px;
+
+    margin-bottom:4px;
+}
+
+.nav button.active{
+    color:#85d7ff;
+
+    background:#10263c;
+}
+
+/* TOAST */
+
+.toast{
+    position:fixed;
+
+    z-index:110;
+
+    left:50%;
+    bottom:92px;
+
+    transform:
+        translateX(-50%)
+        translateY(20px);
+
+    width:
+        min(
+            600px,
+            92%
+        );
+
+    padding:
+        11px
+        12px;
+
+    border:
+        1px
+        solid
+        #2b4d69;
+
+    border-radius:15px;
+
+    background:#0a1625fa;
+
+    opacity:0;
+
+    pointer-events:none;
+
+    transition:.2s;
+
+    box-shadow:
+        0 18px 44px
+        #0006;
+}
+
+.toast.show{
+    opacity:1;
+
+    transform:
+        translateX(-50%)
+        translateY(0);
+}
+
+.toast strong{
+    display:block;
+}
+
+.toast small{
+    color:#8aa3bb;
+}
+
+/* MODAL */
+
+.modal-back{
+    position:fixed;
+
+    inset:0;
+
+    z-index:120;
+
+    background:#000b;
+
+    display:none;
+
+    align-items:flex-end;
+    justify-content:center;
+}
+
+.modal-back.show{
+    display:flex;
+}
+
+.modal{
+    width:
+        min(
+            660px,
+            100%
+        );
+
+    padding:
+        18px
+        14px
+        max(
+            18px,
+            env(safe-area-inset-bottom)
+        );
+
+    border:
+        1px
+        solid
+        #284760;
+
+    border-radius:
+        23px
+        23px
+        0
+        0;
+
+    background:#08131f;
+}
+
+.modal h3{
+    margin:
+        0
+        0
+        5px;
+}
+
+.modal p{
+    margin:
+        0
+        0
+        12px;
+
+    color:var(--muted);
+
+    font-size:11px;
+}
+
+.modal-buttons{
+    display:grid;
+
+    grid-template-columns:
+        1fr
+        1fr;
+
+    gap:7px;
+
+    margin-top:8px;
+}
+
+/* PARTICLES */
+
+.particles{
+    position:fixed;
+
+    inset:0;
+
+    z-index:100;
+
+    pointer-events:none;
+
+    overflow:hidden;
+}
+
+.particle{
+    position:absolute;
+
+    top:-20px;
+
+    width:7px;
+    height:13px;
+
+    border-radius:2px;
+
+    animation:
+        fall
+        1.7s
+        ease-out
+        forwards;
+}
+
+@keyframes fall{
+    to{
+        transform:
+            translateY(85vh)
+            rotate(540deg);
+
+        opacity:0;
+    }
+}
+
+@media(max-width:400px){
+
+    .app{
+        padding-left:9px;
+        padding-right:9px;
+    }
+
+    .hero{
+        padding:13px;
+    }
+
+    .plate-code{
+        font-size:29px;
+    }
+
+    .plate-region{
+        min-width:60px;
+    }
+
+    .admin-stats{
+        grid-template-columns:
+            1fr
+            1fr;
+    }
+
+    .chip{
+        font-size:10px;
+        padding:8px;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<div
+    class="particles"
+    id="particles">
+</div>
+
+<div class="app">
+
+    <header class="top">
+
+        <div class="brand">
+
+            <div class="logo">
+                NC
+            </div>
+
+            <div>
+
+                <h1>
+                    NOMER CLUB
+                </h1>
+
+                <small>
+                    COLLECT • TRADE • RISE
+                </small>
+
+            </div>
+
+        </div>
+
+
+        <div class="top-actions">
+
+            <button
+                class="chip admin-chip hidden"
+                id="admin-btn">
+                ADMIN
+            </button>
+
+            <div
+                class="chip"
+                id="balance">
+                — NC
+            </div>
+
+        </div>
+
+    </header>
+
+
+    <!-- HOME -->
+
+    <section
+        class="page active"
+        id="page-home">
+
+        <div class="hero">
+
+            <div class="eyebrow">
+                ГЕНЕРАТОР НОМЕРОВ
+            </div>
+
+            <h2>
+                Собери лучшую коллекцию
+            </h2>
+
+            <p class="muted small">
+                Одна прокрутка стоит
+                <b>100 NC</b>.
+                Чем выше редкость —
+                тем дороже номер.
+            </p>
+
+
+            <div class="stats">
+
+                <div class="stat">
+
+                    <span>
+                        ПОПЫТКИ
+                    </span>
+
+                    <b id="spins">
+                        —/20
+                    </b>
+
+                </div>
+
+
+                <div class="stat">
+
+                    <span>
+                        УРОВЕНЬ
+                    </span>
+
+                    <b id="level">
+                        —
+                    </b>
+
+                </div>
+
+
+                <div class="stat">
+
+                    <span>
+                        НОМЕРА
+                    </span>
+
+                    <b id="count">
+                        —
+                    </b>
+
+                </div>
+
+            </div>
+
+
+            <div
+                class="stage"
+                id="stage">
+
+                <div
+                    class="plate"
+                    id="plate">
+
+                    <div
+                        class="plate-code"
+                        id="plate-code">
+                        A 777 AA
+                    </div>
+
+
+                    <div
+                        class="plate-region"
+                        id="plate-region">
+
+                        77
+
+                        <small>
+                            RUS 🇷🇺
+                        </small>
+
+                    </div>
+
+                </div>
+
+
+                <div class="result">
+
+                    <span
+                        class="rarity common"
+                        id="rarity">
+                        ГОТОВ
+                    </span>
+
+
+                    <span
+                        class="hint"
+                        id="result-text">
+                        Прокрутка стоит 100 NC
+                    </span>
+
+                </div>
+
+            </div>
+
+
+            <button
+                class="btn primary full"
+                id="spin-btn"
+                disabled>
+                КРУТИТЬ • 100 NC
+            </button>
+
+
+            <div
+                class="quick"
+                id="quick">
+
+                <button
+                    class="btn secondary"
+                    id="keep-btn">
+                    ОСТАВИТЬ
+                </button>
+
+                <button
+                    class="btn danger"
+                    id="sell-btn">
+                    ПРОДАТЬ
+                </button>
+
+            </div>
+
+        </div>
+
+
+        <div class="section-head">
+
+            <div>
+
+                <h3>
+                    Мой аккаунт
+                </h3>
+
+                <p>
+                    Основная информация
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <div
+            class="card"
+            id="home-profile">
+            Загрузка...
+        </div>
+
+    </section>
+
+
+    <!-- COLLECTION -->
+
+    <section
+        class="page"
+        id="page-collection">
+
+        <div class="section-head">
+
+            <div>
+
+                <h3>
+                    Моя коллекция
+                </h3>
+
+                <p>
+                    Все полученные номера
+                </p>
+
+            </div>
+
+
+            <span
+                class="badge"
+                id="collection-count">
+                0
+            </span>
+
+        </div>
+
+
+        <div class="toolbar">
+
+            <input
+                class="input"
+                id="search"
+                placeholder="Поиск номера">
+
+
+            <select
+                class="select"
+                id="rarity-filter"
+                style="max-width:140px">
+
+                <option value="">
+                    Все
+                </option>
+
+                <option>
+                    Обычный
+                </option>
+
+                <option>
+                    Необычный
+                </option>
+
+                <option>
+                    Редкий
+                </option>
+
+                <option>
+                    Эпический
+                </option>
+
+                <option>
+                    Легендарный
+                </option>
+
+                <option>
+                    Мифический
+                </option>
+
+            </select>
+
+        </div>
+
+
+        <div id="collection-list">
+
+            <div class="empty">
+                Загрузка...
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- MARKET -->
+
+    <section
+        class="page"
+        id="page-market">
+
+        <div class="section-head">
+
+            <div>
+
+                <h3>
+                    Маркет
+                </h3>
+
+                <p>
+                    Торговля между игроками
+                </p>
+
+            </div>
+
+
+            <button
+                class="btn ghost smallbtn"
+                id="market-refresh">
+                ↻
+            </button>
+
+        </div>
+
+
+        <div id="market-list">
+
+            <div class="empty">
+                Загрузка...
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- TASKS -->
+
+    <section
+        class="page"
+        id="page-tasks">
+
+        <div class="section-head">
+
+            <div>
+
+                <h3>
+                    Ежедневные задания
+                </h3>
+
+                <p>
+                    Выполняй и получай NC + XP
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <div id="tasks-list">
+
+            <div class="empty">
+                Загрузка...
+            </div>
+
+        </div>
+
+
+        <div class="section-head">
+
+            <div>
+
+                <h3>
+                    Достижения
+                </h3>
+
+                <p>
+                    Постоянный прогресс
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <div id="achievements-list"></div>
+
+    </section>
+
+
+    <!-- PROFILE -->
+
+    <section
+        class="page"
+        id="page-profile">
+
+        <div class="card">
+
+            <div class="profile-head">
+
+                <div
+                    class="avatar"
+                    id="avatar">
+                    N
+                </div>
+
+
+                <div class="grow">
+
+                    <div
+                        class="big"
+                        id="profile-name">
+                        Игрок
+                    </div>
+
+
+                    <div
+                        class="muted small"
+                        id="profile-id">
+                        —
+                    </div>
+
+                </div>
+
+
+                <span
+                    class="badge creator hidden"
+                    id="creator-badge">
+                    👑 CREATOR
+                </span>
+
+            </div>
+
+        </div>
+
+
+        <div
+            class="card"
+            id="profile-info">
+        </div>
+
+
+        <div class="section-head">
+
+            <div>
+
+                <h3>
+                    Рейтинг
+                </h3>
+
+                <p>
+                    Лучшие игроки
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <div id="top-list"></div>
+
+    </section>
+
+
+    <!-- ADMIN -->
+
+    <section
+        class="page"
+        id="page-admin">
+
+        <div class="card admin-hero">
+
+            <div class="row">
+
+                <div>
+
+                    <div class="eyebrow">
+                        CREATOR CONTROL
+                    </div>
+
+
+                    <div class="big">
+                        Админ-панель
+                    </div>
+
+
+                    <div class="muted small">
+                        ID 8518976778
+                    </div>
+
+                </div>
+
+
+                <span class="badge creator">
+                    ONLINE
+                </span>
+
+            </div>
+
+
+            <div
+                class="admin-stats"
+                id="admin-stats">
+            </div>
+
+        </div>
+
+
+        <div class="card">
+
+            <div class="title">
+                Управление игроком
+            </div>
+
+
+            <input
+                class="input"
+                id="admin-target"
+                inputmode="numeric"
+                placeholder="Telegram ID"
+                style="margin-top:10px">
+
+
+            <div
+                class="toolbar"
+                style="margin-top:7px">
+
+                <input
+                    class="input"
+                    id="admin-nc"
+                    inputmode="numeric"
+                    placeholder="NC">
+
+
+                <input
+                    class="input"
+                    id="admin-xp"
+                    inputmode="numeric"
+                    placeholder="XP">
+
+            </div>
+
+
+            <input
+                class="input"
+                id="admin-reason"
+                placeholder="Причина">
+
+
+            <button
+                class="btn gold full"
+                id="admin-grant"
+                style="margin-top:7px">
+                ВЫДАТЬ
+            </button>
+
+        </div>
+
+
+        <div class="toolbar">
+
+            <input
+                class="input"
+                id="admin-search"
+                placeholder="ID / имя / username">
+
+
+            <button
+                class="btn ghost smallbtn"
+                id="admin-search-btn">
+                Найти
+            </button>
+
+        </div>
+
+
+        <div id="admin-players"></div>
+
+    </section>
+
+</div>
+
+
+<!-- NAVIGATION -->
+
+<nav class="nav">
+
+    <button
+        class="active"
+        data-tab="home">
+
+        <span>⌂</span>
+
+        Главная
+    </button>
+
+
+    <button
+        data-tab="collection">
+
+        <span>▤</span>
+
+        Гараж
+    </button>
+
+
+    <button
+        data-tab="market">
+
+        <span>⇄</span>
+
+        Маркет
+    </button>
+
+
+    <button
+        data-tab="tasks">
+
+        <span>✓</span>
+
+        Задания
+    </button>
+
+
+    <button
+        data-tab="profile">
+
+        <span>◉</span>
+
+        Профиль
+    </button>
+
+</nav>
+
+
+<!-- TOAST -->
+
+<div
+    class="toast"
+    id="toast">
+
+    <strong id="toast-title">
+        Готово
+    </strong>
+
+    <small id="toast-text"></small>
+
+</div>
+
+
+<!-- MODAL -->
+
+<div
+    class="modal-back"
+    id="modal-back">
+
+    <div
+        class="modal"
+        id="modal">
+    </div>
+
+</div>
+
+
+<script>
+
+const tg =
+    window.Telegram?.WebApp;
+
+
+tg?.ready();
+tg?.expand();
+
+
+try{
+
+    tg?.setHeaderColor?.(
+        "#07111f"
+    );
+
+    tg?.setBackgroundColor?.(
+        "#050a12"
+    );
+
+}catch{}
+
+
+const $ =
+    id =>
+        document.getElementById(
+            id
+        );
+
+
+const fmt =
+    n =>
+        Number(
+            n || 0
+        )
+        .toLocaleString(
+            "ru-RU"
+        );
+
+
+const S = {
+    me:null,
+    collection:[],
+    market:[],
+    last:null,
+    busy:false,
+    page:"home"
+};
+
+
+let toastTimer =
+    null;
+
+
+let modalResolve =
+    null;
+
+
+const esc =
+    value =>
+        String(
+            value ?? ""
+        )
+        .replace(
+            /[&<>"']/g,
+            char => ({
+                "&":"&amp;",
+                "<":"&lt;",
+                ">":"&gt;",
+                '"':"&quot;",
+                "'":"&#39;"
+            }[char])
+        );
+
+
+const rarityClass =
+    rarity =>
+        ({
+            "Обычный":"common",
+            "Необычный":"uncommon",
+            "Редкий":"rare",
+            "Эпический":"epic",
+            "Легендарный":"legendary",
+            "Мифический":"mythic"
+        }[
+            rarity
+        ] || "common");
+
+
+const fallbackPrice =
+    rarity =>
+        ({
+            "Обычный":35,
+            "Необычный":75,
+            "Редкий":220,
+            "Эпический":800,
+            "Легендарный":3500,
+            "Мифический":15000
+        }[
+            rarity
+        ] || 1);
+
+
+/* NOTIFY */
+
+function notify(
+    title,
+    text = ""
+){
+
+    $("toast-title")
+    .textContent =
+        title;
+
+
+    $("toast-text")
+    .textContent =
+        text;
+
+
+    $("toast")
+    .classList
+    .remove(
+        "show"
+    );
+
+
+    void $("toast")
+        .offsetWidth;
+
+
+    $("toast")
+    .classList
+    .add(
+        "show"
+    );
+
+
+    clearTimeout(
+        toastTimer
+    );
+
+
+    toastTimer =
+        setTimeout(
+            ()=>{
+
+                $("toast")
+                .classList
+                .remove(
+                    "show"
+                );
+
+            },
+            3000
+        );
+}
+
+
+function fail(
+    error
+){
+
+    console.error(
+        error
+    );
+
+
+    notify(
+        "Ошибка",
+        error?.message ||
+        "Что-то пошло не так"
+    );
+}
+
+
+/* API */
+
+async function api(
+    path,
+    method = "GET",
+    data
+){
+
+    const response =
+        await fetch(
+            "/api/" +
+            path,
+            {
+                method,
+
+                cache:"no-store",
+
+                headers:{
+                    "Content-Type":
+                        "application/json",
+
+                    "X-Telegram-Init-Data":
+                        tg?.initData ||
+                        "",
+
+                    "X-Client-Version":
+                        "6.1.1"
+                },
+
+                body:
+                    data === undefined
+                    ?
+                    undefined
+                    :
+                    JSON.stringify(
+                        data
+                    )
+            }
+        );
+
+
+    let json;
+
+
+    try{
+
+        json =
+            await response
+            .json();
+
+    }catch{
+
+        throw new Error(
+            "Сервер вернул " +
+            response.status +
+            " вместо JSON"
+        );
+    }
+
+
+    if(
+        !response.ok
+    ){
+
+        throw new Error(
+            json.error ||
+            "Ошибка " +
+            response.status
+        );
+    }
+
+
+    return json;
+}
+
+
+/* REQUEST ID */
+
+function requestId(){
+
+    return (
+        crypto?.randomUUID?.() ||
+        (
+            "spin-" +
+            Date.now() +
+            "-" +
+            Math.random()
+            .toString(36)
+            .slice(2)
+        )
+    );
+}
+
+
+/* PLATE */
+
+function parsePlate(
+    code
+){
+
+    const match =
+        String(
+            code || ""
+        )
+        .match(
+            /^([A-Z])(\d{3})([A-Z]{2})\s(\d{2,3})$/
+        );
+
+
+    if(
+        !match
+    ){
+
+        return null;
+    }
+
+
+    return {
+        main:
+            match[1] +
+            " " +
+            match[2] +
+            " " +
+            match[3],
+
+        region:
+            match[4]
+    };
+}
+
+
+function showPlate(
+    code,
+    rarity
+){
+
+    const plate =
+        parsePlate(
+            code
+        );
+
+
+    if(
+        plate
+    ){
+
+        $("plate-code")
+        .textContent =
+            plate.main;
+
+
+        $("plate-region")
+        .innerHTML =
+            esc(
+                plate.region
+            ) +
+            "<small>RUS 🇷🇺</small>";
+    }
+
+
+    if(
+        rarity
+    ){
+
+        $("rarity")
+        .textContent =
+            rarity.toUpperCase();
+
+
+        $("rarity")
+        .className =
+            "rarity " +
+            rarityClass(
+                rarity
+            );
+    }
+}
+
+
+function randomPlate(){
+
+    const letters =
+        "ABEKMHOPCTYX";
+
+
+    const randomLetter =
+        ()=>{
+
+            return letters[
+                Math.floor(
+                    Math.random() *
+                    letters.length
+                )
+            ];
+        };
+
+
+    const number =
+        String(
+            Math.floor(
+                Math.random() *
+                900
+            ) +
+            100
+        );
+
+
+    const regions = [
+        "01",
+        "02",
+        "05",
+        "07",
+        "16",
+        "50",
+        "77",
+        "78",
+        "95",
+        "99",
+        "116",
+        "177",
+        "777"
+    ];
+
+
+    const region =
+        regions[
+            Math.floor(
+                Math.random() *
+                regions.length
+            )
+        ];
+
+
+    return {
+        main:
+            randomLetter() +
+            " " +
+            number +
+            " " +
+            randomLetter() +
+            randomLetter(),
+
+        region
+    };
+}
+
+
+/* EFFECT */
+
+function confetti(
+    rarity
+){
+
+    const count =
+        rarity ===
+        "Мифический"
+        ?
+        45
+        :
+        rarity ===
+        "Легендарный"
+        ?
+        30
+        :
+        rarity ===
+        "Эпический"
+        ?
+        18
+        :
+        rarity ===
+        "Редкий"
+        ?
+        10
+        :
+        0;
+
+
+    if(
+        !count
+    ){
+
+        return;
+    }
+
+
+    const colors =
+        rarity ===
+        "Мифический"
+        ?
+        [
+            "#ff6680",
+            "#a884ff",
+            "#64e3ff",
+            "#fff"
+        ]
+        :
+        rarity ===
+        "Легендарный"
+        ?
+        [
+            "#ffd166",
+            "#fff2ad",
+            "#fff"
+        ]
+        :
+        rarity ===
+        "Эпический"
+        ?
+        [
+            "#a884ff",
+            "#64e3ff"
+        ]
+        :
+        [
+            "#2ca6ff",
+            "#bdeaff"
+        ];
+
+
+    for(
+        let i = 0;
+        i < count;
+        i++
+    ){
+
+        const particle =
+            document
+            .createElement(
+                "i"
+            );
+
+
+        particle
+        .className =
+            "particle";
+
+
+        particle
+        .style
+        .left =
+            Math.random() *
+            100 +
+            "vw";
+
+
+        particle
+        .style
+        .background =
+            colors[
+                Math.floor(
+                    Math.random() *
+                    colors.length
+                )
+            ];
+
+
+        particle
+        .style
+        .animationDelay =
+            Math.random() *
+            .25 +
+            "s";
+
+
+        $("particles")
+        .appendChild(
+            particle
+        );
+
+
+        setTimeout(
+            ()=>{
+
+                particle.remove();
+
+            },
+            2100
+        );
+    }
+}
+
+
+/* PROFILE SYNC */
+
+function sync(){
+
+    const me =
+        S.me;
+
+
+    if(
+        !me
+    ){
+
+        return;
+    }
+
+
+    $("balance")
+    .textContent =
+        fmt(
+            me.balance
+        ) +
+        " NC";
+
+
+    $("spins")
+    .textContent =
+        me.spins_left +
+        "/20";
+
+
+    $("level")
+    .textContent =
+        me.level;
+
+
+    $("count")
+    .textContent =
+        me.collection;
+
+
+    $("spin-btn")
+    .disabled =
+        S.busy ||
+        me.spins_left <= 0 ||
+        me.balance < 100;
+
+
+    $("profile-name")
+    .textContent =
+        me.name ||
+        "Игрок";
+
+
+    $("profile-id")
+    .textContent =
+        (
+            me.username
+            ?
+            "@" +
+            me.username +
+            " • "
+            :
+            ""
+        ) +
+        "ID " +
+        me.id;
+
+
+    $("avatar")
+    .textContent =
+        (
+            me.name ||
+            "N"
+        )[0]
+        .toUpperCase();
+
+
+    $("creator-badge")
+    .classList
+    .toggle(
+        "hidden",
+        !me.creator
+    );
+
+
+    $("admin-btn")
+    .classList
+    .toggle(
+        "hidden",
+        !me.creator
+    );
+
+
+    $("home-profile")
+    .innerHTML = `
+
+        <div class="row">
+
+            <div>
+
+                <div class="title">
+
+                    ${esc(me.name)}
+
+                    ${
+                        me.creator
+                        ?
+                        "👑"
+                        :
+                        ""
+                    }
+
+                </div>
+
+
+                <div class="muted small">
+
+                    ${
+                        me.username
+                        ?
+                        "@" +
+                        esc(
+                            me.username
+                        ) +
+                        " • "
+                        :
+                        ""
+                    }
+
+                    ID ${me.id}
+
+                </div>
+
+            </div>
+
+
+            <span class="badge">
+
+                ${me.level}
+                LVL
+
+            </span>
+
+        </div>
+
+
+        <div class="actions">
+
+            <span class="badge">
+
+                ${fmt(me.balance)}
+                NC
+
+            </span>
+
+
+            <span class="badge">
+
+                Прокрутка
+                100 NC
+
+            </span>
+
+
+            ${
+                me.mythic_mode
+
+                ?
+
+                `
+                    <span
+                        class="badge mythic">
+                        100% MYTHIC
+                    </span>
+                `
+
+                :
+
+                ""
+            }
+
+
+            ${
+                me.mythic_queue
+
+                ?
+
+                `
+                    <span class="badge">
+                        MYTHIC ×${me.mythic_queue}
+                    </span>
+                `
+
+                :
+
+                ""
+            }
+
+        </div>
+    `;
+
+
+    $("profile-info")
+    .innerHTML = `
+
+        <div class="row">
+
+            <span class="muted">
+                Баланс
+            </span>
+
+            <b>
+                ${fmt(me.balance)}
+                NC
+            </b>
+
+        </div>
+
+
+        <div
+            class="row"
+            style="margin-top:9px">
+
+            <span class="muted">
+                Уровень / XP
+            </span>
+
+            <b>
+                ${me.level}
+                /
+                ${fmt(me.xp)}
+            </b>
+
+        </div>
+
+
+        <div
+            class="row"
+            style="margin-top:9px">
+
+            <span class="muted">
+                Номеров
+            </span>
+
+            <b>
+                ${me.collection}
+            </b>
+
+        </div>
+
+
+        <div
+            class="row"
+            style="margin-top:9px">
+
+            <span class="muted">
+                Попытки
+            </span>
+
+            <b>
+                ${me.spins_left}/20
+            </b>
+
+        </div>
+    `;
+}
+
+
+async function refreshMe(){
+
+    S.me =
+        await api(
+            "me"
+        );
+
+
+    sync();
+}
+
+
+/* SPIN */
+
+async function spin(){
+
+    if(
+        S.busy
+    ){
+
+        return;
+    }
+
+
+    S.busy =
+        true;
+
+
+    sync();
+
+
+    $("quick")
+    .classList
+    .remove(
+        "show"
+    );
+
+
+    $("plate")
+    .classList
+    .add(
+        "spinning"
+    );
+
+
+    $("result-text")
+    .textContent =
+        "Генерация...";
+
+
+    const timer =
+        setInterval(
+            ()=>{
+
+                const temp =
+                    randomPlate();
+
+
+                $("plate-code")
+                .textContent =
+                    temp.main;
+
+
+                $("plate-region")
+                .innerHTML =
+                    temp.region +
+                    "<small>RUS 🇷🇺</small>";
+
+            },
+            55
+        );
+
+
+    try{
+
+        const result =
+            await api(
+                "spin",
+                "POST",
+                {
+                    request_id:
+                        requestId()
+                }
+            );
+
+
+        await new Promise(
+            resolve =>
+                setTimeout(
+                    resolve,
+                    700
+                )
+        );
+
+
+        clearInterval(
+            timer
+        );
+
+
+        $("plate")
+        .classList
+        .remove(
+            "spinning"
+        );
+
+
+        S.me =
+            result.user;
+
+
+        S.last =
+            result.plate;
+
+
+        showPlate(
+            result.plate.code,
+            result.plate.rarity
+        );
+
+
+        const price =
+            Number(
+                result.plate.sell_price ||
+                fallbackPrice(
+                    result.plate.rarity
+                )
+            );
+
+
+        $("result-text")
+        .textContent =
+            "Продажа системе: " +
+            fmt(
+                price
+            ) +
+            " NC";
+
+
+        $("sell-btn")
+        .textContent =
+            "ПРОДАТЬ • " +
+            fmt(
+                price
+            ) +
+            " NC";
+
+
+        $("quick")
+        .classList
+        .add(
+            "show"
+        );
+
+
+        confetti(
+            result.plate.rarity
+        );
+
+
+        sync();
+
+
+        notify(
+            result.plate.rarity,
+            result.plate.code
+        );
+
+    }catch(error){
+
+        clearInterval(
+            timer
+        );
+
+
+        $("plate")
+        .classList
+        .remove(
+            "spinning"
+        );
+
+
+        fail(
+            error
+        );
+
+    }finally{
+
+        S.busy =
+            false;
+
+
+        sync();
+    }
+}
+
+
+/* SYSTEM SELL */
+
+async function sellSystem(
+    id
+){
+
+    try{
+
+        const result =
+            await api(
+                "sell-system",
+                "POST",
+                {
+                    plate_id:
+                        Number(
+                            id
+                        )
+                }
+            );
+
+
+        S.me =
+            result.user;
+
+
+        if(
+            S.last?.id ===
+            Number(
+                id
+            )
+        ){
+
+            S.last =
+                null;
+
+
+            $("quick")
+            .classList
+            .remove(
+                "show"
+            );
+
+
+            $("result-text")
+            .textContent =
+                "Номер продан";
+        }
+
+
+        sync();
+
+
+        notify(
+            "Продано",
+            "+" +
+            fmt(
+                result.reward
+            ) +
+            " NC"
+        );
+
+
+        if(
+            S.page ===
+            "collection"
+        ){
+
+            await loadCollection();
+        }
+
+    }catch(error){
+
+        fail(
+            error
+        );
+    }
+}
+
+
+/* COLLECTION */
+
+function cardPlate(
+    plate
+){
+
+    const price =
+        Number(
+            plate.sell_price ||
+            fallbackPrice(
+                plate.rarity
+            )
+        );
+
+
+    return `
+
+        <div class="card">
+
+            <div class="row">
+
+                <div class="grow">
+
+                    <span
+                        class="
+                            rarity
+                            ${rarityClass(plate.rarity)}
+                        ">
+
+                        ${esc(plate.rarity)}
+
+                    </span>
+
+
+                    <div class="plate-name">
+
+                        ${esc(plate.code)}
+
+                    </div>
+
+
+                    <div class="muted small">
+
+                        Системная цена:
+
+                        <b>
+                            ${fmt(price)}
+                            NC
+                        </b>
+
+                    </div>
+
+                </div>
+
+
+                <div class="price">
+
+                    #${plate.id}
+
+                </div>
+
+            </div>
+
+
+            <div class="actions">
+
+                ${
+                    plate.listing_id
+
+                    ?
+
+                    `
+                        <button
+                            class="
+                                btn
+                                ghost
+                                smallbtn
+                            "
+                            data-act="cancel"
+                            data-id="${plate.listing_id}">
+                            Снять с маркета
+                        </button>
+                    `
+
+                    :
+
+                    `
+                        <button
+                            class="
+                                btn
+                                secondary
+                                smallbtn
+                            "
+                            data-act="list"
+                            data-id="${plate.id}"
+                            data-code="${esc(plate.code)}">
+                            На маркет
+                        </button>
+
+
+                        <button
+                            class="
+                                btn
+                                danger
+                                smallbtn
+                            "
+                            data-act="sell"
+                            data-id="${plate.id}"
+                            data-price="${price}">
+                            Продать ${fmt(price)}
+                        </button>
+                    `
+                }
+
+            </div>
+
+        </div>
+    `;
+}
+
+
+async function loadCollection(){
+
+    try{
+
+        const result =
+            await api(
+                "collection"
+            );
+
+
+        S.collection =
+            result.plates ||
+            [];
+
+
+        $("collection-count")
+        .textContent =
+            S.collection.length;
+
+
+        renderCollection();
+
+    }catch(error){
+
+        fail(
+            error
+        );
+    }
+}
+
+
+function renderCollection(){
+
+    const search =
+        $("search")
+        .value
+        .trim()
+        .toLowerCase();
+
+
+    const rarity =
+        $("rarity-filter")
+        .value;
+
+
+    const rows =
+        S.collection
+        .filter(
+            plate =>{
+
+                return (
+                    (
+                        !search ||
+                        plate.code
+                        .toLowerCase()
+                        .includes(
+                            search
+                        )
+                    )
+                    &&
+                    (
+                        !rarity ||
+                        plate.rarity ===
+                        rarity
+                    )
+                );
+            }
+        );
+
+
+    $("collection-list")
+    .innerHTML =
+        rows.length
+
+        ?
+
+        rows
+        .map(
+            cardPlate
+        )
+        .join("")
+
+        :
+
+        `
+            <div class="empty">
+                Ничего не найдено
+            </div>
+        `;
+}
+
+
+/* MARKET */
+
+async function loadMarket(){
+
+    try{
+
+        const result =
+            await api(
+                "market"
+            );
+
+
+        S.market =
+            result.listings ||
+            [];
+
+
+        $("market-list")
+        .innerHTML =
+            S.market.length
+
+            ?
+
+            S.market
+            .map(
+                item => `
+
+                    <div class="card">
+
+                        <div class="row">
+
+                            <div class="grow">
+
+                                <span
+                                    class="
+                                        rarity
+                                        ${rarityClass(item.rarity)}
+                                    ">
+
+                                    ${esc(item.rarity)}
+
+                                </span>
+
+
+                                <div class="plate-name">
+
+                                    ${esc(item.code)}
+
+                                </div>
+
+
+                                <div class="muted small">
+
+                                    ${esc(item.seller)}
+
+                                    ${
+                                        item.seller_username
+
+                                        ?
+
+                                        "@" +
+                                        esc(
+                                            item.seller_username
+                                        )
+
+                                        :
+
+                                        ""
+                                    }
+
+                                </div>
+
+                            </div>
+
+
+                            <div class="price">
+
+                                ${fmt(item.price)}
+                                NC
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="actions">
+
+                            ${
+                                item.seller_id ===
+                                S.me?.id
+
+                                ?
+
+                                `
+                                    <button
+                                        class="
+                                            btn
+                                            ghost
+                                            smallbtn
+                                        "
+                                        data-act="cancel"
+                                        data-id="${item.id}">
+                                        Отменить
+                                    </button>
+                                `
+
+                                :
+
+                                `
+                                    <button
+                                        class="
+                                            btn
+                                            primary
+                                            smallbtn
+                                        "
+                                        data-act="buy"
+                                        data-id="${item.id}"
+                                        data-price="${item.price}">
+                                        Купить
+                                    </button>
+                                `
+                            }
+
+                        </div>
+
+                    </div>
+                `
+            )
+            .join("")
+
+            :
+
+            `
+                <div class="empty">
+                    На маркете пока пусто
+                </div>
+            `;
+
+    }catch(error){
+
+        fail(
+            error
+        );
+    }
+}
+
+
+/* TASKS */
+
+async function loadTasks(){
+
+    try{
+
+        const [
+            tasks,
+            achievements
+        ] =
+            await Promise.all([
+                api(
+                    "tasks"
+                ),
+                api(
+                    "achievements"
+                )
+            ]);
+
+
+        $("tasks-list")
+        .innerHTML =
+            (tasks.tasks || [])
+            .map(
+                task =>{
+
+                    const percent =
+                        Math.min(
+                            100,
+                            Math.round(
+                                (
+                                    task.progress /
+                                    task.target
+                                ) *
+                                100
+                            )
+                        );
+
+
+                    return `
+
+                        <div class="card">
+
+                            <div class="row">
+
+                                <div class="grow">
+
+                                    <div class="title">
+
+                                        ${esc(task.title)}
+
+                                    </div>
+
+
+                                    <div class="muted small">
+
+                                        ${task.progress}/${task.target}
+
+                                        •
+
+                                        +${fmt(task.reward_nc)}
+                                        NC
+
+                                        •
+
+                                        +${fmt(task.reward_xp)}
+                                        XP
+
+                                    </div>
+
+                                </div>
+
+
+                                ${
+                                    task.claimed
+
+                                    ?
+
+                                    `
+                                        <span class="badge">
+                                            Получено
+                                        </span>
+                                    `
+
+                                    :
+
+                                    task.completed
+
+                                    ?
+
+                                    `
+                                        <button
+                                            class="
+                                                btn
+                                                primary
+                                                smallbtn
+                                            "
+                                            data-act="claim"
+                                            data-key="${esc(task.key)}">
+                                            Забрать
+                                        </button>
+                                    `
+
+                                    :
+
+                                    `
+                                        <span class="badge">
+                                            ${percent}%
+                                        </span>
+                                    `
+                                }
+
+                            </div>
+
+
+                            <div class="progress">
+
+                                <i
+                                    style="width:${percent}%">
+                                </i>
+
+                            </div>
+
+                        </div>
+                    `;
+                }
+            )
+            .join("");
+
+
+        $("achievements-list")
+        .innerHTML =
+            (achievements.achievements || [])
+            .map(
+                item =>{
+
+                    const percent =
+                        Math.min(
+                            100,
+                            Math.round(
+                                (
+                                    item.progress /
+                                    item.target
+                                ) *
+                                100
+                            )
+                        );
+
+
+                    return `
+
+                        <div class="card">
+
+                            <div class="row">
+
+                                <div>
+
+                                    <div class="title">
+
+                                        ${esc(item.title)}
+
+                                    </div>
+
+
+                                    <div class="muted small">
+
+                                        ${item.progress}/${item.target}
+
+                                    </div>
+
+                                </div>
+
+
+                                <span class="badge">
+
+                                    ${
+                                        item.completed
+                                        ?
+                                        "✓"
+                                        :
+                                        percent +
+                                        "%"
+                                    }
+
+                                </span>
+
+                            </div>
+
+
+                            <div class="progress">
+
+                                <i
+                                    style="width:${percent}%">
+                                </i>
+
+                            </div>
+
+                        </div>
+                    `;
+                }
+            )
+            .join("");
+
+    }catch(error){
+
+        fail(
+            error
+        );
+    }
+}
+
+
+/* TOP */
+
+async function loadTop(){
+
+    try{
+
+        const result =
+            await api(
+                "top"
+            );
+
+
+        $("top-list")
+        .innerHTML =
+            (result.players || [])
+            .slice(
+                0,
+                25
+            )
+            .map(
+                (
+                    player,
+                    index
+                ) => `
+
+                    <div class="card">
+
+                        <div class="row">
+
+                            <div class="grow">
+
+                                <div class="title">
+
+                                    ${index + 1}.
+
+                                    ${
+                                        player.creator
+                                        ?
+                                        "👑 "
+                                        :
+                                        ""
+                                    }
+
+                                    ${esc(player.name)}
+
+                                </div>
+
+
+                                <div class="muted small">
+
+                                    ${player.collection}
+                                    номеров
+
+                                    •
+
+                                    ${player.level}
+                                    LVL
+
+                                </div>
+
+                            </div>
+
+
+                            <b>
+
+                                ${fmt(player.balance)}
+                                NC
+
+                            </b>
+
+                        </div>
+
+                    </div>
+                `
+            )
+            .join("");
+
+    }catch(error){
+
+        fail(
+            error
+        );
+    }
+}
+
+
+/* ADMIN */
+
+async function loadAdmin(
+    query = ""
+){
+
+    if(
+        !S.me?.creator
+    ){
+
+        return;
+    }
+
+
+    try{
+
+        const [
+            stats,
+            players
+        ] =
+            await Promise.all([
+                api(
+                    "admin/stats"
+                ),
+
+                api(
+                    "admin/players?q=" +
+                    encodeURIComponent(
+                        query
+                    )
+                )
+            ]);
+
+
+        $("admin-stats")
+        .innerHTML = `
+
+            <div class="admin-stat">
+
+                <b>
+                    ${fmt(stats.users)}
+                </b>
+
+                <span>
+                    ИГРОКОВ
+                </span>
+
+            </div>
+
+
+            <div class="admin-stat">
+
+                <b>
+                    ${fmt(stats.plates)}
+                </b>
+
+                <span>
+                    НОМЕРОВ
+                </span>
+
+            </div>
+
+
+            <div class="admin-stat">
+
+                <b>
+                    ${fmt(stats.listings)}
+                </b>
+
+                <span>
+                    МАРКЕТ
+                </span>
+
+            </div>
+
+
+            <div class="admin-stat">
+
+                <b>
+                    ${fmt(stats.mythic)}
+                </b>
+
+                <span>
+                    МИФИКОВ
+                </span>
+
+            </div>
+        `;
+
+
+        $("admin-players")
+        .innerHTML =
+            (players.players || [])
+            .map(
+                player => `
+
+                    <div class="card">
+
+                        <div class="row">
+
+                            <div class="grow">
+
+                                <div class="title">
+
+                                    ${
+                                        player.creator
+                                        ?
+                                        "👑 "
+                                        :
+                                        ""
+                                    }
+
+                                    ${esc(player.name)}
+
+                                    ${
+                                        player.username
+                                        ?
+                                        "@" +
+                                        esc(
+                                            player.username
+                                        )
+                                        :
+                                        ""
+                                    }
+
+                                </div>
+
+
+                                <div class="muted small">
+
+                                    ID ${player.id}
+
+                                    •
+
+                                    ${fmt(player.balance)}
+                                    NC
+
+                                    •
+
+                                    ${player.level}
+                                    LVL
+
+                                    •
+
+                                    ${player.collection}
+                                    номеров
+
+                                </div>
+
+
+                                <div class="muted small">
+
+                                    100% mythic:
+
+                                    <b>
+
+                                        ${
+                                            player.mythic_mode
+                                            ?
+                                            "ON"
+                                            :
+                                            "OFF"
+                                        }
+
+                                    </b>
+
+                                    •
+
+                                    очередь:
+
+                                    ${player.mythic_queue || 0}
+
+                                </div>
+
+                            </div>
+
+
+                            <button
+                                class="
+                                    btn
+                                    ghost
+                                    smallbtn
+                                "
+                                data-act="admin-select"
+                                data-id="${player.id}">
+                                Выбрать
+                            </button>
+
+                        </div>
+
+
+                        <div class="actions">
+
+                            <button
+                                class="
+                                    btn
+                                    secondary
+                                    smallbtn
+                                "
+                                data-act="admin-fast"
+                                data-id="${player.id}"
+                                data-kind="nc"
+                                data-amount="1000">
+                                +1000 NC
+                            </button>
+
+
+                            <button
+                                class="
+                                    btn
+                                    secondary
+                                    smallbtn
+                                "
+                                data-act="admin-fast"
+                                data-id="${player.id}"
+                                data-kind="xp"
+                                data-amount="1000">
+                                +1000 XP
+                            </button>
+
+
+                            <button
+                                class="
+                                    btn
+                                    gold
+                                    smallbtn
+                                "
+                                data-act="admin-mythic"
+                                data-id="${player.id}"
+                                data-mode="queue"
+                                data-count="1">
+                                МИФИК ×1
+                            </button>
+
+
+                            <button
+                                class="
+                                    btn
+                                    gold
+                                    smallbtn
+                                "
+                                data-act="admin-mythic"
+                                data-id="${player.id}"
+                                data-mode="${
+                                    player.mythic_mode
+                                    ?
+                                    "off"
+                                    :
+                                    "on"
+                                }">
+
+                                100%
+
+                                ${
+                                    player.mythic_mode
+                                    ?
+                                    "OFF"
+                                    :
+                                    "ON"
+                                }
+
+                            </button>
+
+                        </div>
+
+                    </div>
+                `
+            )
+            .join("")
+
+            ||
+
+            `
+                <div class="empty">
+                    Игроки не найдены
+                </div>
+            `;
+
+    }catch(error){
+
+        fail(
+            error
+        );
+    }
+}
+
+
+/* MODAL */
+
+function modal({
+    title,
+    text = "",
+    input = false,
+    placeholder = "",
+    value = "",
+    ok = "Готово"
+}){
+
+    return new Promise(
+        resolve =>{
+
+            modalResolve =
+                resolve;
+
+
+            $("modal")
+            .innerHTML = `
+
+                <h3>
+                    ${esc(title)}
+                </h3>
+
+
+                ${
+                    text
+
+                    ?
+
+                    `
+                        <p>
+                            ${esc(text)}
+                        </p>
+                    `
+
+                    :
+
+                    ""
+                }
+
+
+                ${
+                    input
+
+                    ?
+
+                    `
+                        <input
+                            class="input"
+                            id="modal-input"
+                            inputmode="numeric"
+                            placeholder="${esc(placeholder)}"
+                            value="${esc(value)}">
+                    `
+
+                    :
+
+                    ""
+                }
+
+
+                <div class="modal-buttons">
+
+                    <button
+                        class="
+                            btn
+                            ghost
+                        "
+                        id="modal-cancel">
+                        Отмена
+                    </button>
+
+
+                    <button
+                        class="
+                            btn
+                            primary
+                        "
+                        id="modal-ok">
+                        ${esc(ok)}
+                    </button>
+
+                </div>
+            `;
+
+
+            $("modal-back")
+            .classList
+            .add(
+                "show"
+            );
+
+
+            $("modal-cancel")
+            .onclick =
+                ()=>{
+
+                    closeModal(
+                        null
+                    );
+                };
+
+
+            $("modal-ok")
+            .onclick =
+                ()=>{
+
+                    closeModal(
+                        input
+                        ?
+                        $("modal-input")
+                        .value
+                        :
+                        true
+                    );
+                };
+        }
+    );
+}
+
+
+function closeModal(
+    value
+){
+
+    $("modal-back")
+    .classList
+    .remove(
+        "show"
+    );
+
+
+    const resolve =
+        modalResolve;
+
+
+    modalResolve =
+        null;
+
+
+    resolve?.(
+        value
+    );
+}
+
+
+/* ACTIONS */
+
+async function action(
+    button
+){
+
+    const actionName =
+        button.dataset.act;
+
+
+    const id =
+        Number(
+            button.dataset.id ||
+            0
+        );
+
+
+    try{
+
+        if(
+            actionName ===
+            "sell"
+        ){
+
+            const accepted =
+                await modal({
+                    title:
+                        "Продать номер?",
+
+                    text:
+                        "Ты получишь " +
+                        fmt(
+                            button.dataset.price
+                        ) +
+                        " NC",
+
+                    ok:
+                        "Продать"
+                });
+
+
+            if(
+                accepted
+            ){
+
+                await sellSystem(
+                    id
+                );
+            }
+        }
+
+
+        else if(
+            actionName ===
+            "list"
+        ){
+
+            const value =
+                await modal({
+                    title:
+                        "Выставить на маркет",
+
+                    text:
+                        button.dataset.code,
+
+                    input:true,
+
+                    placeholder:
+                        "Цена NC",
+
+                    ok:
+                        "Выставить"
+                });
+
+
+            if(
+                value ===
+                null
+            ){
+
+                return;
+            }
+
+
+            const price =
+                Number(
+                    value
+                );
+
+
+            if(
+                !Number.isSafeInteger(
+                    price
+                ) ||
+                price < 100
+            ){
+
+                throw new Error(
+                    "Цена должна быть от 100 NC"
+                );
+            }
+
+
+            await api(
+                "list",
+                "POST",
+                {
+                    plate_id:id,
+                    price
+                }
+            );
+
+
+            notify(
+                "Маркет",
+                "Номер выставлен"
+            );
+
+
+            await loadCollection();
+        }
+
+
+        else if(
+            actionName ===
+            "cancel"
+        ){
+
+            await api(
+                "cancel",
+                "POST",
+                {
+                    listing_id:id
+                }
+            );
+
+
+            notify(
+                "Маркет",
+                "Объявление снято"
+            );
+
+
+            if(
+                S.page ===
+                "market"
+            ){
+
+                await loadMarket();
+
+            }else{
+
+                await loadCollection();
+            }
+        }
+
+
+        else if(
+            actionName ===
+            "buy"
+        ){
+
+            const accepted =
+                await modal({
+                    title:
+                        "Купить номер?",
+
+                    text:
+                        "Цена " +
+                        fmt(
+                            button.dataset.price
+                        ) +
+                        " NC",
+
+                    ok:
+                        "Купить"
+                });
+
+
+            if(
+                !accepted
+            ){
+
+                return;
+            }
+
+
+            const result =
+                await api(
+                    "buy",
+                    "POST",
+                    {
+                        listing_id:id
+                    }
+                );
+
+
+            S.me =
+                result.user;
+
+
+            sync();
+
+
+            notify(
+                "Покупка",
+                "Номер добавлен"
+            );
+
+
+            await loadMarket();
+        }
+
+
+        else if(
+            actionName ===
+            "claim"
+        ){
+
+            const result =
+                await api(
+                    "tasks/claim",
+                    "POST",
+                    {
+                        task_key:
+                            button.dataset.key
+                    }
+                );
+
+
+            S.me =
+                result.user;
+
+
+            sync();
+
+
+            notify(
+                "Награда",
+                "+" +
+                fmt(
+                    result.reward_nc
+                ) +
+                " NC • +" +
+                fmt(
+                    result.reward_xp
+                ) +
+                " XP"
+            );
+
+
+            await loadTasks();
+        }
+
+
+        else if(
+            actionName ===
+            "admin-select"
+        ){
+
+            $("admin-target")
+            .value =
+                id;
+
+
+            notify(
+                "Игрок выбран",
+                "ID " +
+                id
+            );
+        }
+
+
+        else if(
+            actionName ===
+            "admin-fast"
+        ){
+
+            const body = {
+                user_id:id,
+                reason:
+                    "Быстрая выдача"
+            };
+
+
+            body[
+                button.dataset.kind
+            ] =
+                Number(
+                    button.dataset.amount
+                );
+
+
+            await api(
+                "admin/grant",
+                "POST",
+                body
+            );
+
+
+            notify(
+                "Админ",
+                "Выдано " +
+                button.dataset.amount +
+                " " +
+                button.dataset.kind
+                .toUpperCase()
+            );
+
+
+            await loadAdmin(
+                $("admin-search")
+                .value
+            );
+        }
+
+
+        else if(
+            actionName ===
+            "admin-mythic"
+        ){
+
+            await api(
+                "admin/mythic",
+                "POST",
+                {
+                    user_id:id,
+
+                    mode:
+                        button.dataset.mode,
+
+                    count:
+                        Number(
+                            button.dataset.count ||
+                            1
+                        )
+                }
+            );
+
+
+            notify(
+                "Админ",
+                "Настройка мифика изменена"
+            );
+
+
+            await loadAdmin(
+                $("admin-search")
+                .value
+            );
+        }
+
+    }catch(error){
+
+        fail(
+            error
+        );
+    }
+}
+
+
+/* NAVIGATION */
+
+async function openPage(
+    page
+){
+
+    if(
+        page ===
+        "admin" &&
+        !S.me?.creator
+    ){
+
+        notify(
+            "Нет доступа"
+        );
+
+        return;
+    }
+
+
+    S.page =
+        page;
+
+
+    document
+    .querySelectorAll(
+        ".page"
+    )
+    .forEach(
+        element =>{
+
+            element
+            .classList
+            .toggle(
+                "active",
+                element.id ===
+                "page-" +
+                page
+            );
+        }
+    );
+
+
+    document
+    .querySelectorAll(
+        ".nav button"
+    )
+    .forEach(
+        button =>{
+
+            button
+            .classList
+            .toggle(
+                "active",
+                button.dataset.tab ===
+                page
+            );
+        }
+    );
+
+
+    window.scrollTo({
+        top:0,
+        behavior:"smooth"
+    });
+
+
+    if(
+        page ===
+        "collection"
+    ){
+
+        await loadCollection();
+    }
+
+
+    if(
+        page ===
+        "market"
+    ){
+
+        await loadMarket();
+    }
+
+
+    if(
+        page ===
+        "tasks"
+    ){
+
+        await loadTasks();
+    }
+
+
+    if(
+        page ===
+        "profile"
+    ){
+
+        await loadTop();
+    }
+
+
+    if(
+        page ===
+        "admin"
+    ){
+
+        await loadAdmin(
+            $("admin-search")
+            .value
+        );
+    }
+}
+
+
+/* EVENTS */
+
+$("spin-btn")
+.onclick =
+    spin;
+
+
+$("keep-btn")
+.onclick =
+    ()=>{
+
+        $("quick")
+        .classList
+        .remove(
+            "show"
+        );
+
+
+        S.last =
+            null;
+
+
+        notify(
+            "Сохранено",
+            "Номер остался в коллекции"
+        );
+    };
+
+
+$("sell-btn")
+.onclick =
+    ()=>{
+
+        if(
+            S.last
+        ){
+
+            sellSystem(
+                S.last.id
+            );
+        }
+    };
+
+
+$("search")
+.oninput =
+    renderCollection;
+
+
+$("rarity-filter")
+.onchange =
+    renderCollection;
+
+
+$("market-refresh")
+.onclick =
+    loadMarket;
+
+
+$("admin-btn")
+.onclick =
+    ()=>{
+
+        openPage(
+            "admin"
+        );
+    };
+
+
+$("admin-search-btn")
+.onclick =
+    ()=>{
+
+        loadAdmin(
+            $("admin-search")
+            .value
+        );
+    };
+
+
+$("admin-search")
+.onkeydown =
+    event =>{
+
+        if(
+            event.key ===
+            "Enter"
+        ){
+
+            loadAdmin(
+                event.target.value
+            );
+        }
+    };
+
+
+$("admin-grant")
+.onclick =
+    async ()=>{
+
+        try{
+
+            const user_id =
+                Number(
+                    $("admin-target")
+                    .value
+                );
+
+
+            const nc =
+                Number(
+                    $("admin-nc")
+                    .value ||
+                    0
+                );
+
+
+            const xp =
+                Number(
+                    $("admin-xp")
+                    .value ||
+                    0
+                );
+
+
+            const reason =
+                $("admin-reason")
+                .value ||
+                "Админ-панель";
+
+
+            if(
+                !user_id
+            ){
+
+                throw new Error(
+                    "Укажи Telegram ID"
+                );
+            }
+
+
+            if(
+                !nc &&
+                !xp
+            ){
+
+                throw new Error(
+                    "Укажи NC или XP"
+                );
+            }
+
+
+            await api(
+                "admin/grant",
+                "POST",
+                {
+                    user_id,
+                    nc,
+                    xp,
+                    reason
+                }
+            );
+
+
+            $("admin-nc")
+            .value =
+                "";
+
+
+            $("admin-xp")
+            .value =
+                "";
+
+
+            notify(
+                "Админ",
+                "Выдача выполнена"
+            );
+
+
+            await loadAdmin(
+                $("admin-search")
+                .value
+            );
+
+        }catch(error){
+
+            fail(
+                error
+            );
+        }
+    };
+
+
+document
+.addEventListener(
+    "click",
+    event =>{
+
+        const button =
+            event.target
+            .closest(
+                "[data-act]"
+            );
+
+
+        if(
+            button
+        ){
+
+            action(
+                button
+            );
+        }
+    }
+);
+
+
+document
+.querySelector(
+    ".nav"
+)
+.onclick =
+    event =>{
+
+        const button =
+            event.target
+            .closest(
+                "[data-tab]"
+            );
+
+
+        if(
+            button
+        ){
+
+            openPage(
+                button.dataset.tab
+            );
+        }
+    };
+
+
+$("modal-back")
+.onclick =
+    event =>{
+
+        if(
+            event.target ===
+            $("modal-back")
+        ){
+
+            closeModal(
+                null
+            );
+        }
+    };
+
+
+/* START */
+
+(async()=>{
+
+    try{
+
+        const health =
+            await fetch(
+                "/health",
+                {
+                    cache:
+                        "no-store"
+                }
+            )
+            .then(
+                response =>
+                    response.json()
+            )
+            .catch(
+                ()=>null
+            );
+
+
+        if(
+            health?.version &&
+            !String(
+                health.version
+            )
+            .includes(
+                "6.1"
+            )
+        ){
+
+            notify(
+                "Внимание",
+                "Render запустил старый server.py"
+            );
+        }
+
+
+        await refreshMe();
+
+
+        showPlate(
+            "A777AA 77"
+        );
+
+
+        if(
+            S.me?.creator
+        ){
+
+            notify(
+                "Creator mode",
+                "Кнопка ADMIN доступна сверху"
+            );
+        }
+
+    }catch(error){
+
+        fail(
+            error
+        );
+
+
+        $("home-profile")
+        .innerHTML = `
+
+            <div class="empty">
+
+                Не удалось загрузить аккаунт.
+
+                <br><br>
+
+                Проверь BOT_TOKEN
+                и открой Mini App
+                через Telegram.
+
+            </div>
+        `;
+    }
+
+})();
+</script>
+
+</body>
+</html>
