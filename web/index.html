@@ -1,5027 +1,1389 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-<title>NOMER CLUB</title>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no" />
+<title>ДЕЛО №17</title>
 
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 
 <style>
 *{
-    box-sizing:border-box;
-    -webkit-tap-highlight-color:transparent;
+  box-sizing:border-box;
+  -webkit-tap-highlight-color:transparent
 }
 
 :root{
-    --bg:#020811;
-    --bg2:#06111d;
-    --card:#071521;
-    --card2:#0c2133;
-    --card3:#102b40;
-    --line:#1d4562;
-    --line2:#29678f;
-    --blue:#2497f3;
-    --cyan:#44d1ff;
-    --text:#f4f8ff;
-    --muted:#7890aa;
-    --green:#46dda7;
-    --red:#ff7898;
-    --gold:#ffd465;
-    --purple:#b787ff;
+  --bg:#06080c;
+  --panel:#0d1118;
+  --panel2:#121821;
+  --line:#222a35;
+  --text:#f5f7fa;
+  --muted:#8e98a8;
+  --red:#ef3340;
+  --red2:#8f1019;
+  --green:#38d47b;
+  --amber:#ffbd59;
+  --blue:#5aa7ff;
+  --shadow:0 16px 50px rgba(0,0,0,.35)
 }
 
-html{
-    background:#000;
+html,
+body{
+  margin:0;
+  min-height:100%;
+  background:
+    radial-gradient(circle at 50% -10%,#1a2230 0,#090c12 34%,#05070a 72%);
+  color:var(--text);
+  font-family:
+    Inter,
+    ui-sans-serif,
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    sans-serif
 }
 
 body{
-    margin:0;
-    min-height:100vh;
-    overflow-x:hidden;
-
-    font-family:
-        -apple-system,
-        BlinkMacSystemFont,
-        "Segoe UI",
-        Arial,
-        sans-serif;
-
-    color:var(--text);
-
-    background:
-        radial-gradient(circle at 50% -10%,#153a58 0%,#06111d 34%,#020811 72%);
+  overflow-x:hidden
 }
 
 button,
-input,
-select{
-    font-family:inherit;
+input{
+  font:inherit
 }
 
 button{
-    cursor:pointer;
+  cursor:pointer
 }
 
-.app{
-    width:100%;
-    max-width:720px;
-    min-height:100vh;
-    margin:0 auto;
-    padding-bottom:105px;
+#app{
+  min-height:100vh;
+  max-width:520px;
+  margin:0 auto;
+  position:relative;
+  background:
+    linear-gradient(
+      180deg,
+      rgba(255,255,255,.015),
+      transparent 18%
+    )
 }
 
+/* =========================
+   АТМОСФЕРА
+========================= */
 
-/* =====================================================
-   HEADER
-===================================================== */
-
-.header{
-    min-height:92px;
-
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-
-    padding:14px 16px;
-
-    position:sticky;
-    top:0;
-    z-index:500;
-
-    background:rgba(2,11,20,.96);
-
-    border-bottom:1px solid #16354d;
-
-    backdrop-filter:blur(18px);
+#app:before{
+  content:"";
+  position:fixed;
+  inset:0;
+  pointer-events:none;
+  opacity:.12;
+  background-image:
+    linear-gradient(
+      rgba(255,255,255,.025) 1px,
+      transparent 1px
+    ),
+    linear-gradient(
+      90deg,
+      rgba(255,255,255,.02) 1px,
+      transparent 1px
+    );
+  background-size:24px 24px;
+  mix-blend-mode:overlay
 }
 
-.brand{
-    display:flex;
-    align-items:center;
-    gap:13px;
-    min-width:0;
+.scanline{
+  position:fixed;
+  left:0;
+  right:0;
+  height:120px;
+  top:-140px;
+  pointer-events:none;
+  background:
+    linear-gradient(
+      180deg,
+      transparent,
+      rgba(239,51,64,.04),
+      transparent
+    );
+  animation:scan 9s linear infinite;
+  z-index:1
+}
+
+@keyframes scan{
+  to{
+    transform:translateY(calc(100vh + 300px))
+  }
+}
+
+/* =========================
+   СТАРТОВЫЙ ЭКРАН
+========================= */
+
+.splash{
+  min-height:100vh;
+  padding:34px 22px 26px;
+  display:flex;
+  flex-direction:column;
+  justify-content:space-between;
+  background:
+    radial-gradient(
+      circle at 70% 15%,
+      rgba(239,51,64,.18),
+      transparent 22%
+    ),
+    radial-gradient(
+      circle at 20% 70%,
+      rgba(65,98,135,.16),
+      transparent 28%
+    )
+}
+
+.case-no{
+  font-size:12px;
+  letter-spacing:.28em;
+  color:var(--muted);
+  text-transform:uppercase
 }
 
 .logo{
-    width:58px;
-    height:58px;
-
-    flex-shrink:0;
-
-    border-radius:18px;
-
-    display:flex;
-    align-items:center;
-    justify-content:center;
-
-    background:
-        linear-gradient(
-            145deg,
-            #218fff,
-            #43d8ff
-        );
-
-    color:white;
-
-    font-size:22px;
-    font-weight:1000;
-
-    box-shadow:
-        0 9px 28px rgba(35,163,255,.22);
+  font-weight:950;
+  line-height:.88;
+  font-size:58px;
+  letter-spacing:-.05em;
+  margin-top:10px;
+  text-shadow:0 6px 28px rgba(0,0,0,.65)
 }
 
-.brand-name{
-    font-size:22px;
-    font-weight:1000;
-
-    white-space:nowrap;
+.logo span{
+  color:var(--red)
 }
 
-.brand-sub{
-    margin-top:5px;
-
-    color:#879db7;
-
-    font-size:10px;
-    font-weight:900;
-
-    letter-spacing:2.3px;
-
-    white-space:nowrap;
+.tagline{
+  margin-top:16px;
+  max-width:330px;
+  color:#b8c0cc;
+  line-height:1.6;
+  font-size:14px
 }
 
-.header-right{
-    display:flex;
-    align-items:center;
-    gap:8px;
+.hero-card{
+  margin-top:38px;
+  border:1px solid #27303d;
+  background:
+    linear-gradient(
+      145deg,
+      rgba(20,27,36,.96),
+      rgba(8,11,16,.98)
+    );
+  border-radius:24px;
+  padding:22px;
+  box-shadow:var(--shadow);
+  position:relative;
+  overflow:hidden
 }
 
-.admin-header-btn{
-    display:none;
-
-    min-height:44px;
-
-    padding:0 13px;
-
-    border-radius:15px;
-
-    border:1px solid #9b7416;
-
-    background:#2c2107;
-
-    color:#ffe184;
-
-    font-size:11px;
-    font-weight:1000;
+.hero-card:after{
+  content:"17";
+  position:absolute;
+  right:-6px;
+  bottom:-28px;
+  font-weight:950;
+  font-size:120px;
+  color:rgba(239,51,64,.06)
 }
 
-.balance{
-    min-height:44px;
-
-    padding:0 13px;
-
-    display:flex;
-    align-items:center;
-    justify-content:center;
-
-    border-radius:15px;
-
-    border:1px solid #28506e;
-
-    background:#071521;
-
-    white-space:nowrap;
-
-    font-size:12px;
-    font-weight:1000;
+.hero-line{
+  height:3px;
+  width:74px;
+  background:var(--red);
+  border-radius:99px;
+  margin-bottom:18px;
+  box-shadow:0 0 20px rgba(239,51,64,.6)
 }
 
-
-/* =====================================================
-   PAGE
-===================================================== */
-
-.page{
-    display:none;
-
-    padding:17px 14px 25px;
+.hero-card h2{
+  margin:0 0 8px;
+  font-size:22px
 }
 
-.page.active{
-    display:block;
+.hero-card p{
+  margin:0;
+  color:var(--muted);
+  line-height:1.55;
+  font-size:14px
+}
+
+/* =========================
+   КНОПКИ
+========================= */
+
+.primary{
+  width:100%;
+  border:0;
+  border-radius:16px;
+  background:
+    linear-gradient(
+      180deg,
+      #ff4450,
+      #c71724
+    );
+  color:white;
+  font-weight:800;
+  padding:17px 18px;
+  box-shadow:0 10px 30px rgba(239,51,64,.25);
+  position:relative;
+  overflow:hidden
+}
+
+.primary:active{
+  transform:scale(.985)
+}
+
+.primary:after{
+  content:"";
+  position:absolute;
+  inset:0;
+  transform:translateX(-120%);
+  background:
+    linear-gradient(
+      90deg,
+      transparent,
+      rgba(255,255,255,.22),
+      transparent
+    );
+  animation:shine 3.5s infinite
+}
+
+@keyframes shine{
+  55%,
+  100%{
+    transform:translateX(120%)
+  }
+}
+
+.secondary{
+  width:100%;
+  border:1px solid #303a48;
+  background:#10161e;
+  color:#f5f7fa;
+  padding:14px;
+  border-radius:15px;
+  font-weight:700
+}
+
+/* =========================
+   ОСНОВНАЯ ОБОЛОЧКА
+========================= */
+
+.shell{
+  display:none;
+  min-height:100vh;
+  padding-bottom:84px
+}
+
+.shell.active{
+  display:block;
+  animation:fade .28s ease
+}
+
+@keyframes fade{
+  from{
+    opacity:0;
+    transform:translateY(4px)
+  }
+
+  to{
+    opacity:1;
+    transform:none
+  }
+}
+
+/* =========================
+   ВЕРХНЯЯ ПАНЕЛЬ
+========================= */
+
+.topbar{
+  position:sticky;
+  top:0;
+  z-index:10;
+  padding:14px 16px 12px;
+  background:
+    linear-gradient(
+      180deg,
+      rgba(6,8,12,.98),
+      rgba(6,8,12,.88)
+    );
+  backdrop-filter:blur(18px);
+  border-bottom:1px solid rgba(255,255,255,.04)
+}
+
+.toprow{
+  display:flex;
+  align-items:center;
+  gap:12px
+}
+
+.chapter-dot{
+  width:38px;
+  height:38px;
+  border-radius:14px;
+  display:grid;
+  place-items:center;
+  background:#161c25;
+  border:1px solid #2a3340;
+  font-weight:900;
+  color:var(--red)
+}
+
+.toptext{
+  min-width:0
+}
+
+.toptext b{
+  display:block;
+  font-size:15px
+}
+
+.toptext span{
+  display:block;
+  color:var(--muted);
+  font-size:12px;
+  margin-top:2px
+}
+
+.top-actions{
+  margin-left:auto;
+  display:flex;
+  gap:8px
+}
+
+.iconbtn{
+  width:38px;
+  height:38px;
+  border-radius:13px;
+  border:1px solid #27303c;
+  background:#10151d;
+  color:#fff;
+  display:grid;
+  place-items:center
+}
+
+.progress{
+  height:3px;
+  background:#151a22;
+  margin-top:12px;
+  border-radius:999px;
+  overflow:hidden
+}
+
+.progress i{
+  display:block;
+  height:100%;
+  background:
+    linear-gradient(
+      90deg,
+      var(--red),
+      #ff7180
+    );
+  box-shadow:0 0 14px rgba(239,51,64,.5);
+  transition:width .5s ease
+}
+
+/* =========================
+   ЭКРАНЫ
+========================= */
+
+.view{
+  display:none;
+  padding:15px 15px 22px
+}
+
+.view.active{
+  display:block;
+  animation:viewin .25s ease
+}
+
+@keyframes viewin{
+  from{
+    opacity:0;
+    transform:translateX(5px)
+  }
+
+  to{
+    opacity:1;
+    transform:none
+  }
 }
 
 .section-title{
-    margin:4px 2px 17px;
-
-    font-size:28px;
-    font-weight:1000;
-
-    letter-spacing:-.5px;
-}
-
-
-/* =====================================================
-   MAIN CARD
-===================================================== */
-
-.main-card{
-    padding:22px 16px;
-
-    border:1px solid #245274;
-
-    border-radius:29px;
-
-    background:
-        linear-gradient(
-            145deg,
-            #10283d,
-            #071724 65%
-        );
-
-    box-shadow:
-        0 22px 55px rgba(0,0,0,.22);
-}
-
-.eyebrow{
-    color:#61d5ff;
-
-    font-size:12px;
-    font-weight:1000;
-
-    letter-spacing:2.2px;
-}
-
-.main-title{
-    margin:14px 0 0;
-
-    font-size:31px;
-    line-height:1.06;
-
-    letter-spacing:-1px;
-}
-
-.description{
-    margin-top:17px;
-
-    color:#8198b1;
-
-    font-size:14px;
-    font-weight:700;
-
-    line-height:1.55;
-}
-
-
-/* =====================================================
-   STATS
-===================================================== */
-
-.stats{
-    display:grid;
-
-    grid-template-columns:
-        repeat(3,minmax(0,1fr));
-
-    gap:8px;
-
-    margin-top:19px;
-}
-
-.stat{
-    min-height:82px;
-
-    padding:13px 11px;
-
-    border-radius:20px;
-
-    border:1px solid #1c425e;
-
-    background:#071521;
-}
-
-.stat-label{
-    color:#7790a8;
-
-    font-size:10px;
-    font-weight:900;
-
-    text-transform:uppercase;
-}
-
-.stat-value{
-    margin-top:10px;
-
-    font-size:20px;
-    font-weight:1000;
-}
-
-
-/* =====================================================
-   RESULT CARD
-===================================================== */
-
-.result-card{
-    margin-top:18px;
-
-    padding:
-        33px
-        9px
-        20px;
-
-    border:1px solid #143047;
-
-    border-radius:29px;
-
-    background:#020d16;
-
-    overflow:hidden;
-}
-
-
-/* =====================================================
-   RUSSIAN PLATE
-===================================================== */
-
-.plate-wrap{
-    width:100%;
-
-    display:flex;
-    justify-content:center;
-}
-
-.russian-plate{
-    width:100%;
-    max-width:600px;
-
-    aspect-ratio:520 / 112;
-
-    position:relative;
-
-    display:flex;
-
-    overflow:hidden;
-
-    color:#050505;
-
-    border:3px solid #121212;
-    border-radius:12px;
-
-    background:
-        linear-gradient(
-            180deg,
-            #ffffff 0%,
-            #fafafa 35%,
-            #efefed 100%
-        );
-
-    box-shadow:
-        0 0 0 2px #92928f,
-        0 0 0 4px #f5f5f2,
-        0 8px 20px rgba(0,0,0,.55);
-}
-
-.russian-plate::after{
-    content:"";
-
-    position:absolute;
-    inset:0;
-
-    pointer-events:none;
-
-    background:
-        linear-gradient(
-            115deg,
-            rgba(255,255,255,.18),
-            transparent 27%,
-            transparent 70%,
-            rgba(255,255,255,.08)
-        );
-}
-
-
-/* LEFT PLATE */
-
-.plate-left{
-    width:80%;
-    height:100%;
-
-    display:grid;
-
-    grid-template-columns:
-        18% 50% 32%;
-
-    align-items:center;
-
-    padding:
-        0
-        1.5%
-        0
-        3.5%;
-}
-
-.plate-char{
-    width:100%;
-    height:100%;
-
-    display:flex;
-    align-items:center;
-    justify-content:center;
-
-    color:#030303;
-
-    font-family:
-        "Arial Narrow",
-        "Helvetica Neue",
-        Arial,
-        sans-serif;
-
-    font-weight:900;
-
-    line-height:1;
-}
-
-
-/* ПЕРВАЯ РУССКАЯ БУКВА */
-
-.plate-first{
-    font-size:clamp(41px,12.5vw,88px);
-
-    transform:scaleX(.84);
-}
-
-
-/* ШИРОКИЕ ЦИФРЫ */
-
-.plate-digits{
-    font-size:clamp(47px,14.5vw,102px);
-
-    letter-spacing:1px;
-
-    transform:scaleX(1.02);
-}
-
-
-/* ДВЕ РУССКИЕ БУКВЫ */
-
-.plate-last{
-    font-size:clamp(41px,12.4vw,86px);
-
-    letter-spacing:-2px;
-
-    transform:scaleX(.86);
-}
-
-
-/* REGION */
-
-.plate-region-box{
-    width:20%;
-    height:100%;
-
-    border-left:3px solid #101010;
-
-    display:flex;
-    flex-direction:column;
-
-    padding:
-        2px
-        4px
-        4px;
-}
-
-.region-number{
-    width:100%;
-    height:70%;
-
-    display:flex;
-    align-items:center;
-    justify-content:center;
-
-    font-family:
-        "Arial Narrow",
-        Arial,
-        sans-serif;
-
-    font-size:clamp(28px,8.3vw,62px);
-
-    font-weight:900;
-
-    letter-spacing:-2px;
-
-    line-height:1;
-
-    transform:scaleX(.92);
-}
-
-.region-bottom{
-    width:100%;
-    height:30%;
-
-    display:flex;
-    align-items:center;
-    justify-content:center;
-
-    gap:4px;
-}
-
-.rus{
-    font-size:clamp(8px,2.2vw,16px);
-
-    font-weight:900;
-
-    line-height:1;
-}
-
-.flag{
-    width:31%;
-    min-width:20px;
-    max-width:37px;
-
-    aspect-ratio:3 / 2;
-
-    display:flex;
-    flex-direction:column;
-
-    border:1px solid #777;
-
-    overflow:hidden;
-}
-
-.flag span{
-    width:100%;
-    height:33.333%;
-}
-
-.flag span:nth-child(1){
-    background:#fff;
-}
-
-.flag span:nth-child(2){
-    background:#1654a3;
-}
-
-.flag span:nth-child(3){
-    background:#d52b1e;
-}
-
-
-/* BOLTS */
-
-.plate-bolt{
-    width:9px;
-    height:9px;
-
-    position:absolute;
-
-    top:50%;
-
-    transform:translateY(-50%);
-
-    border-radius:50%;
-
-    z-index:5;
-
-    background:
-        radial-gradient(
-            circle at 32% 28%,
-            #fff 0%,
-            #ddd 18%,
-            #999 42%,
-            #555 68%,
-            #aaa 100%
-        );
-
-    box-shadow:
-        0 1px 2px rgba(0,0,0,.8);
-}
-
-.plate-bolt.left{
-    left:8px;
-}
-
-.plate-bolt.right{
-    right:7px;
-}
-
-
-/* =====================================================
-   RESULT INFO
-===================================================== */
-
-.result-details{
-    padding:
-        19px
-        9px
-        0;
-}
-
-.rarity{
-    display:inline-flex;
-
-    align-items:center;
-
-    padding:
-        10px
-        15px;
-
-    border-radius:999px;
-
-    border:1px solid #316384;
-
-    color:#a9bdcf;
-
-    font-size:12px;
-    font-weight:1000;
-
-    letter-spacing:.6px;
-}
-
-.rarity.common{
-    color:#abbdd0;
-}
-
-.rarity.uncommon{
-    color:#50dda9;
-}
-
-.rarity.rare{
-    color:#51baff;
-}
-
-.rarity.epic{
-    color:#bd89ff;
-}
-
-.rarity.legendary{
-    color:#ffd25d;
-}
-
-.rarity.mythic{
-    color:#ff7798;
-
-    border-color:#9f3a57;
-
-    box-shadow:
-        0 0 22px rgba(255,68,122,.17);
-}
-
-.sale-info{
-    margin-top:16px;
-
-    color:#8199b2;
-
-    font-size:14px;
-    font-weight:750;
-}
-
-
-/* =====================================================
-   BUTTONS
-===================================================== */
-
-.spin-btn{
-    width:100%;
-
-    min-height:62px;
-
-    margin-top:20px;
-
-    border:0;
-
-    border-radius:21px;
-
-    color:#fff;
-
-    font-size:18px;
-    font-weight:1000;
-
-    background:
-        linear-gradient(
-            90deg,
-            #2787ef,
-            #3ac5fa
-        );
-
-    box-shadow:
-        0 10px 28px rgba(28,150,247,.2);
-}
-
-.spin-btn:active{
-    transform:scale(.985);
-}
-
-.actions{
-    display:grid;
-
-    grid-template-columns:
-        1fr 1fr;
-
-    gap:9px;
-
-    margin-top:10px;
-}
-
-.action-btn{
-    min-height:64px;
-
-    padding:10px;
-
-    border-radius:21px;
-
-    border:1px solid #2a6794;
-
-    background:#0b2133;
-
-    color:white;
-
-    font-size:15px;
-    font-weight:1000;
-}
-
-.sell-btn{
-    color:#ff9eb6;
-
-    border-color:#923c56;
-
-    background:#3a1622;
-}
-
-.help{
-    margin-top:16px;
-
-    padding:0 10px;
-
-    text-align:center;
-
-    color:#758da6;
-
-    font-size:12px;
-    font-weight:650;
-
-    line-height:1.5;
-}
-
-
-/* =====================================================
-   CARDS
-===================================================== */
-
-.card{
-    padding:19px;
-
-    border-radius:23px;
-
-    border:1px solid #183d59;
-
-    background:
-        linear-gradient(
-            145deg,
-            #0d2132,
-            #06121d
-        );
-}
-
-.card + .card{
-    margin-top:11px;
-}
-
-.card-title{
-    font-size:18px;
-    font-weight:1000;
-}
-
-.card-text{
-    margin-top:7px;
-
-    color:#7990a8;
-
-    font-size:13px;
-
-    line-height:1.55;
-}
-
-
-/* =====================================================
-   GARAGE
-===================================================== */
-
-.garage-list{
-    display:grid;
-
-    gap:10px;
-}
-
-.garage-item{
-    padding:16px;
-
-    border:1px solid #183d59;
-
-    border-radius:20px;
-
-    background:#071521;
-}
-
-.garage-top{
-    display:flex;
-
-    justify-content:space-between;
-
-    gap:10px;
-
-    align-items:center;
-}
-
-.garage-number{
-    font-size:22px;
-    font-weight:1000;
-}
-
-.garage-price{
-    color:#55cfff;
-
-    font-size:13px;
-    font-weight:1000;
-}
-
-.garage-meta{
-    margin-top:7px;
-
-    color:#7891aa;
-
-    font-size:12px;
-}
-
-.small-danger-btn{
-    margin-top:12px;
-
-    width:100%;
-
-    min-height:43px;
-
-    border-radius:14px;
-
-    border:1px solid #84374f;
-
-    background:#31141e;
-
-    color:#ff9bb2;
-
-    font-size:12px;
-    font-weight:1000;
-}
-
-
-/* =====================================================
-   MARKET
-===================================================== */
-
-.market-grid{
-    display:grid;
-
-    gap:10px;
-}
-
-.market-item{
-    padding:17px;
-
-    border-radius:21px;
-
-    border:1px solid #1b4563;
-
-    background:#071521;
-}
-
-.market-title{
-    font-size:20px;
-    font-weight:1000;
-}
-
-.market-meta{
-    margin-top:7px;
-
-    color:#7d95ae;
-
-    font-size:12px;
-}
-
-.market-buy{
-    width:100%;
-
-    min-height:44px;
-
-    margin-top:13px;
-
-    border:0;
-
-    border-radius:14px;
-
-    background:#143d5b;
-
-    color:#69d8ff;
-
-    font-size:13px;
-    font-weight:1000;
-}
-
-
-/* =====================================================
-   TASKS
-===================================================== */
-
-.task-list{
-    display:grid;
-
-    gap:10px;
-}
-
-.task{
-    padding:17px;
-
-    border-radius:22px;
-
-    border:1px solid #1b425f;
-
-    background:#071521;
-}
-
-.task-top{
-    display:flex;
-
-    align-items:flex-start;
-
-    justify-content:space-between;
-
-    gap:12px;
-}
-
-.task-name{
-    font-size:16px;
-    font-weight:1000;
-}
-
-.task-reward{
-    color:#ffd268;
-
-    white-space:nowrap;
-
-    font-size:12px;
-    font-weight:1000;
-}
-
-.task-desc{
-    margin-top:7px;
-
-    color:#7891aa;
-
-    font-size:12px;
-
-    line-height:1.4;
-}
-
-.task-progress{
-    margin-top:13px;
-
-    height:7px;
-
-    border-radius:999px;
-
-    overflow:hidden;
-
-    background:#0e293d;
-}
-
-.task-progress-fill{
-    height:100%;
-
-    border-radius:999px;
-
-    background:
-        linear-gradient(
-            90deg,
-            #248ef0,
-            #49d2ff
-        );
-}
-
-.task-btn{
-    width:100%;
-
-    min-height:44px;
-
-    margin-top:12px;
-
-    border-radius:14px;
-
-    border:1px solid #2b6a96;
-
-    background:#102d43;
-
-    color:#62d5ff;
-
-    font-size:12px;
-    font-weight:1000;
-}
-
-.task-btn.done{
-    color:#5bddad;
-
-    border-color:#257054;
-
-    background:#0e2b22;
-}
-
-
-/* =====================================================
-   PROFILE
-===================================================== */
-
-.profile-card{
-    padding:20px;
-
-    border-radius:24px;
-
-    border:1px solid #173b59;
-
-    background:
-        linear-gradient(
-            145deg,
-            #0d2132,
-            #06121d
-        );
-}
-
-.profile-row{
-    display:flex;
-
-    align-items:center;
-
-    gap:14px;
+  display:flex;
+  align-items:end;
+  justify-content:space-between;
+  margin:4px 0 12px
+}
+
+.section-title h2{
+  margin:0;
+  font-size:24px
+}
+
+.section-title small{
+  color:var(--muted)
+}
+
+/* =========================
+   СПИСОК ЧАТОВ
+========================= */
+
+.chat-list{
+  display:flex;
+  flex-direction:column;
+  gap:10px
+}
+
+.chat-row{
+  position:relative;
+  display:flex;
+  gap:12px;
+  padding:13px;
+  border:1px solid #202733;
+  background:
+    linear-gradient(
+      145deg,
+      #111720,
+      #0c1016
+    );
+  border-radius:18px;
+  box-shadow:0 8px 24px rgba(0,0,0,.18);
+  animation:pop .35s ease both
+}
+
+@keyframes pop{
+  from{
+    opacity:0;
+    transform:scale(.97) translateY(7px)
+  }
+
+  to{
+    opacity:1;
+    transform:none
+  }
 }
 
 .avatar{
-    width:66px;
-    height:66px;
-
-    flex-shrink:0;
-
-    overflow:hidden;
-
-    border-radius:20px;
-
-    display:flex;
-
-    align-items:center;
-    justify-content:center;
-
-    background:
-        linear-gradient(
-            145deg,
-            #238fff,
-            #4ad7ff
-        );
-
-    font-size:23px;
-    font-weight:1000;
+  flex:0 0 48px;
+  width:48px;
+  height:48px;
+  border-radius:16px;
+  background:
+    radial-gradient(
+      circle at 30% 20%,
+      #39465a,
+      #171e28 58%,
+      #0d1117
+    );
+  border:1px solid #394454;
+  display:grid;
+  place-items:center;
+  font-weight:900;
+  font-size:18px
 }
 
-.avatar img{
-    width:100%;
-    height:100%;
-
-    object-fit:cover;
+.chat-main{
+  min-width:0;
+  flex:1
 }
 
-.profile-name{
-    font-size:20px;
-    font-weight:1000;
+.chat-name{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  font-weight:800
 }
 
-.profile-small{
-    margin-top:4px;
-
-    color:#7c93ac;
-
-    font-size:13px;
+.status{
+  font-size:10px;
+  color:var(--green)
 }
 
-.profile-stats{
-    display:grid;
-
-    grid-template-columns:
-        repeat(2,1fr);
-
-    gap:8px;
-
-    margin-top:17px;
+.preview{
+  margin-top:5px;
+  color:#8f99a8;
+  font-size:13px;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis
 }
 
-.profile-stat{
-    padding:14px;
-
-    border-radius:17px;
-
-    background:#071521;
-
-    border:1px solid #183c57;
+.badge{
+  position:absolute;
+  right:12px;
+  top:12px;
+  min-width:20px;
+  height:20px;
+  padding:0 6px;
+  border-radius:999px;
+  background:var(--red);
+  display:grid;
+  place-items:center;
+  font-size:11px;
+  font-weight:800;
+  animation:pulse 1.7s infinite
 }
 
-.profile-stat-label{
-    color:#7590a8;
-
-    font-size:10px;
-    font-weight:850;
-
-    text-transform:uppercase;
+@keyframes pulse{
+  50%{
+    box-shadow:0 0 0 7px rgba(239,51,64,0)
+  }
 }
 
-.profile-stat-value{
-    margin-top:7px;
+/* =========================
+   ЧАТ
+========================= */
 
-    font-size:18px;
-    font-weight:1000;
+.chat-screen{
+  display:none
 }
 
-
-/* =====================================================
-   ADMIN PANEL
-===================================================== */
-
-.admin-panel{
-    display:none;
-
-    margin-top:15px;
-
-    padding:19px;
-
-    border:1px solid #755a17;
-
-    border-radius:24px;
-
-    background:
-        linear-gradient(
-            145deg,
-            #211b08,
-            #0d100a
-        );
+.chat-screen.active{
+  display:block
 }
 
-.admin-title{
-    color:#ffe17a;
-
-    font-size:20px;
-    font-weight:1000;
+.chat-header{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  margin-bottom:12px
 }
 
-.admin-description{
-    margin-top:7px;
-
-    color:#a79b73;
-
-    font-size:12px;
-
-    line-height:1.45;
+.back{
+  border:0;
+  background:transparent;
+  color:#cbd4df;
+  font-size:22px;
+  padding:7px
 }
 
-.admin-grid{
-    display:grid;
-
-    grid-template-columns:
-        1fr 1fr;
-
-    gap:8px;
-
-    margin-top:15px;
+.chat-head-text b{
+  display:block
 }
 
-.admin-btn{
-    min-height:52px;
-
-    padding:10px;
-
-    border-radius:16px;
-
-    border:1px solid #765d1a;
-
-    background:#292008;
-
-    color:#ffe082;
-
-    font-size:12px;
-    font-weight:1000;
+.chat-head-text span{
+  font-size:11px;
+  color:var(--green)
 }
 
-.admin-btn.blue{
-    border-color:#296890;
-
-    background:#102d42;
-
-    color:#61d5ff;
+.messages{
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+  padding:8px 0 18px;
+  min-height:310px
 }
 
-.admin-btn.red{
-    border-color:#82394e;
-
-    background:#31141e;
-
-    color:#ff9bb2;
+.bubble{
+  max-width:86%;
+  padding:11px 13px;
+  border-radius:17px;
+  line-height:1.43;
+  font-size:14px;
+  animation:bubble .28s ease
 }
 
-.admin-btn.green{
-    border-color:#287458;
-
-    background:#0f2b22;
-
-    color:#5ce2af;
+.bubble.them{
+  align-self:flex-start;
+  background:#151c25;
+  border:1px solid #252f3c;
+  border-bottom-left-radius:6px
 }
 
-
-/* TARGET PLAYER */
-
-.admin-subtitle{
-    margin-top:20px;
-
-    color:#f3f7ff;
-
-    font-size:14px;
-    font-weight:1000;
+.bubble.me{
+  align-self:flex-end;
+  background:
+    linear-gradient(
+      180deg,
+      #4a1419,
+      #2e0d11
+    );
+  border:1px solid #74232a;
+  border-bottom-right-radius:6px
 }
 
-.admin-input{
-    width:100%;
-
-    height:49px;
-
-    margin-top:10px;
-
-    padding:0 14px;
-
-    border-radius:15px;
-
-    outline:none;
-
-    border:1px solid #344a58;
-
-    background:#080e12;
-
-    color:white;
-
-    font-size:14px;
+.bubble.system{
+  align-self:center;
+  background:transparent;
+  color:#778294;
+  border:0;
+  font-size:11px;
+  text-align:center
 }
 
-.admin-input::placeholder{
-    color:#596871;
+@keyframes bubble{
+  from{
+    opacity:0;
+    transform:translateY(8px) scale(.98)
+  }
+
+  to{
+    opacity:1;
+    transform:none
+  }
 }
 
-.admin-status{
-    margin-top:13px;
-
-    padding:12px;
-
-    border-radius:15px;
-
-    background:#11140d;
-
-    color:#958c68;
-
-    font-size:11px;
-
-    line-height:1.45;
+.typing{
+  display:none;
+  align-items:center;
+  gap:5px;
+  color:#96a0ae;
+  font-size:12px;
+  margin:2px 0 8px
 }
 
-
-/* =====================================================
-   NAV
-===================================================== */
-
-.bottom-nav{
-    width:100%;
-    max-width:720px;
-
-    min-height:91px;
-
-    position:fixed;
-
-    left:50%;
-    bottom:0;
-
-    transform:translateX(-50%);
-
-    display:grid;
-
-    grid-template-columns:
-        repeat(5,1fr);
-
-    padding:
-        8px
-        8px
-        max(8px,env(safe-area-inset-bottom));
-
-    background:rgba(2,10,18,.98);
-
-    border-top:1px solid #173650;
-
-    backdrop-filter:blur(18px);
-
-    z-index:1000;
+.typing.show{
+  display:flex
 }
 
-.nav-btn{
-    border:0;
-
-    background:transparent;
-
-    color:#71879e;
-
-    border-radius:20px;
-
-    display:flex;
-    flex-direction:column;
-
-    align-items:center;
-    justify-content:center;
-
-    gap:6px;
-
-    font-size:10px;
-    font-weight:900;
+.typing i{
+  width:6px;
+  height:6px;
+  background:#8d98a8;
+  border-radius:50%;
+  animation:dot 1s infinite
 }
 
-.nav-btn.active{
-    color:#69d8ff;
-
-    background:#102b40;
+.typing i:nth-child(2){
+  animation-delay:.14s
 }
 
-.nav-icon{
-    font-size:22px;
-
-    line-height:1;
+.typing i:nth-child(3){
+  animation-delay:.28s
 }
 
+@keyframes dot{
+  50%{
+    transform:translateY(-4px);
+    opacity:.5
+  }
+}
 
-/* =====================================================
-   TOAST
-===================================================== */
+/* =========================
+   КАРТОЧКИ
+========================= */
+
+.card{
+  border:1px solid #202936;
+  background:
+    linear-gradient(
+      145deg,
+      #111720,
+      #0c1016
+    );
+  border-radius:19px;
+  padding:15px;
+  box-shadow:0 10px 30px rgba(0,0,0,.16)
+}
+
+/* =========================
+   ЗАДАНИЯ
+========================= */
+
+.tasks{
+  display:flex;
+  flex-direction:column;
+  gap:9px
+}
+
+.task{
+  display:flex;
+  gap:10px;
+  align-items:center
+}
+
+.check{
+  width:22px;
+  height:22px;
+  border-radius:8px;
+  border:1px solid #3a4555;
+  display:grid;
+  place-items:center;
+  color:transparent
+}
+
+.task.done .check{
+  background:rgba(56,212,123,.12);
+  border-color:#2c8c58;
+  color:var(--green)
+}
+
+.task span{
+  font-size:13px;
+  color:#cfd5dd
+}
+
+.task.done span{
+  color:#6f7a88;
+  text-decoration:line-through
+}
+
+/* =========================
+   ВЫБОРЫ
+========================= */
+
+.actions{
+  display:grid;
+  gap:9px;
+  margin-top:14px
+}
+
+.choice{
+  position:relative;
+  border:1px solid #2b3440;
+  background:#111720;
+  color:#edf1f5;
+  border-radius:14px;
+  padding:13px 14px;
+  text-align:left;
+  overflow:hidden;
+  transition:.18s
+}
+
+.choice:hover{
+  border-color:#3b4656;
+  transform:translateY(-1px)
+}
+
+.choice.primary{
+  width:auto;
+  background:
+    linear-gradient(
+      180deg,
+      #4b151a,
+      #2a0d10
+    );
+  border-color:#7c252c;
+  box-shadow:none
+}
+
+.choice.danger{
+  border-color:#542229;
+  background:#1a0e11
+}
+
+.choice:active{
+  transform:scale(.99)
+}
+
+/* =========================
+   УЛИКИ
+========================= */
+
+.evidence-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px
+}
+
+.evidence{
+  min-height:150px;
+  padding:13px;
+  border-radius:18px;
+  border:1px solid #252e3a;
+  background:
+    linear-gradient(
+      145deg,
+      #131a23,
+      #0a0e13
+    );
+  position:relative;
+  overflow:hidden;
+  animation:pop .35s ease
+}
+
+.evidence:before{
+  content:"";
+  position:absolute;
+  right:-24px;
+  top:-24px;
+  width:74px;
+  height:74px;
+  border-radius:50%;
+  background:rgba(239,51,64,.07)
+}
+
+.evidence .etype{
+  font-size:10px;
+  text-transform:uppercase;
+  letter-spacing:.08em;
+  color:var(--red)
+}
+
+.evidence h3{
+  margin:8px 0 7px;
+  font-size:15px
+}
+
+.evidence p{
+  margin:0;
+  color:#8e99a8;
+  font-size:12px;
+  line-height:1.45
+}
+
+/* =========================
+   ГЛАВЫ
+========================= */
+
+.case-board{
+  display:grid;
+  gap:10px
+}
+
+.chapter-item{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  border:1px solid #202936;
+  background:#0e141c;
+  border-radius:16px;
+  padding:12px
+}
+
+.chapter-num{
+  width:34px;
+  height:34px;
+  border-radius:12px;
+  display:grid;
+  place-items:center;
+  font-weight:900;
+  background:#171e27;
+  color:var(--red)
+}
+
+.chapter-item.locked{
+  opacity:.35;
+  filter:grayscale(1)
+}
+
+.chapter-item small{
+  display:block;
+  color:var(--muted);
+  margin-top:2px
+}
+
+.note{
+  margin-top:10px;
+  border-left:2px solid var(--red);
+  padding:10px 12px;
+  background:rgba(239,51,64,.04);
+  font-size:13px;
+  color:#c5ccd6;
+  line-height:1.5
+}
+
+/* =========================
+   ФИНАЛ
+========================= */
+
+.end-card{
+  text-align:center;
+  padding:28px 20px
+}
+
+.end-kicker{
+  font-size:11px;
+  letter-spacing:.25em;
+  color:var(--red);
+  font-weight:900
+}
+
+.end-card h1{
+  font-size:34px;
+  margin:10px 0 12px
+}
+
+.end-card p{
+  color:#b2bbc7;
+  line-height:1.7;
+  font-size:14px
+}
+
+.stats{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:9px;
+  margin:18px 0
+}
+
+.stat{
+  border:1px solid #26303d;
+  background:#0d131a;
+  border-radius:16px;
+  padding:12px 7px
+}
+
+.stat b{
+  display:block;
+  font-size:20px
+}
+
+.stat span{
+  font-size:10px;
+  color:#7e8997
+}
+
+.end-actions{
+  display:grid;
+  gap:10px;
+  margin-top:20px
+}
+
+/* =========================
+   НИЖНЕЕ МЕНЮ
+========================= */
+
+.bottomnav{
+  position:fixed;
+  bottom:0;
+  left:50%;
+  transform:translateX(-50%);
+  width:min(520px,100%);
+  z-index:20;
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  padding:
+    9px
+    8px
+    calc(8px + env(safe-area-inset-bottom));
+  background:rgba(8,11,16,.94);
+  border-top:1px solid #1c2430;
+  backdrop-filter:blur(18px)
+}
+
+.navbtn{
+  border:0;
+  background:transparent;
+  color:#707b8b;
+  padding:5px 2px;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:4px;
+  font-size:10px
+}
+
+.navbtn .ico{
+  font-size:19px
+}
+
+.navbtn.active{
+  color:#fff
+}
+
+.navbtn.active .ico{
+  color:var(--red);
+  filter:
+    drop-shadow(
+      0 0 10px rgba(239,51,64,.5)
+    )
+}
+
+/* =========================
+   УВЕДОМЛЕНИЯ
+========================= */
 
 .toast{
-    position:fixed;
-
-    left:50%;
-    bottom:108px;
-
-    transform:
-        translateX(-50%)
-        translateY(30px);
-
-    width:calc(100% - 32px);
-    max-width:520px;
-
-    overflow:hidden;
-
-    padding:
-        14px
-        16px
-        17px;
-
-    border-radius:17px;
-
-    border:1px solid #285678;
-
-    background:#0d2233;
-
-    color:#fff;
-
-    font-size:13px;
-    font-weight:800;
-
-    opacity:0;
-
-    pointer-events:none;
-
-    transition:.25s;
-
-    z-index:5000;
-
-    box-shadow:
-        0 15px 40px rgba(0,0,0,.5);
+  position:fixed;
+  left:50%;
+  transform:
+    translateX(-50%)
+    translateY(-16px);
+  top:16px;
+  width:min(470px,calc(100% - 24px));
+  z-index:100;
+  background:rgba(14,19,27,.97);
+  border:1px solid #303b49;
+  border-radius:18px;
+  padding:12px 14px;
+  box-shadow:0 18px 50px rgba(0,0,0,.4);
+  opacity:0;
+  pointer-events:none;
+  transition:.25s
 }
 
 .toast.show{
-    opacity:1;
-
-    transform:
-        translateX(-50%)
-        translateY(0);
+  opacity:1;
+  transform:
+    translateX(-50%)
+    translateY(0)
 }
 
-.toast::after{
-    content:"";
-
-    position:absolute;
-
-    left:0;
-    bottom:0;
-
-    height:3px;
-
-    width:0%;
-
-    background:#44cfff;
+.toast strong{
+  display:block;
+  font-size:13px
 }
 
-.toast.show::after{
-    animation:
-        toastProgress
-        3s
-        linear
-        forwards;
+.toast span{
+  display:block;
+  color:#97a2b1;
+  margin-top:3px;
+  font-size:12px
 }
 
-@keyframes toastProgress{
-    from{
-        width:100%;
-    }
-
-    to{
-        width:0%;
-    }
+.toast .bar{
+  position:absolute;
+  left:10px;
+  right:10px;
+  bottom:4px;
+  height:2px;
+  background:#25303b;
+  overflow:hidden;
+  border-radius:99px
 }
 
-
-/* =====================================================
-   SPIN
-===================================================== */
-
-.russian-plate.spinning{
-    animation:
-        spinShake
-        .09s
-        linear
-        infinite;
+.toast .bar i{
+  display:block;
+  width:100%;
+  height:100%;
+  background:var(--red);
+  animation:toastbar 3.1s linear forwards
 }
 
-@keyframes spinShake{
-    0%{
-        transform:translateX(-4px);
-    }
-
-    50%{
-        transform:translateX(4px);
-    }
-
-    100%{
-        transform:translateX(-4px);
-    }
+@keyframes toastbar{
+  to{
+    width:0
+  }
 }
 
-
-/* =====================================================
-   MOBILE
-===================================================== */
-
-@media(max-width:450px){
-
-    .header{
-        min-height:82px;
-
-        padding:
-            11px
-            11px;
-    }
-
-    .logo{
-        width:49px;
-        height:49px;
-
-        border-radius:15px;
-
-        font-size:18px;
-    }
-
-    .brand{
-        gap:9px;
-    }
-
-    .brand-name{
-        font-size:17px;
-    }
-
-    .brand-sub{
-        font-size:7px;
-
-        letter-spacing:1.5px;
-    }
-
-    .admin-header-btn{
-        min-height:39px;
-
-        padding:0 9px;
-
-        font-size:9px;
-    }
-
-    .balance{
-        min-height:39px;
-
-        padding:0 8px;
-
-        font-size:10px;
-    }
-
-    .main-card{
-        padding:
-            19px
-            13px;
-    }
-
-    .main-title{
-        font-size:28px;
-    }
-
-    .stats{
-        gap:6px;
-    }
-
-    .stat{
-        min-height:76px;
-
-        padding:
-            11px
-            8px;
-    }
-
-    .stat-label{
-        font-size:8px;
-    }
-
-    .stat-value{
-        font-size:17px;
-    }
-
-    .result-card{
-        padding:
-            30px
-            7px
-            18px;
-    }
-
-    .russian-plate{
-        border-radius:9px;
-    }
-
-    .plate-left{
-        grid-template-columns:
-            18% 50% 32%;
-    }
-
-    .nav-btn{
-        font-size:9px;
-    }
-
-    .nav-icon{
-        font-size:20px;
-    }
-
-    .admin-grid{
-        grid-template-columns:
-            1fr 1fr;
-    }
+.toast.red{
+  border-color:#6f252c
 }
 
+/* =========================
+   МОДАЛЬНОЕ ОКНО
+========================= */
+
+.modal{
+  position:fixed;
+  inset:0;
+  z-index:90;
+  display:none;
+  align-items:center;
+  justify-content:center;
+  padding:20px;
+  background:rgba(0,0,0,.72);
+  backdrop-filter:blur(12px)
+}
+
+.modal.show{
+  display:flex;
+  animation:fade .2s ease
+}
+
+.modal-box{
+  width:min(430px,100%);
+  border:1px solid #303948;
+  border-radius:24px;
+  background:
+    linear-gradient(
+      160deg,
+      #141b24,
+      #090d12
+    );
+  padding:22px;
+  box-shadow:0 20px 70px rgba(0,0,0,.55)
+}
+
+.modal-box h2{
+  margin:5px 0 9px
+}
+
+.modal-box p{
+  color:#9ea8b5;
+  line-height:1.6;
+  font-size:14px
+}
+
+.warning{
+  color:#ff6973;
+  font-weight:900;
+  font-size:12px;
+  letter-spacing:.08em
+}
+
+/* =========================
+   ПЕРЕХОД ГЛАВЫ
+========================= */
+
+.flash{
+  position:fixed;
+  inset:0;
+  z-index:110;
+  background:#050609;
+  display:none;
+  place-items:center;
+  text-align:center;
+  padding:24px
+}
+
+.flash.show{
+  display:grid;
+  animation:chapter 1.45s ease forwards
+}
+
+.flash b{
+  font-size:28px
+}
+
+.flash span{
+  display:block;
+  margin-top:8px;
+  color:#7f8997;
+  font-size:12px;
+  letter-spacing:.16em;
+  text-transform:uppercase
+}
+
+@keyframes chapter{
+  0%{
+    opacity:0
+  }
+
+  18%,
+  75%{
+    opacity:1
+  }
+
+  100%{
+    opacity:0
+  }
+}
+
+/* =========================
+   DESKTOP
+========================= */
+
+@media (min-width:700px){
+
+  body{
+    padding:18px 0
+  }
+
+  #app{
+    border-radius:26px;
+    overflow:hidden;
+    min-height:calc(100vh - 36px);
+    border:1px solid #232b36;
+    box-shadow:0 20px 80px rgba(0,0,0,.5)
+  }
+
+  .bottomnav{
+    bottom:18px;
+    border-radius:0 0 26px 26px
+  }
+
+  .splash,
+  .shell{
+    min-height:calc(100vh - 36px)
+  }
+
+}
 </style>
 </head>
 
 <body>
 
-<div class="app">
+<div id="app">
 
+  <div class="scanline"></div>
 
-<!-- =====================================================
-     HEADER
-===================================================== -->
+  <!-- =========================
+       СТАРТОВЫЙ ЭКРАН
+  ========================== -->
 
-<header class="header">
+  <section id="splash" class="splash">
 
-    <div class="brand">
+    <div>
 
-        <div class="logo">
-            NC
-        </div>
+      <div class="case-no">
+        интерактивный детектив
+      </div>
 
-        <div>
+      <div class="logo">
+        ДЕЛО <span>№17</span>
+      </div>
 
-            <div class="brand-name">
-                NOMER CLUB
-            </div>
+      <div class="tagline">
+        Точка невозврата.
+        Каждое решение меняет доверие,
+        доступные улики и то,
+        какой финал ты увидишь.
+      </div>
 
-            <div class="brand-sub">
-                COLLECT • TRADE • RISE
-            </div>
+      <div class="hero-card">
 
-        </div>
+        <div class="hero-line"></div>
+
+        <h2>
+          Последнее сообщение
+        </h2>
+
+        <p>
+          Алина исчезла.
+          Перед этим она оставила тебе
+          цепочку сообщений и попросила
+          никому не доверять слишком быстро.
+        </p>
+
+      </div>
 
     </div>
 
+    <button
+      id="startBtn"
+      class="primary"
+    >
+      НАЧАТЬ РАССЛЕДОВАНИЕ
+    </button>
 
-    <div class="header-right">
+  </section>
 
-        <button
-            class="admin-header-btn"
-            id="adminHeaderButton"
-            onclick="openAdmin()"
-        >
-            ADMIN
-        </button>
+  <!-- =========================
+       ОСНОВНАЯ ИГРА
+  ========================== -->
+
+  <main
+    id="shell"
+    class="shell"
+  >
+
+    <!-- HEADER -->
+
+    <header class="topbar">
+
+      <div class="toprow">
 
         <div
-            class="balance"
-            id="balance"
+          id="chapterDot"
+          class="chapter-dot"
         >
-            10 000 NC
+          1
         </div>
 
-    </div>
+        <div class="toptext">
 
-</header>
+          <b id="chapterTitle">
+            Последнее сообщение
+          </b>
 
-
-
-<!-- =====================================================
-     HOME
-===================================================== -->
-
-<section
-    class="page active"
-    id="page-home"
->
-
-    <div class="main-card">
-
-        <div class="eyebrow">
-            ГЕНЕРАТОР НОМЕРОВ
-        </div>
-
-        <h1 class="main-title">
-            Собери лучшую коллекцию
-        </h1>
-
-        <div class="description">
-            Крутить можно <b>без ограничений</b>.
-            Каждая прокрутка стоит <b>100 NC</b>.
-        </div>
-
-
-        <div class="stats">
-
-            <div class="stat">
-
-                <div class="stat-label">
-                    Стоимость
-                </div>
-
-                <div class="stat-value">
-                    100 NC
-                </div>
-
-            </div>
-
-
-            <div class="stat">
-
-                <div class="stat-label">
-                    Уровень
-                </div>
-
-                <div
-                    class="stat-value"
-                    id="levelValue"
-                >
-                    1
-                </div>
-
-            </div>
-
-
-            <div class="stat">
-
-                <div class="stat-label">
-                    Номера
-                </div>
-
-                <div
-                    class="stat-value"
-                    id="platesCount"
-                >
-                    0
-                </div>
-
-            </div>
+          <span id="playerLine">
+            Дело №17
+          </span>
 
         </div>
 
+        <div class="top-actions">
 
-        <!-- НОМЕР -->
-
-        <div class="result-card">
-
-            <div class="plate-wrap">
-
-                <div
-                    class="russian-plate"
-                    id="licensePlate"
-                >
-
-                    <div class="plate-bolt left"></div>
-
-
-                    <div class="plate-left">
-
-                        <div
-                            class="plate-char plate-first"
-                            id="plateFirst"
-                        >
-                            У
-                        </div>
-
-                        <div
-                            class="plate-char plate-digits"
-                            id="plateDigits"
-                        >
-                            981
-                        </div>
-
-                        <div
-                            class="plate-char plate-last"
-                            id="plateLast"
-                        >
-                            МС
-                        </div>
-
-                    </div>
-
-
-                    <div class="plate-region-box">
-
-                        <div
-                            class="region-number"
-                            id="plateRegion"
-                        >
-                            774
-                        </div>
-
-
-                        <div class="region-bottom">
-
-                            <span class="rus">
-                                RUS
-                            </span>
-
-
-                            <span class="flag">
-
-                                <span></span>
-                                <span></span>
-                                <span></span>
-
-                            </span>
-
-                        </div>
-
-                    </div>
-
-
-                    <div class="plate-bolt right"></div>
-
-                </div>
-
-            </div>
-
-
-            <div class="result-details">
-
-                <div
-                    class="rarity common"
-                    id="rarity"
-                >
-                    ОБЫЧНЫЙ
-                </div>
-
-
-                <div
-                    class="sale-info"
-                    id="saleInfo"
-                >
-                    Не сохранён • продажа: 63 NC
-                </div>
-
-            </div>
+          <button
+            id="aboutBtn"
+            class="iconbtn"
+          >
+            i
+          </button>
 
         </div>
 
+      </div>
 
-        <button
-            class="spin-btn"
-            id="spinButton"
-            onclick="spinPlate()"
-        >
-            КРУТИТЬ • 100 NC
-        </button>
+      <div class="progress">
 
+        <i
+          id="progressBar"
+          style="width:10%"
+        ></i>
 
-        <div class="actions">
+      </div>
 
-            <button
-                class="action-btn"
-                onclick="savePlate()"
-            >
-                ОСТАВИТЬ В ГАРАЖЕ
-            </button>
+    </header>
 
+    <!-- =========================
+         ЧАТЫ
+    ========================== -->
 
-            <button
-                class="action-btn sell-btn"
-                id="sellButton"
-                onclick="sellPlate()"
-            >
-                ПРОДАТЬ • 63 NC
-            </button>
-
-        </div>
-
-
-        <div class="help">
-            Если номер не сохранить и нажать
-            «КРУТИТЬ» ещё раз —
-            предыдущий автоматически продастся системе.
-        </div>
-
-    </div>
-
-</section>
-
-
-
-<!-- =====================================================
-     GARAGE
-===================================================== -->
-
-<section
-    class="page"
-    id="page-garage"
->
-
-    <div class="section-title">
-        Гараж
-    </div>
-
-    <div
-        class="garage-list"
-        id="garageList"
-    ></div>
-
-</section>
-
-
-
-<!-- =====================================================
-     MARKET
-===================================================== -->
-
-<section
-    class="page"
-    id="page-market"
->
-
-    <div class="section-title">
-        Маркет
-    </div>
-
-    <div class="card">
-
-        <div class="card-title">
-            Рынок игроков
-        </div>
-
-        <div class="card-text">
-            Покупай номера других игроков.
-            Ниже показаны тестовые предложения.
-        </div>
-
-    </div>
-
-
-    <div
-        class="market-grid"
-        id="marketGrid"
-        style="margin-top:11px"
-    ></div>
-
-</section>
-
-
-
-<!-- =====================================================
-     TASKS
-===================================================== -->
-
-<section
-    class="page"
-    id="page-tasks"
->
-
-    <div class="section-title">
-        Задания
-    </div>
-
-    <div
-        class="task-list"
-        id="taskList"
-    ></div>
-
-</section>
-
-
-
-<!-- =====================================================
-     PROFILE
-===================================================== -->
-
-<section
-    class="page"
-    id="page-profile"
->
-
-    <div class="section-title">
-        Профиль
-    </div>
-
-
-    <div class="profile-card">
-
-        <div class="profile-row">
-
-            <div
-                class="avatar"
-                id="avatar"
-            >
-                NC
-            </div>
-
-
-            <div>
-
-                <div
-                    class="profile-name"
-                    id="profileName"
-                >
-                    Игрок
-                </div>
-
-                <div
-                    class="profile-small"
-                    id="profileUsername"
-                >
-                    @username
-                </div>
-
-                <div
-                    class="profile-small"
-                    id="profileId"
-                >
-                    ID: —
-                </div>
-
-            </div>
-
-        </div>
-
-
-        <div class="profile-stats">
-
-            <div class="profile-stat">
-
-                <div class="profile-stat-label">
-                    Баланс
-                </div>
-
-                <div
-                    class="profile-stat-value"
-                    id="profileBalance"
-                >
-                    0 NC
-                </div>
-
-            </div>
-
-
-            <div class="profile-stat">
-
-                <div class="profile-stat-label">
-                    Уровень
-                </div>
-
-                <div
-                    class="profile-stat-value"
-                    id="profileLevel"
-                >
-                    1
-                </div>
-
-            </div>
-
-
-            <div class="profile-stat">
-
-                <div class="profile-stat-label">
-                    В гараже
-                </div>
-
-                <div
-                    class="profile-stat-value"
-                    id="profileGarage"
-                >
-                    0
-                </div>
-
-            </div>
-
-
-            <div class="profile-stat">
-
-                <div class="profile-stat-label">
-                    Прокрутки
-                </div>
-
-                <div
-                    class="profile-stat-value"
-                    id="profileSpins"
-                >
-                    0
-                </div>
-
-            </div>
-
-        </div>
-
-    </div>
-
-
-
-    <!-- ADMIN -->
-
-    <div
-        class="admin-panel"
-        id="adminPanel"
+    <section
+      id="viewChats"
+      class="view active"
     >
 
-        <div class="admin-title">
-            👑 ADMIN PANEL
-        </div>
+      <div id="chatListWrap">
 
-        <div class="admin-description">
-            Панель доступна только администратору.
-            Здесь можно тестировать экономику
-            и выпадение номеров.
-        </div>
+        <div class="section-title">
 
+          <h2>
+            Чаты
+          </h2>
 
-        <div class="admin-grid">
-
-            <button
-                class="admin-btn green"
-                onclick="adminAddMoney(1000)"
-            >
-                +1 000 NC
-            </button>
-
-            <button
-                class="admin-btn green"
-                onclick="adminAddMoney(10000)"
-            >
-                +10 000 NC
-            </button>
-
-            <button
-                class="admin-btn blue"
-                onclick="adminNextMythic()"
-            >
-                МИФИК СЛЕДУЮЩИЙ
-            </button>
-
-            <button
-                class="admin-btn blue"
-                id="mythicModeBtn"
-                onclick="toggleMythicMode()"
-            >
-                МИФИК РЕЖИМ: OFF
-            </button>
-
-            <button
-                class="admin-btn"
-                onclick="adminLevelUp()"
-            >
-                +1 УРОВЕНЬ
-            </button>
-
-            <button
-                class="admin-btn red"
-                onclick="adminClearGarage()"
-            >
-                ОЧИСТИТЬ ГАРАЖ
-            </button>
+          <small>
+            контакты появляются по сюжету
+          </small>
 
         </div>
 
+        <div
+          id="chatList"
+          class="chat-list"
+        ></div>
 
-        <div class="admin-subtitle">
-            Управление игроком
+      </div>
+
+      <!-- Открытый чат -->
+
+      <div
+        id="chatScreen"
+        class="chat-screen"
+      >
+
+        <div class="chat-header">
+
+          <button
+            id="chatBack"
+            class="back"
+          >
+            ‹
+          </button>
+
+          <div
+            id="chatAvatar"
+            class="avatar"
+          >
+            А
+          </div>
+
+          <div class="chat-head-text">
+
+            <b id="chatName">
+              Алина
+            </b>
+
+            <span id="chatStatus">
+              была недавно
+            </span>
+
+          </div>
+
         </div>
 
+        <div
+          id="messages"
+          class="messages"
+        ></div>
 
-        <input
-            class="admin-input"
-            id="adminTargetId"
-            type="number"
-            inputmode="numeric"
-            placeholder="Telegram ID игрока"
+        <div
+          id="typing"
+          class="typing"
         >
 
-
-        <div class="admin-grid">
-
-            <button
-                class="admin-btn blue"
-                onclick="sendAdminPlayerAction('mythic')"
-            >
-                ВЫДАТЬ 100% МИФИК
-            </button>
-
-            <button
-                class="admin-btn"
-                onclick="sendAdminPlayerAction('remove_mythic')"
-            >
-                УБРАТЬ МИФИК
-            </button>
-
-            <button
-                class="admin-btn green"
-                onclick="sendAdminPlayerAction('money')"
-            >
-                ВЫДАТЬ 10 000 NC
-            </button>
-
-            <button
-                class="admin-btn red"
-                onclick="sendAdminPlayerAction('reset')"
-            >
-                СБРОС ИГРОКА
-            </button>
-
-        </div>
-
-
-        <div class="admin-status">
-            Локальные кнопки сверху работают прямо в этом интерфейсе.
-            Действия для другого Telegram ID отправляются на сервер.
-        </div>
-
-    </div>
-
-</section>
-
-</div>
-
-
-
-<!-- =====================================================
-     NAV
-===================================================== -->
-
-<nav class="bottom-nav">
-
-    <button
-        class="nav-btn active"
-        id="nav-home"
-        onclick="openPage('home',this)"
-    >
-
-        <span class="nav-icon">
-            ⌂
-        </span>
-
-        Главная
-
-    </button>
-
-
-    <button
-        class="nav-btn"
-        id="nav-garage"
-        onclick="openPage('garage',this)"
-    >
-
-        <span class="nav-icon">
-            ▤
-        </span>
-
-        Гараж
-
-    </button>
-
-
-    <button
-        class="nav-btn"
-        id="nav-market"
-        onclick="openPage('market',this)"
-    >
-
-        <span class="nav-icon">
-            ⇄
-        </span>
-
-        Маркет
-
-    </button>
-
-
-    <button
-        class="nav-btn"
-        id="nav-tasks"
-        onclick="openPage('tasks',this)"
-    >
-
-        <span class="nav-icon">
-            ✓
-        </span>
-
-        Задания
-
-    </button>
-
-
-    <button
-        class="nav-btn"
-        id="nav-profile"
-        onclick="openPage('profile',this)"
-    >
-
-        <span class="nav-icon">
-            ◉
-        </span>
-
-        Профиль
-
-    </button>
-
-</nav>
-
-
-<div
-    class="toast"
-    id="toast"
-></div>
-
-
-
-<script>
-
-/* =====================================================
-   TELEGRAM
-===================================================== */
-
-const tg =
-    window.Telegram &&
-    window.Telegram.WebApp
-        ? window.Telegram.WebApp
-        : null;
-
-
-if(tg){
-
-    tg.ready();
-
-    tg.expand();
-
-    try{
-
-        tg.setHeaderColor(
-            "#020b14"
-        );
-
-        tg.setBackgroundColor(
-            "#020811"
-        );
-
-    }catch(e){}
-
-}
-
-
-
-/* =====================================================
-   CONFIG
-===================================================== */
-
-const ADMIN_ID =
-    8518976778;
-
-
-const SPIN_PRICE =
-    100;
-
-
-/*
-Русские буквы,
-разрешённые на автомобильных номерах.
-ИМЕННО КИРИЛЛИЦА.
-*/
-
-const LETTERS = [
-
-    "А",
-    "В",
-    "Е",
-    "К",
-    "М",
-    "Н",
-    "О",
-    "Р",
-    "С",
-    "Т",
-    "У",
-    "Х"
-
-];
-
-
-const REGIONS = [
-
-    "01",
-    "02",
-    "05",
-    "07",
-    "16",
-
-    "50",
-    "77",
-    "78",
-
-    "95",
-    "96",
-    "97",
-    "98",
-    "99",
-
-    "102",
-    "116",
-
-    "121",
-    "123",
-    "124",
-    "125",
-    "126",
-
-    "134",
-    "136",
-    "138",
-
-    "150",
-    "152",
-    "154",
-    "159",
-
-    "161",
-    "163",
-    "164",
-
-    "173",
-    "174",
-
-    "177",
-    "178",
-
-    "186",
-
-    "190",
-    "196",
-    "197",
-    "198",
-    "199",
-
-    "716",
-
-    "750",
-
-    "761",
-    "763",
-
-    "774",
-
-    "777",
-
-    "790",
-    "797",
-    "799"
-
-];
-
-
-
-/* =====================================================
-   STATE
-===================================================== */
-
-let state = {
-
-    balance:10000,
-
-    level:1,
-
-    spins:0,
-
-    current:null,
-
-    garage:[],
-
-    spinning:false,
-
-    forceNextMythic:false,
-
-    mythicMode:false,
-
-    tasks:{
-
-        spin5:false,
-
-        save3:false,
-
-        sell3:false,
-
-        spin20:false
-
-    },
-
-    stats:{
-
-        sold:0,
-
-        saved:0
-
-    }
-
-};
-
-
-
-/* =====================================================
-   MARKET DATA
-===================================================== */
-
-const marketItems = [
-
-    {
-        first:"А",
-        digits:"777",
-        last:"АА",
-        region:"77",
-        rarity:"МИФИЧЕСКИЙ",
-        price:6500
-    },
-
-    {
-        first:"М",
-        digits:"001",
-        last:"ММ",
-        region:"99",
-        rarity:"ЛЕГЕНДАРНЫЙ",
-        price:3200
-    },
-
-    {
-        first:"У",
-        digits:"555",
-        last:"ХХ",
-        region:"777",
-        rarity:"ЭПИЧЕСКИЙ",
-        price:1850
-    }
-
-];
-
-
-
-/* =====================================================
-   HELPERS
-===================================================== */
-
-function randomItem(array){
-
-    return array[
-        Math.floor(
-            Math.random() *
-            array.length
-        )
-    ];
-
-}
-
-
-function randomDigit(){
-
-    return Math.floor(
-        Math.random() *
-        10
-    );
-
-}
-
-
-function formatNumber(number){
-
-    return Number(
-        number || 0
-    ).toLocaleString(
-        "ru-RU"
-    );
-
-}
-
-
-function sleep(ms){
-
-    return new Promise(
-        resolve =>
-            setTimeout(
-                resolve,
-                ms
-            )
-    );
-
-}
-
-
-
-/* =====================================================
-   GENERATOR
-===================================================== */
-
-function generatePlate(){
-
-    let roll =
-        Math.random() *
-        100;
-
-
-    if(
-        state.forceNextMythic ||
-        state.mythicMode
-    ){
-
-        roll =
-            0;
-
-    }
-
-
-    let rarity;
-
-    let digits;
-
-    let price;
-
-
-    /* MYTHIC */
-
-    if(roll < 1){
-
-        rarity = {
-
-            name:"МИФИЧЕСКИЙ",
-
-            class:"mythic"
-
-        };
-
-
-        digits =
-            randomItem([
-
-                "001",
-                "007",
-
-                "111",
-                "222",
-                "333",
-                "444",
-                "555",
-                "666",
-                "777",
-                "888",
-                "999"
-
-            ]);
-
-
-        price =
-            Math.floor(
-                3000 +
-                Math.random() *
-                6000
-            );
-
-    }
-
-
-    /* LEGENDARY */
-
-    else if(roll < 5){
-
-        rarity = {
-
-            name:"ЛЕГЕНДАРНЫЙ",
-
-            class:"legendary"
-
-        };
-
-
-        digits =
-            randomItem([
-
-                "010",
-                "020",
-                "030",
-                "050",
-                "070",
-
-                "100",
-                "200",
-                "500",
-                "700",
-                "800",
-                "900"
-
-            ]);
-
-
-        price =
-            Math.floor(
-                1000 +
-                Math.random() *
-                1800
-            );
-
-    }
-
-
-    /* EPIC */
-
-    else if(roll < 13){
-
-        rarity = {
-
-            name:"ЭПИЧЕСКИЙ",
-
-            class:"epic"
-
-        };
-
-
-        const a =
-            randomDigit();
-
-
-        const b =
-            randomDigit();
-
-
-        digits =
-            `${a}${b}${a}`;
-
-
-        price =
-            Math.floor(
-                500 +
-                Math.random() *
-                750
-            );
-
-    }
-
-
-    /* RARE */
-
-    else if(roll < 28){
-
-        rarity = {
-
-            name:"РЕДКИЙ",
-
-            class:"rare"
-
-        };
-
-
-        const d =
-            randomDigit();
-
-
-        digits =
-            `${d}${d}${randomDigit()}`;
-
-
-        price =
-            Math.floor(
-                220 +
-                Math.random() *
-                380
-            );
-
-    }
-
-
-    /* UNCOMMON */
-
-    else if(roll < 56){
-
-        rarity = {
-
-            name:"НЕОБЫЧНЫЙ",
-
-            class:"uncommon"
-
-        };
-
-
-        digits =
-            String(
-                Math.floor(
-                    Math.random() *
-                    1000
-                )
-            ).padStart(
-                3,
-                "0"
-            );
-
-
-        price =
-            Math.floor(
-                75 +
-                Math.random() *
-                145
-            );
-
-    }
-
-
-    /* COMMON */
-
-    else{
-
-        rarity = {
-
-            name:"ОБЫЧНЫЙ",
-
-            class:"common"
-
-        };
-
-
-        digits =
-            String(
-                Math.floor(
-                    Math.random() *
-                    1000
-                )
-            ).padStart(
-                3,
-                "0"
-            );
-
-
-        price =
-            Math.floor(
-                30 +
-                Math.random() *
-                60
-            );
-
-    }
-
-
-    let first =
-        randomItem(
-            LETTERS
-        );
-
-
-    let last1 =
-        randomItem(
-            LETTERS
-        );
-
-
-    let last2 =
-        randomItem(
-            LETTERS
-        );
-
-
-    /* красивые буквенные сочетания */
-
-    if(
-        rarity.class ===
-        "mythic"
-    ){
-
-        const same =
-            randomItem(
-                LETTERS
-            );
-
-
-        first =
-            same;
-
-        last1 =
-            same;
-
-        last2 =
-            same;
-
-    }
-
-
-    return {
-
-        id:
-            Date.now() +
-            "-" +
-            Math.random(),
-
-        first:first,
-
-        digits:digits,
-
-        last:
-            last1 +
-            last2,
-
-        region:
-            randomItem(
-                REGIONS
-            ),
-
-        rarity:
-            rarity.name,
-
-        rarityClass:
-            rarity.class,
-
-        price:price,
-
-        saved:false
-
-    };
-
-}
-
-
-
-/* =====================================================
-   DISPLAY
-===================================================== */
-
-function displayPlate(
-    plate
-){
-
-    if(!plate){
-        return;
-    }
-
-
-    document
-        .getElementById(
-            "plateFirst"
-        )
-        .textContent =
-        plate.first;
-
-
-    document
-        .getElementById(
-            "plateDigits"
-        )
-        .textContent =
-        plate.digits;
-
-
-    document
-        .getElementById(
-            "plateLast"
-        )
-        .textContent =
-        plate.last;
-
-
-    document
-        .getElementById(
-            "plateRegion"
-        )
-        .textContent =
-        plate.region;
-
-
-    const rarity =
-        document.getElementById(
-            "rarity"
-        );
-
-
-    rarity.textContent =
-        plate.rarity;
-
-
-    rarity.className =
-        "rarity " +
-        plate.rarityClass;
-
-
-    document
-        .getElementById(
-            "saleInfo"
-        )
-        .textContent =
-        plate.saved
-            ?
-            "Номер сохранён в гараже"
-            :
-            "Не сохранён • продажа: " +
-            formatNumber(
-                plate.price
-            ) +
-            " NC";
-
-
-    document
-        .getElementById(
-            "sellButton"
-        )
-        .textContent =
-        plate.saved
-            ?
-            "НОМЕР В ГАРАЖЕ"
-            :
-            "ПРОДАТЬ • " +
-            formatNumber(
-                plate.price
-            ) +
-            " NC";
-
-}
-
-
-
-/* =====================================================
-   SPIN
-===================================================== */
-
-async function spinPlate(){
-
-    if(state.spinning){
-        return;
-    }
-
-
-    /*
-    Старый номер не сохранили:
-    продаём автоматически.
-    */
-
-    if(
-        state.current &&
-        !state.current.saved
-    ){
-
-        state.balance +=
-            state.current.price;
-
-
-        state.stats.sold++;
-
-    }
-
-
-    if(
-        state.balance <
-        SPIN_PRICE
-    ){
-
-        showToast(
-            "Недостаточно NC"
-        );
-
-        updateUI();
-
-        return;
-
-    }
-
-
-    state.balance -=
-        SPIN_PRICE;
-
-
-    state.spinning =
-        true;
-
-
-    const plateElement =
-        document.getElementById(
-            "licensePlate"
-        );
-
-
-    const button =
-        document.getElementById(
-            "spinButton"
-        );
-
-
-    plateElement
-        .classList
-        .add(
-            "spinning"
-        );
-
-
-    button.disabled =
-        true;
-
-
-    button.textContent =
-        "КРУТИМ...";
-
-
-    updateUI();
-
-
-    let count =
-        0;
-
-
-    const animation =
-        setInterval(
-            function(){
-
-                displayPlate(
-                    generatePlate()
-                );
-
-
-                count++;
-
-
-                if(
-                    count >=
-                    17
-                ){
-
-                    clearInterval(
-                        animation
-                    );
-
-                }
-
-            },
-            55
-        );
-
-
-    await sleep(
-        1050
-    );
-
-
-    clearInterval(
-        animation
-    );
-
-
-    state.current =
-        generatePlate();
-
-
-    state.spins++;
-
-
-    /*
-    Одноразовый админ мифик
-    отключаем после выпадения.
-    */
-
-    if(
-        state.forceNextMythic
-    ){
-
-        state.forceNextMythic =
-            false;
-
-    }
-
-
-    displayPlate(
-        state.current
-    );
-
-
-    plateElement
-        .classList
-        .remove(
-            "spinning"
-        );
-
-
-    state.spinning =
-        false;
-
-
-    button.disabled =
-        false;
-
-
-    button.textContent =
-        "КРУТИТЬ • 100 NC";
-
-
-    updateUI();
-
-    renderTasks();
-
-
-    showToast(
-        "Выпал номер " +
-        plateText(
-            state.current
-        )
-    );
-
-
-    if(
-        tg &&
-        tg.HapticFeedback
-    ){
-
-        try{
-
-            tg.HapticFeedback
-                .impactOccurred(
-                    state.current.rarityClass === "mythic"
-                        ?
-                        "heavy"
-                        :
-                        "medium"
-                );
-
-        }catch(e){}
-
-    }
-
-}
-
-
-
-/* =====================================================
-   SAVE
-===================================================== */
-
-function savePlate(){
-
-    if(!state.current){
-
-        showToast(
-            "Сначала прокрути номер"
-        );
-
-        return;
-
-    }
-
-
-    if(state.current.saved){
-
-        showToast(
-            "Этот номер уже сохранён"
-        );
-
-        return;
-
-    }
-
-
-    state.current.saved =
-        true;
-
-
-    state.garage.unshift(
-        {
-            ...state.current
-        }
-    );
-
-
-    state.stats.saved++;
-
-
-    displayPlate(
-        state.current
-    );
-
-
-    renderGarage();
-
-    renderTasks();
-
-    updateUI();
-
-
-    showToast(
-        "Номер добавлен в гараж"
-    );
-
-}
-
-
-
-/* =====================================================
-   SELL CURRENT
-===================================================== */
-
-function sellPlate(){
-
-    if(!state.current){
-
-        showToast(
-            "Сначала прокрути номер"
-        );
-
-        return;
-
-    }
-
-
-    if(state.current.saved){
-
-        showToast(
-            "Этот номер уже находится в гараже"
-        );
-
-        return;
-
-    }
-
-
-    const price =
-        state.current.price;
-
-
-    state.balance +=
-        price;
-
-
-    state.stats.sold++;
-
-
-    state.current =
-        null;
-
-
-    defaultPlate();
-
-    renderTasks();
-
-    updateUI();
-
-
-    showToast(
-        "Продано за " +
-        formatNumber(
-            price
-        ) +
-        " NC"
-    );
-
-}
-
-
-
-/* =====================================================
-   SELL GARAGE
-===================================================== */
-
-function sellGaragePlate(
-    id
-){
-
-    const index =
-        state.garage
-            .findIndex(
-                item =>
-                    String(
-                        item.id
-                    ) ===
-                    String(
-                        id
-                    )
-            );
-
-
-    if(index === -1){
-        return;
-    }
-
-
-    const item =
-        state.garage[
-            index
-        ];
-
-
-    state.balance +=
-        item.price;
-
-
-    state.stats.sold++;
-
-
-    state.garage.splice(
-        index,
-        1
-    );
-
-
-    if(
-        state.current &&
-        String(
-            state.current.id
-        ) ===
-        String(
-            item.id
-        )
-    ){
-
-        state.current =
-            null;
-
-
-        defaultPlate();
-
-    }
-
-
-    renderGarage();
-
-    renderTasks();
-
-    updateUI();
-
-
-    showToast(
-        "Номер продан за " +
-        formatNumber(
-            item.price
-        ) +
-        " NC"
-    );
-
-}
-
-
-
-/* =====================================================
-   DEFAULT PLATE
-===================================================== */
-
-function defaultPlate(){
-
-    displayPlate({
-
-        first:"У",
-
-        digits:"981",
-
-        last:"МС",
-
-        region:"774",
-
-        rarity:"ГОТОВ К ПРОКРУТКЕ",
-
-        rarityClass:"common",
-
-        price:0,
-
-        saved:false
-
-    });
-
-
-    document
-        .getElementById(
-            "saleInfo"
-        )
-        .textContent =
-        "Нажми «Крутить», чтобы получить номер";
-
-
-    document
-        .getElementById(
-            "sellButton"
-        )
-        .textContent =
-        "ПРОДАТЬ";
-
-}
-
-
-
-/* =====================================================
-   GARAGE
-===================================================== */
-
-function renderGarage(){
-
-    const list =
-        document.getElementById(
-            "garageList"
-        );
-
-
-    list.innerHTML =
-        "";
-
-
-    if(
-        state.garage.length ===
-        0
-    ){
-
-        list.innerHTML = `
-
-            <div class="card">
-
-                <div class="card-title">
-                    Гараж пуст
-                </div>
-
-                <div class="card-text">
-                    Сохрани выпавший номер,
-                    и он появится здесь.
-                </div>
-
-            </div>
-
-        `;
-
-
-        return;
-
-    }
-
-
-    state.garage.forEach(
-        function(item){
-
-            const element =
-                document.createElement(
-                    "div"
-                );
-
-
-            element.className =
-                "garage-item";
-
-
-            element.innerHTML = `
-
-                <div class="garage-top">
-
-                    <div class="garage-number">
-
-                        ${item.first}
-                        ${item.digits}
-                        ${item.last}
-
-                        ${item.region}
-
-                    </div>
-
-
-                    <div class="garage-price">
-
-                        ${formatNumber(
-                            item.price
-                        )} NC
-
-                    </div>
-
-                </div>
-
-
-                <div class="garage-meta">
-
-                    ${item.rarity}
-
-                </div>
-
-
-                <button
-                    class="small-danger-btn"
-                    onclick="sellGaragePlate('${item.id}')"
-                >
-                    ПРОДАТЬ НОМЕР
-                </button>
-
-            `;
-
-
-            list.appendChild(
-                element
-            );
-
-        }
-    );
-
-}
-
-
-
-/* =====================================================
-   MARKET
-===================================================== */
-
-function renderMarket(){
-
-    const grid =
-        document.getElementById(
-            "marketGrid"
-        );
-
-
-    grid.innerHTML =
-        "";
-
-
-    marketItems.forEach(
-        function(item,index){
-
-            const element =
-                document.createElement(
-                    "div"
-                );
-
-
-            element.className =
-                "market-item";
-
-
-            element.innerHTML = `
-
-                <div class="market-title">
-
-                    ${item.first}
-                    ${item.digits}
-                    ${item.last}
-
-                    ${item.region}
-
-                </div>
-
-
-                <div class="market-meta">
-
-                    ${item.rarity}
-
-                    •
-
-                    ${formatNumber(
-                        item.price
-                    )} NC
-
-                </div>
-
-
-                <button
-                    class="market-buy"
-                    onclick="buyMarketItem(${index})"
-                >
-                    КУПИТЬ
-                </button>
-
-            `;
-
-
-            grid.appendChild(
-                element
-            );
-
-        }
-    );
-
-}
-
-
-function buyMarketItem(
-    index
-){
-
-    const item =
-        marketItems[
-            index
-        ];
-
-
-    if(!item){
-        return;
-    }
-
-
-    if(
-        state.balance <
-        item.price
-    ){
-
-        showToast(
-            "Недостаточно NC"
-        );
-
-        return;
-
-    }
-
-
-    state.balance -=
-        item.price;
-
-
-    const newItem = {
-
-        ...item,
-
-        id:
-            Date.now() +
-            "-" +
-            Math.random(),
-
-        rarityClass:
-            item.rarity === "МИФИЧЕСКИЙ"
-                ?
-                "mythic"
-                :
-                item.rarity === "ЛЕГЕНДАРНЫЙ"
-                    ?
-                    "legendary"
-                    :
-                    "epic",
-
-        saved:true
-
-    };
-
-
-    state.garage.unshift(
-        newItem
-    );
-
-
-    updateUI();
-
-    renderGarage();
-
-
-    showToast(
-        "Номер куплен"
-    );
-
-}
-
-
-
-/* =====================================================
-   TASKS
-===================================================== */
-
-function taskData(){
-
-    return [
-
-        {
-
-            id:"spin5",
-
-            name:"5 прокруток",
-
-            desc:
-                "Сделай 5 прокруток номеров.",
-
-            current:
-                Math.min(
-                    state.spins,
-                    5
-                ),
-
-            max:5,
-
-            reward:300
-
-        },
-
-
-        {
-
-            id:"save3",
-
-            name:"Сохрани 3 номера",
-
-            desc:
-                "Добавь 3 выпавших номера в гараж.",
-
-            current:
-                Math.min(
-                    state.stats.saved,
-                    3
-                ),
-
-            max:3,
-
-            reward:450
-
-        },
-
-
-        {
-
-            id:"sell3",
-
-            name:"Продай 3 номера",
-
-            desc:
-                "Продай системе 3 номера.",
-
-            current:
-                Math.min(
-                    state.stats.sold,
-                    3
-                ),
-
-            max:3,
-
-            reward:350
-
-        },
-
-
-        {
-
-            id:"spin20",
-
-            name:"20 прокруток",
-
-            desc:
-                "Сделай 20 прокруток.",
-
-            current:
-                Math.min(
-                    state.spins,
-                    20
-                ),
-
-            max:20,
-
-            reward:1200
-
-        }
-
-    ];
-
-}
-
-
-function renderTasks(){
-
-    const list =
-        document.getElementById(
-            "taskList"
-        );
-
-
-    list.innerHTML =
-        "";
-
-
-    taskData()
-        .forEach(
-            function(task){
-
-                const claimed =
-                    state.tasks[
-                        task.id
-                    ];
-
-
-                const complete =
-                    task.current >=
-                    task.max;
-
-
-                const percent =
-                    Math.min(
-                        100,
-                        Math.round(
-                            task.current /
-                            task.max *
-                            100
-                        )
-                    );
-
-
-                const element =
-                    document.createElement(
-                        "div"
-                    );
-
-
-                element.className =
-                    "task";
-
-
-                element.innerHTML = `
-
-                    <div class="task-top">
-
-                        <div>
-
-                            <div class="task-name">
-                                ${task.name}
-                            </div>
-
-                            <div class="task-desc">
-                                ${task.desc}
-                            </div>
-
-                        </div>
-
-
-                        <div class="task-reward">
-
-                            +${task.reward} NC
-
-                        </div>
-
-                    </div>
-
-
-                    <div class="task-progress">
-
-                        <div
-                            class="task-progress-fill"
-                            style="width:${percent}%"
-                        ></div>
-
-                    </div>
-
-
-                    <div class="task-desc">
-
-                        ${task.current} / ${task.max}
-
-                    </div>
-
-
-                    <button
-                        class="task-btn
-                        ${claimed ? "done" : ""}"
-                        onclick="claimTask('${task.id}')"
-                        ${claimed ? "disabled" : ""}
-                    >
-
-                        ${
-                            claimed
-                                ?
-                                "ПОЛУЧЕНО"
-                                :
-                                complete
-                                    ?
-                                    "ЗАБРАТЬ НАГРАДУ"
-                                    :
-                                    "НЕ ВЫПОЛНЕНО"
-                        }
-
-                    </button>
-
-                `;
-
-
-                list.appendChild(
-                    element
-                );
-
-            }
-        );
-
-}
-
-
-function claimTask(
-    id
-){
-
-    const task =
-        taskData()
-            .find(
-                item =>
-                    item.id ===
-                    id
-            );
-
-
-    if(!task){
-        return;
-    }
-
-
-    if(
-        state.tasks[
-            id
-        ]
-    ){
-
-        showToast(
-            "Награда уже получена"
-        );
-
-        return;
-
-    }
-
-
-    if(
-        task.current <
-        task.max
-    ){
-
-        showToast(
-            "Задание ещё не выполнено"
-        );
-
-        return;
-
-    }
-
-
-    state.tasks[
-        id
-    ] =
-        true;
-
-
-    state.balance +=
-        task.reward;
-
-
-    renderTasks();
-
-    updateUI();
-
-
-    showToast(
-        "+" +
-        task.reward +
-        " NC"
-    );
-
-}
-
-
-
-/* =====================================================
-   ADMIN
-===================================================== */
-
-function isAdmin(){
-
-    /*
-    В Telegram проверяем реальный ID.
-
-    В обычном браузере доступ не даём.
-    */
-
-    if(
-        tg &&
-        tg.initDataUnsafe &&
-        tg.initDataUnsafe.user
-    ){
-
-        return (
-            Number(
-                tg.initDataUnsafe.user.id
-            ) ===
-            Number(
-                ADMIN_ID
-            )
-        );
-
-    }
-
-
-    return false;
-
-}
-
-
-function updateAdminUI(){
-
-    const allowed =
-        isAdmin();
-
-
-    document
-        .getElementById(
-            "adminHeaderButton"
-        )
-        .style.display =
-        allowed
-            ?
-            "block"
-            :
-            "none";
-
-
-    document
-        .getElementById(
-            "adminPanel"
-        )
-        .style.display =
-        allowed
-            ?
-            "block"
-            :
-            "none";
-
-
-    updateMythicButton();
-
-}
-
-
-function openAdmin(){
-
-    if(
-        !isAdmin()
-    ){
-
-        showToast(
-            "Нет прав администратора"
-        );
-
-        return;
-
-    }
-
-
-    openPage(
-        "profile",
-        document.getElementById(
-            "nav-profile"
-        )
-    );
-
-
-    setTimeout(
-        function(){
-
-            document
-                .getElementById(
-                    "adminPanel"
-                )
-                .scrollIntoView({
-
-                    behavior:"smooth",
-
-                    block:"start"
-
-                });
-
-        },
-        100
-    );
-
-}
-
-
-function adminAddMoney(
-    amount
-){
-
-    if(
-        !isAdmin()
-    ){
-        return;
-    }
-
-
-    state.balance +=
-        amount;
-
-
-    updateUI();
-
-
-    showToast(
-        "ADMIN: +" +
-        formatNumber(
-            amount
-        ) +
-        " NC"
-    );
-
-}
-
-
-function adminLevelUp(){
-
-    if(
-        !isAdmin()
-    ){
-        return;
-    }
-
-
-    state.level++;
-
-
-    updateUI();
-
-
-    showToast(
-        "ADMIN: уровень повышен"
-    );
-
-}
-
-
-function adminNextMythic(){
-
-    if(
-        !isAdmin()
-    ){
-        return;
-    }
-
-
-    state.forceNextMythic =
-        true;
-
-
-    updateUI();
-
-
-    showToast(
-        "Следующая прокрутка — мифическая"
-    );
-
-}
-
-
-function toggleMythicMode(){
-
-    if(
-        !isAdmin()
-    ){
-        return;
-    }
-
-
-    state.mythicMode =
-        !state.mythicMode;
-
-
-    updateMythicButton();
-
-    updateUI();
-
-
-    showToast(
-        state.mythicMode
-            ?
-            "Мифический режим включён"
-            :
-            "Мифический режим выключен"
-    );
-
-}
-
-
-function updateMythicButton(){
-
-    const button =
-        document.getElementById(
-            "mythicModeBtn"
-        );
-
-
-    if(!button){
-        return;
-    }
-
-
-    button.textContent =
-        state.mythicMode
-            ?
-            "МИФИК РЕЖИМ: ON"
-            :
-            "МИФИК РЕЖИМ: OFF";
-
-}
-
-
-function adminClearGarage(){
-
-    if(
-        !isAdmin()
-    ){
-        return;
-    }
-
-
-    state.garage =
-        [];
-
-
-    state.current =
-        null;
-
-
-    defaultPlate();
-
-    renderGarage();
-
-    updateUI();
-
-
-    showToast(
-        "Гараж очищен"
-    );
-
-}
-
-
-
-/* =====================================================
-   SERVER ADMIN ACTION
-===================================================== */
-
-async function sendAdminPlayerAction(
-    action
-){
-
-    if(
-        !isAdmin()
-    ){
-        return;
-    }
-
-
-    const target =
-        document
-            .getElementById(
-                "adminTargetId"
-            )
-            .value
-            .trim();
-
-
-    if(!target){
-
-        showToast(
-            "Введите Telegram ID"
-        );
-
-        return;
-
-    }
-
-
-    /*
-    Отправляем запрос серверу.
-    Если таких API ещё нет,
-    интерфейс не сломается.
-    */
-
-    try{
-
-        const response =
-            await fetch(
-                "/api/admin/player-action",
-                {
-
-                    method:"POST",
-
-                    headers:{
-
-                        "Content-Type":
-                            "application/json"
-
-                    },
-
-                    body:
-                        JSON.stringify({
-
-                            target_id:
-                                target,
-
-                            action:
-                                action,
-
-                            amount:
-                                action ===
-                                "money"
-                                    ?
-                                    10000
-                                    :
-                                    0,
-
-                            initData:
-                                tg
-                                    ?
-                                    tg.initData
-                                    :
-                                    ""
-
-                        })
-
-                }
-            );
-
-
-        let data = {};
-
-
-        try{
-
-            data =
-                await response.json();
-
-        }catch(e){}
-
-
-        if(
-            response.ok
-        ){
-
-            showToast(
-                data.message ||
-                "Админ-действие выполнено"
-            );
-
-        }else{
-
-            showToast(
-                data.error ||
-                "Для этой кнопки нужен серверный API"
-            );
-
-        }
-
-    }catch(e){
-
-        showToast(
-            "Не удалось связаться с сервером"
-        );
-
-    }
-
-}
-
-
-
-/* =====================================================
-   TELEGRAM USER
-===================================================== */
-
-function loadTelegramUser(){
-
-    if(
-        !tg ||
-        !tg.initDataUnsafe ||
-        !tg.initDataUnsafe.user
-    ){
-
-        document
-            .getElementById(
-                "profileName"
-            )
-            .textContent =
-            "Игрок";
-
-
-        document
-            .getElementById(
-                "profileUsername"
-            )
-            .textContent =
-            "Откройте через Telegram";
-
-
-        document
-            .getElementById(
-                "profileId"
-            )
-            .textContent =
-            "ID: —";
-
-
-        return;
-
-    }
-
-
-    const user =
-        tg.initDataUnsafe.user;
-
-
-    let name =
-        user.first_name ||
-        "Игрок";
-
-
-    if(
-        user.last_name
-    ){
-
-        name +=
-            " " +
-            user.last_name;
-
-    }
-
-
-    document
-        .getElementById(
-            "profileName"
-        )
-        .textContent =
-        name;
-
-
-    document
-        .getElementById(
-            "profileUsername"
-        )
-        .textContent =
-        user.username
-            ?
-            "@" +
-            user.username
-            :
-            "Без username";
-
-
-    document
-        .getElementById(
-            "profileId"
-        )
-        .textContent =
-        "ID: " +
-        user.id;
-
-
-    if(
-        user.photo_url
-    ){
-
-        document
-            .getElementById(
-                "avatar"
-            )
-            .innerHTML = `
-
-                <img
-                    src="${user.photo_url}"
-                    alt=""
-                >
-
-            `;
-
-    }
-
-}
-
-
-
-/* =====================================================
-   PAGE NAVIGATION
-===================================================== */
-
-function openPage(
-    page,
-    button
-){
-
-    document
-        .querySelectorAll(
-            ".page"
-        )
-        .forEach(
-            function(element){
-
-                element
-                    .classList
-                    .remove(
-                        "active"
-                    );
-
-            }
-        );
-
-
-    const target =
-        document.getElementById(
-            "page-" +
-            page
-        );
-
-
-    if(
-        target
-    ){
-
-        target
-            .classList
-            .add(
-                "active"
-            );
-
-    }
-
-
-    document
-        .querySelectorAll(
-            ".nav-btn"
-        )
-        .forEach(
-            function(element){
-
-                element
-                    .classList
-                    .remove(
-                        "active"
-                    );
-
-            }
-        );
-
-
-    if(
-        button
-    ){
-
-        button
-            .classList
-            .add(
-                "active"
-            );
-
-    }
-
-
-    if(
-        page ===
-        "garage"
-    ){
-
-        renderGarage();
-
-    }
-
-
-    if(
-        page ===
-        "market"
-    ){
-
-        renderMarket();
-
-    }
-
-
-    if(
-        page ===
-        "tasks"
-    ){
-
-        renderTasks();
-
-    }
-
-
-    if(
-        page ===
-        "profile"
-    ){
-
-        updateUI();
-
-        updateAdminUI();
-
-    }
-
-
-    window.scrollTo({
-
-        top:0,
-
-        behavior:"smooth"
-
-    });
-
-}
-
-
-
-/* =====================================================
-   PLATE TEXT
-===================================================== */
-
-function plateText(
-    plate
-){
-
-    if(!plate){
-        return "";
-    }
-
-
-    return (
-        plate.first +
-        plate.digits +
-        plate.last +
-        " " +
-        plate.region
-    );
-
-}
-
-
-
-/* =====================================================
-   UPDATE UI
-===================================================== */
-
-function updateUI(){
-
-    document
-        .getElementById(
-            "balance"
-        )
-        .textContent =
-        formatNumber(
-            state.balance
-        ) +
-        " NC";
-
-
-    document
-        .getElementById(
-            "levelValue"
-        )
-        .textContent =
-        state.level;
-
-
-    document
-        .getElementById(
-            "platesCount"
-        )
-        .textContent =
-        state.garage.length;
-
-
-    document
-        .getElementById(
-            "profileBalance"
-        )
-        .textContent =
-        formatNumber(
-            state.balance
-        ) +
-        " NC";
-
-
-    document
-        .getElementById(
-            "profileLevel"
-        )
-        .textContent =
-        state.level;
-
-
-    document
-        .getElementById(
-            "profileGarage"
-        )
-        .textContent =
-        state.garage.length;
-
-
-    document
-        .getElementById(
-            "profileSpins"
-        )
-        .textContent =
-        state.spins;
-
-
-    updateMythicButton();
-
-
-    saveLocal();
-
-}
-
-
-
-/* =====================================================
-   LOCAL STORAGE
-===================================================== */
-
-function saveLocal(){
-
-    try{
-
-        localStorage
-            .setItem(
-                "nomerClubStateV3",
-                JSON.stringify(
-                    state
-                )
-            );
-
-    }catch(e){}
-
-}
-
-
-function loadLocal(){
-
-    try{
-
-        const saved =
-            localStorage
-                .getItem(
-                    "nomerClubStateV3"
-                );
-
-
-        if(!saved){
-            return;
-        }
-
-
-        const data =
-            JSON.parse(
-                saved
-            );
-
-
-        if(
-            typeof data.balance ===
-            "number"
-        ){
-
-            state.balance =
-                data.balance;
-
-        }
-
-
-        if(
-            typeof data.level ===
-            "number"
-        ){
-
-            state.level =
-                data.level;
-
-        }
-
-
-        if(
-            typeof data.spins ===
-            "number"
-        ){
-
-            state.spins =
-                data.spins;
-
-        }
-
-
-        if(
-            data.current
-        ){
-
-            state.current =
-                data.current;
-
-        }
-
-
-        if(
-            Array.isArray(
-                data.garage
-            )
-        ){
-
-            state.garage =
-                data.garage;
-
-        }
-
-
-        if(
-            typeof data.mythicMode ===
-            "boolean"
-        ){
-
-            state.mythicMode =
-                data.mythicMode;
-
-        }
-
-
-        if(
-            typeof data.forceNextMythic ===
-            "boolean"
-        ){
-
-            state.forceNextMythic =
-                data.forceNextMythic;
-
-        }
-
-
-        if(
-            data.tasks
-        ){
-
-            state.tasks =
-                {
-
-                    ...state.tasks,
-
-                    ...data.tasks
-
-                };
-
-        }
-
-
-        if(
-            data.stats
-        ){
-
-            state.stats =
-                {
-
-                    ...state.stats,
-
-                    ...data.stats
-
-                };
-
-        }
-
-    }catch(e){
-
-        console.log(
-            e
-        );
-
-    }
-
-}
-
-
-
-/* =====================================================
-   TOAST
-===================================================== */
-
-let toastTimer = null;
-
-
-function showToast(
-    text
-){
-
-    const toast =
-        document.getElementById(
-            "toast"
-        );
-
-
-    toast.textContent =
-        text;
-
-
-    toast.classList
-        .remove(
-            "show"
-        );
-
-
-    void toast.offsetWidth;
-
-
-    toast.classList
-        .add(
-            "show"
-        );
-
-
-    clearTimeout(
-        toastTimer
-    );
-
-
-    toastTimer =
-        setTimeout(
-            function(){
-
-                toast.classList
-                    .remove(
-                        "show"
-                    );
-
-            },
-            3000
-        );
-
-}
-
-
-
-/* =====================================================
-   START
-===================================================== */
-
-function start(){
-
-    loadLocal();
-
-
-    loadTelegramUser();
-
-
-    renderGarage();
-
-
-    renderMarket();
-
-
-    renderTasks();
-
-
-    if(
-        state.current
-    ){
-
-        displayPlate(
-            state.current
-        );
-
-    }else{
-
-        defaultPlate();
-
-    }
-
-
-    updateUI();
-
-
-    updateAdminUI();
-
-}
-
-
-start();
-
-</script>
-
-</body>
-</html>
+ 
