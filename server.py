@@ -8,26 +8,44 @@ from urllib.parse import parse_qsl
 from functools import wraps
 
 from flask import Flask, request, jsonify, send_from_directory
+from werkzeug.exceptions import HTTPException
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 WEB_DIR = os.path.join(BASE_DIR, "web")
-DB_PATH = os.getenv("DB_PATH", os.path.join(BASE_DIR, "delo17.db"))
+DATA_DIR = os.getenv("DATA_DIR", os.path.join(BASE_DIR, "data"))
+os.makedirs(DATA_DIR, exist_ok=True)
+
+APP_VERSION = "DELO17 2.0 FIXED"
+STATE_VERSION = 2
+DB_PATH = os.getenv("DB_PATH", os.path.join(DATA_DIR, "delo17.db"))
 BOT_TOKEN = os.getenv("BOT_TOKEN", "").strip()
-DEMO_MODE = os.getenv("DEMO_MODE", "1") == "1"
+DEMO_MODE = os.getenv("DEMO_MODE", "0") == "1"
 DEV_CHANNEL_URL = os.getenv("DEV_CHANNEL_URL", "https://t.me/your_channel").strip()
 
 app = Flask(__name__, static_folder=WEB_DIR, static_url_path="")
-app.config["JSON_AS_ASCII"] = False
+app.config.update(
+    JSON_AS_ASCII=False,
+    JSON_SORT_KEYS=False,
+    MAX_CONTENT_LENGTH=256 * 1024,
+)
 
 
 def db():
-    con = sqlite3.connect(DB_PATH)
+    # timeout/busy_timeout make SQLite much more stable under Gunicorn threads.
+    con = sqlite3.connect(DB_PATH, timeout=30, check_same_thread=False)
     con.row_factory = sqlite3.Row
+    con.execute("PRAGMA busy_timeout=30000")
+    con.execute("PRAGMA foreign_keys=ON")
     return con
 
 
 def init_db():
     con = db()
+    # WAL improves read/write concurrency for this small game database.
+    try:
+        con.execute("PRAGMA journal_mode=WAL")
+    except sqlite3.DatabaseError:
+        pass
     con.execute(
         """
         CREATE TABLE IF NOT EXISTS players (
@@ -39,12 +57,26 @@ def init_db():
         )
         """
     )
+    con.execute(
+        """
+        CREATE TABLE IF NOT EXISTS app_meta (
+            key TEXT PRIMARY KEY,
+            value TEXT NOT NULL
+        )
+        """
+    )
+    con.execute(
+        "INSERT INTO app_meta(key,value) VALUES('version',?) "
+        "ON CONFLICT(key) DO UPDATE SET value=excluded.value",
+        (APP_VERSION,),
+    )
     con.commit()
     con.close()
 
 
 def initial_state():
     return {
+        "state_version": STATE_VERSION,
         "chapter": 1,
         "step": "alina_intro",
         "chapter_title": "Последнее сообщение",
@@ -112,6 +144,59 @@ EVIDENCE_CATALOG = {
 }
 
 
+def migrate_state(raw_state):
+    """Bring old saves forward instead of crashing with KeyError after deploys."""
+    if not isinstance(raw_state, dict):
+        return initial_state()
+
+    base = initial_state()
+    state = dict(raw_state)
+
+    # Required simple keys.
+    for key in (
+        "chapter", "step", "chapter_title", "ending",
+        "ending_title", "ending_text", "started_at"
+    ):
+        if key not in state:
+            state[key] = base[key]
+
+    # Required list/dict containers.
+    for key in ("unlocked_contacts", "messages", "evidence", "tasks",
+                "flags", "notes", "conclusions", "new_badges"):
+        expected = base[key]
+        if not isinstance(state.get(key), type(expected)):
+            state[key] = expected.copy() if isinstance(expected, (dict, list)) else expected
+
+    # Merge nested dictionaries so new fields do not break old saves.
+    for key in ("trust", "stats"):
+        merged = dict(base[key])
+        if isinstance(state.get(key), dict):
+            merged.update(state[key])
+        state[key] = merged
+
+    # Sanitize values that are used as lookup keys.
+    state["unlocked_contacts"] = [
+        x for x in state["unlocked_contacts"]
+        if x in CONTACTS
+    ] if "CONTACTS" in globals() else state["unlocked_contacts"]
+
+    if not state["unlocked_contacts"]:
+        state["unlocked_contacts"] = ["alina"]
+
+    try:
+        chapter = int(state.get("chapter", 1))
+    except (TypeError, ValueError):
+        chapter = 1
+    state["chapter"] = min(10, max(1, chapter))
+
+    if not isinstance(state.get("messages"), dict):
+        state["messages"] = base["messages"]
+    state["messages"].setdefault("alina", list(base["messages"]["alina"]))
+
+    state["state_version"] = STATE_VERSION
+    return state
+
+
 def verify_init_data(init_data: str):
     if not init_data or not BOT_TOKEN:
         return None
@@ -124,9 +209,11 @@ def verify_init_data(init_data: str):
         if not hmac.compare_digest(calculated, received_hash):
             return None
         auth_date = int(data.get("auth_date", "0") or 0)
-        if auth_date and abs(int(time.time()) - auth_date) > 86400:
+        if auth_date and abs(int(time.time()) - auth_date) > 172800:
             return None
         user = json.loads(data.get("user", "{}"))
+        if not user.get("id"):
+            return None
         return user
     except Exception:
         return None
@@ -137,7 +224,7 @@ def current_user():
     user = verify_init_data(init_data)
     if user:
         return {
-            "id": int(user.get("id")),
+            "id": int(user["id"]),
             "first_name": str(user.get("first_name") or "Игрок"),
             "username": str(user.get("username") or ""),
         }
@@ -160,6 +247,7 @@ def auth_required(fn):
 def load_player(user):
     con = db()
     row = con.execute("SELECT * FROM players WHERE telegram_id=?", (user["id"],)).fetchone()
+    changed = False
     if row is None:
         state = initial_state()
         con.execute(
@@ -168,16 +256,32 @@ def load_player(user):
         )
         con.commit()
     else:
-        state = json.loads(row["state_json"])
+        try:
+            raw = json.loads(row["state_json"])
+        except (TypeError, ValueError, json.JSONDecodeError):
+            raw = initial_state()
+            changed = True
+        state = migrate_state(raw)
+        if state.get("state_version") != raw.get("state_version"):
+            changed = True
+        if changed:
+            con.execute(
+                "UPDATE players SET state_json=?, updated_at=? WHERE telegram_id=?",
+                (json.dumps(state, ensure_ascii=False), int(time.time()), user["id"]),
+            )
+            con.commit()
     con.close()
     return state
 
 
 def save_player(user, state):
+    state = migrate_state(state)
     con = db()
     con.execute(
-        "UPDATE players SET first_name=?, username=?, state_json=?, updated_at=? WHERE telegram_id=?",
-        (user["first_name"], user["username"], json.dumps(state, ensure_ascii=False), int(time.time()), user["id"]),
+        "INSERT INTO players(telegram_id, first_name, username, state_json, updated_at) VALUES(?,?,?,?,?) "
+        "ON CONFLICT(telegram_id) DO UPDATE SET first_name=excluded.first_name, username=excluded.username, "
+        "state_json=excluded.state_json, updated_at=excluded.updated_at",
+        (user["id"], user["first_name"], user["username"], json.dumps(state, ensure_ascii=False), int(time.time())),
     )
     con.commit()
     con.close()
@@ -190,7 +294,6 @@ def add_msg(state, contact, text, sender="them", kind="text"):
 def unlock_contact(state, contact):
     if contact not in state["unlocked_contacts"]:
         state["unlocked_contacts"].append(contact)
-    state["new_badges"][contact] = state["new_badges"].get(contact, 0) + 1
 
 
 def add_evidence(state, evidence_id):
@@ -223,7 +326,8 @@ def available_actions(state):
         a("inspect_photo", "Изучить фотографию", "primary", "alina")
     elif step == "photo_zoom":
         a("find_plate", "Увеличить номер машины", "primary")
-        a("look_window", "Рассмотреть окно кафе")
+        if not state.get("flags", {}).get("window_detail"):
+            a("look_window", "Рассмотреть окно кафе")
     elif step == "alina_last_note":
         a("open_envelope", "Открыть последнее вложение Алины", "primary", "alina")
     elif step == "kirill_intro":
@@ -345,6 +449,7 @@ def process_action(state, action):
 
     def notify(contact, preview):
         nonlocal incoming
+        state["new_badges"][contact] = state["new_badges"].get(contact, 0) + 1
         incoming = {"contact": contact, "name": CONTACTS[contact]["name"], "preview": preview}
 
     if action == "inspect_photo" and state["step"] == "alina_intro":
@@ -371,7 +476,8 @@ def process_action(state, action):
         notify("kirill", "Зачем ты мне пишешь?")
         chapter_flash = "Глава 2 — Квартира"
 
-    elif action == "look_window" and state["step"] == "photo_zoom":
+    elif action == "look_window" and state["step"] == "photo_zoom" and not state.get("flags", {}).get("window_detail"):
+        state["flags"]["window_detail"] = True
         state["notes"].append("На окне кафе отражается яркая вывеска. Возможно, время снимка можно проверить по камерам.")
         state["stats"]["secrets"] += 1
         reveal = "Секретная деталь добавлена в заметки"
@@ -383,69 +489,4 @@ def process_action(state, action):
             add_msg(state, "kirill", "Ладно. Спасибо, что не начал сразу обвинять меня.")
         elif action == "kirill_pressure":
             state["trust"]["kirill"] -= 2
-            state["stats"]["mistakes"] += 1
-            add_msg(state, "kirill", "Если ты уже решил, что я виноват, тогда зачем вообще спрашиваешь?")
-        else:
-            state["trust"]["kirill"] += 1
-            add_msg(state, "kirill", "Подожди... Я знаю это место. Это кафе «Луна».")
-        add_msg(state, "kirill", "У неё был запасной ключ. Он мог остаться в конверте возле двери.")
-        state["step"] = "apartment"
-
-    elif action in {"search_apartment", "ask_orlov"} and state["step"] == "apartment":
-        if action == "ask_orlov":
-            unlock_contact(state, "orlov")
-            state["trust"]["orlov"] += 1
-            add_msg(state, "orlov", "Не трогайте ничего лишнего. Но если найдёте что-то важное — сообщите мне.")
-            notify("orlov", "Если найдёте что-то важное — сообщите мне.")
-        add_evidence(state, "apartment_key")
-        add_evidence(state, "receipt")
-        mark_task(state, "visit_apartment")
-        state["step"] = "apartment_findings"
-        state["notes"].append("В квартире почти всё на месте. Самыми странными находками оказались ключ в подписанном конверте и чек из кафе.")
-
-    elif action in {"inspect_receipt", "inspect_key"} and state["step"] == "apartment_findings":
-        if action == "inspect_receipt":
-            state["stats"]["correct"] += 1
-            state["notes"].append("Чек подтверждает: Алина была в кафе незадолго до 22:00.")
-        else:
-            state["stats"]["secrets"] += 1
-            state["notes"].append("На внутренней стороне конверта едва заметно написано: «М. слышала больше, чем сказала». ")
-        set_chapter(state, 3)
-        state["step"] = "masha_intro"
-        set_tasks(state, [("talk_masha", "Поговорить с соседкой"), ("check_time", "Проверить время 22:17")])
-        unlock_contact(state, "masha")
-        add_msg(state, "masha", "Привет. Мы не знакомы, но ты ведь ищешь Алину?")
-        add_msg(state, "masha", "Я слышала шум в коридоре в тот вечер.")
-        notify("masha", "Я слышала шум в коридоре в тот вечер.")
-        chapter_flash = "Глава 3 — 22:17"
-
-    elif action in {"masha_soft", "masha_pressure", "masha_2217"} and state["step"] == "masha_intro":
-        mark_task(state, "talk_masha")
-        if action == "masha_soft":
-            state["trust"]["masha"] += 2
-            add_msg(state, "masha", "Хорошо. Я постараюсь вспомнить всё по порядку.")
-        elif action == "masha_pressure":
-            state["trust"]["masha"] -= 2
-            add_msg(state, "masha", "Не разговаривай со мной так. Я и так пытаюсь помочь.")
-        else:
-            state["trust"]["masha"] += 1
-            add_msg(state, "masha", "22:17... Да. Я посмотрела на часы именно тогда.")
-        add_msg(state, "masha", "Я видела, как у дома остановилась тёмная машина. Но водителя не разглядела.")
-        state["step"] = "cctv_check"
-
-    elif action in {"review_cctv", "compare_receipt"} and state["step"] == "cctv_check":
-        mark_task(state, "check_time")
-        add_evidence(state, "cctv")
-        state["conclusions"].append("Кто-то был рядом с Алиной после 22:00, несмотря на ранние алиби.")
-        state["stats"]["correct"] += 1
-        state["step"] = "voice_check"
-        state["notes"].append("Вместе с записью камеры найдено короткое голосовое. Фоновый звук может указать место отправителя.")
-
-    elif action in {"analyze_voice", "skip_voice"} and state["step"] == "voice_check":
-        if action == "analyze_voice":
-            add_evidence(state, "voice")
-            state["stats"]["secrets"] += 1
-            state["notes"].append("На фоне голосового слышен звук двери кафе и объявление с улицы. Запись сделана рядом с «Луной».")
-        set_chapter(state, 4)
-        state["step"] = "igor_intro"
-        set_tasks(state, [("talk_igor", "Проверить показания Игоря"), ("find_lie", "Найти противореч
+            state["stats"]["mistakes"] 
