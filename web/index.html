@@ -15,8 +15,10 @@
     --bg2:#07111f;
     --card:#0d1928;
     --line:#1f3a55;
+
     --text:#f4f8ff;
     --muted:#7f95ac;
+
     --blue:#2ca6ff;
     --cyan:#64e3ff;
     --green:#4adf9d;
@@ -82,7 +84,7 @@ button{
 
     padding:
         12px
-        12px
+        10px
         110px;
 }
 
@@ -209,7 +211,6 @@ button{
 }
 
 @keyframes pageIn{
-
     from{
         opacity:0;
         transform:translateY(7px);
@@ -225,7 +226,6 @@ button{
 
 .hero{
     position:relative;
-
     overflow:hidden;
 
     border:
@@ -235,7 +235,9 @@ button{
 
     border-radius:25px;
 
-    padding:16px;
+    padding:
+        14px
+        10px;
 
     background:
         linear-gradient(
@@ -346,7 +348,7 @@ button{
     margin-top:4px;
 }
 
-/* NUMBER STAGE */
+/* STAGE */
 
 .stage{
     position:relative;
@@ -363,58 +365,57 @@ button{
     background:#050c15aa;
 
     padding:
-        16px
-        8px
+        15px
+        0
         18px;
 
     margin-bottom:10px;
 }
 
-/* ==============================
-   БОЛЬШОЙ РЕАЛИСТИЧНЫЙ НОМЕР
-============================== */
+/* =====================================
+   НОМЕР КАК НА ТВОЁМ ПРИМЕРЕ
+===================================== */
 
 .plate{
     width:100%;
+    max-width:760px;
 
-    max-width:620px;
-
-    height:142px;
+    aspect-ratio:5.25/1;
 
     margin:
-        8px
+        6px
         auto
-        14px;
+        15px;
 
     display:grid;
 
     grid-template-columns:
         minmax(0,1fr)
-        132px;
+        22%;
 
     align-items:stretch;
 
     border:
-        3px
+        4px
         solid
-        #1a1a1a;
+        #111;
 
-    border-radius:13px;
+    border-radius:17px;
 
     background:
         linear-gradient(
             180deg,
-            #ffffff 0%,
-            #f4f4f0 55%,
-            #e4e6e5 100%
+            #fbfbfa 0%,
+            #f1f1ef 58%,
+            #e2e3e2 100%
         );
 
-    color:#0b0b0b;
+    color:#0c0c0c;
 
     box-shadow:
-        inset 0 0 0 2px #b7bcbe,
-        inset 0 1px 0 #fff,
-        0 22px 44px #0008;
+        inset 0 0 0 2px #fff,
+        inset 0 0 0 8px #222,
+        0 20px 42px #0008;
 
     position:relative;
 
@@ -426,16 +427,18 @@ button{
 
     position:absolute;
 
-    inset:6px;
+    inset:10px;
 
     border:
         2px
         solid
-        #666b6d;
+        #6e6f70;
 
-    border-radius:7px;
+    border-radius:8px;
 
     pointer-events:none;
+
+    z-index:1;
 }
 
 .plate:after{
@@ -447,22 +450,24 @@ button{
 
     background:
         linear-gradient(
-            110deg,
-            transparent 0 42%,
-            rgba(255,255,255,.65) 49%,
+            112deg,
+            transparent 0 43%,
+            rgba(255,255,255,.45) 49%,
             transparent 56%
         );
 
-    opacity:.2;
+    opacity:.16;
 
     pointer-events:none;
+
+    z-index:3;
 }
 
 .bolt{
     position:absolute;
 
-    width:10px;
-    height:10px;
+    width:8px;
+    height:8px;
 
     border-radius:50%;
 
@@ -470,19 +475,19 @@ button{
         radial-gradient(
             circle at 35% 35%,
             #fff,
-            #9fa4a6 40%,
-            #484d4f 68%
+            #9a9a9a 43%,
+            #444 70%
         );
 
     box-shadow:
         0 1px 2px
         #0006;
 
-    z-index:4;
+    z-index:5;
 }
 
 .bolt.left{
-    left:10px;
+    left:13px;
 
     top:50%;
 
@@ -491,7 +496,7 @@ button{
 }
 
 .bolt.right{
-    right:10px;
+    right:13px;
 
     top:50%;
 
@@ -509,41 +514,49 @@ button{
     align-items:center;
     justify-content:center;
 
+    min-width:0;
+
     padding:
         0
-        16px
+        2px
         0
-        24px;
+        12px;
 
-    min-width:0;
+    overflow:hidden;
 }
 
 .plate-code{
     font-family:
         "Arial Narrow",
-        "DIN Condensed",
+        "Helvetica Neue Condensed Black",
+        "Arial Black",
         Arial,
         sans-serif;
 
     font-size:
         clamp(
-            54px,
-            14vw,
-            92px
+            78px,
+            18vw,
+            150px
         );
 
     font-weight:900;
 
-    letter-spacing:3px;
+    letter-spacing:-4px;
 
-    line-height:.95;
+    line-height:.8;
 
     white-space:nowrap;
 
+    color:#101010;
+
     transform:
-        scaleX(.92);
+        scaleX(.76);
 
     transform-origin:center;
+
+    text-rendering:
+        geometricPrecision;
 }
 
 .plate-region{
@@ -554,7 +567,7 @@ button{
     border-left:
         4px
         solid
-        #171717;
+        #111;
 
     display:flex;
 
@@ -564,28 +577,38 @@ button{
     justify-content:center;
 
     padding:
-        5px
-        10px
-        6px;
+        6px
+        6px
+        8px;
+
+    overflow:hidden;
 }
 
 .region-number{
     font-family:
+        "Arial Narrow",
+        "Helvetica Neue Condensed Black",
+        "Arial Black",
         Arial,
         sans-serif;
 
     font-size:
         clamp(
-            42px,
-            10vw,
-            66px
+            58px,
+            14vw,
+            98px
         );
 
     font-weight:900;
 
-    line-height:.9;
+    line-height:.78;
 
-    letter-spacing:1px;
+    letter-spacing:-3px;
+
+    color:#101010;
+
+    transform:
+        scaleX(.86);
 }
 
 .region-bottom{
@@ -594,24 +617,46 @@ button{
     align-items:center;
     justify-content:center;
 
-    gap:6px;
+    gap:7px;
 
-    margin-top:8px;
+    margin-top:12px;
+
+    width:100%;
 }
 
 .plate-country{
-    font:
-        900
-        18px/1
+    font-family:
         Arial,
         sans-serif;
 
-    letter-spacing:.7px;
+    font-size:
+        clamp(
+            19px,
+            4.8vw,
+            30px
+        );
+
+    font-weight:800;
+
+    line-height:1;
+
+    color:#111;
 }
 
 .ru-flag{
-    width:32px;
-    height:20px;
+    width:
+        clamp(
+            34px,
+            8vw,
+            56px
+        );
+
+    height:
+        clamp(
+            20px,
+            4.7vw,
+            33px
+        );
 
     border:
         1px
@@ -622,7 +667,7 @@ button{
         linear-gradient(
             to bottom,
             #fff 0 33.33%,
-            #1256b8 33.33% 66.66%,
+            #1b56b8 33.33% 66.66%,
             #d52b1e 66.66% 100%
         );
 
@@ -642,7 +687,6 @@ button{
 }
 
 @keyframes shake{
-
     from{
         transform:
             translateX(-2px)
@@ -665,6 +709,10 @@ button{
     align-items:center;
 
     gap:8px;
+
+    padding:
+        0
+        8px;
 }
 
 .rarity{
@@ -853,7 +901,7 @@ button{
     display:grid;
 }
 
-/* SECTIONS */
+/* CARDS */
 
 .section-head{
     display:flex;
@@ -993,6 +1041,8 @@ button{
 
     margin-top:10px;
 }
+
+/* INPUT */
 
 .toolbar{
     display:flex;
@@ -1166,7 +1216,7 @@ button{
     font-size:8px;
 }
 
-/* NAVIGATION */
+/* NAV */
 
 .nav{
     position:fixed;
@@ -1418,7 +1468,6 @@ button{
 }
 
 @keyframes fall{
-
     to{
         transform:
             translateY(85vh)
@@ -1428,55 +1477,130 @@ button{
     }
 }
 
-/* MOBILE */
+/* IPHONE */
 
 @media(max-width:520px){
 
     .app{
-        padding-left:8px;
-
-        padding-right:8px;
+        padding-left:7px;
+        padding-right:7px;
     }
 
     .hero{
-        padding:11px;
+        padding:
+            10px
+            7px;
+    }
+
+    .stage{
+        padding-left:0;
+        padding-right:0;
     }
 
     .plate{
-        height:118px;
+        aspect-ratio:5.05/1;
 
-        grid-template-columns:
-            minmax(0,1fr)
-            105px;
+        border-width:3px;
+
+        border-radius:13px;
+
+        box-shadow:
+            inset 0 0 0 1px #fff,
+            inset 0 0 0 5px #222,
+            0 16px 32px #0008;
+    }
+
+    .plate:before{
+        inset:7px;
+
+        border-width:1.5px;
+
+        border-radius:6px;
+    }
+
+    .plate-main{
+        padding:0;
     }
 
     .plate-code{
         font-size:
             clamp(
-                44px,
-                13vw,
-                68px
+                58px,
+                19vw,
+                90px
             );
 
-        letter-spacing:1.6px;
+        letter-spacing:-4px;
+
+        transform:
+            scaleX(.72);
+    }
+
+    .plate-region{
+        border-left-width:3px;
+
+        padding:
+            4px
+            2px
+            5px;
     }
 
     .region-number{
         font-size:
             clamp(
-                38px,
-                10vw,
-                54px
+                46px,
+                15vw,
+                70px
             );
+
+        letter-spacing:-3px;
+
+        transform:
+            scaleX(.84);
+    }
+
+    .region-bottom{
+        gap:4px;
+
+        margin-top:8px;
     }
 
     .plate-country{
-        font-size:14px;
+        font-size:
+            clamp(
+                14px,
+                4.5vw,
+                20px
+            );
     }
 
     .ru-flag{
-        width:27px;
-        height:17px;
+        width:
+            clamp(
+                25px,
+                7.7vw,
+                34px
+            );
+
+        height:
+            clamp(
+                15px,
+                4.5vw,
+                20px
+            );
+    }
+
+    .bolt{
+        width:6px;
+        height:6px;
+    }
+
+    .bolt.left{
+        left:9px;
+    }
+
+    .bolt.right{
+        right:9px;
     }
 
     .admin-stats{
@@ -1510,6 +1634,7 @@ button{
     class="particles"
     id="particles">
 </div>
+
 
 <div class="app">
 
@@ -1660,7 +1785,7 @@ button{
                         class="plate-code"
                         id="plate-code">
 
-                        A 123 BC
+                        A123BC
 
                     </div>
 
@@ -2094,9 +2219,7 @@ button{
 
 
             <span class="badge creator">
-
                 ONLINE
-
             </span>
 
         </div>
@@ -2189,7 +2312,7 @@ button{
 </div>
 
 
-<!-- NAVIGATION -->
+<!-- NAV -->
 
 <nav class="nav">
 
@@ -2256,6 +2379,8 @@ button{
 </nav>
 
 
+<!-- TOAST -->
+
 <div
     class="toast"
     id="toast">
@@ -2268,6 +2393,8 @@ button{
 
 </div>
 
+
+<!-- MODAL -->
 
 <div
     class="modal-back"
@@ -2287,7 +2414,6 @@ const tg =
 
 
 tg?.ready();
-
 tg?.expand();
 
 
@@ -2539,7 +2665,7 @@ async function api(
                         "",
 
                     "X-Client-Version":
-                        "6.4-big"
+                        "6.4-exact"
                 },
 
                 body:
@@ -2609,11 +2735,13 @@ function regionHTML(
             ${esc(region)}
         </div>
 
+
         <div class="region-bottom">
 
             <span class="plate-country">
                 RUS
             </span>
+
 
             <span class="ru-flag"></span>
 
@@ -2644,11 +2772,7 @@ function showPlate(
         .textContent =
             match[1]
             +
-            " "
-            +
             match[2]
-            +
-            " "
             +
             match[3];
 
@@ -2700,6 +2824,18 @@ function randomPlate(){
         };
 
 
+    const number =
+        String(
+            Math.floor(
+                Math.random()
+                *
+                900
+            )
+            +
+            100
+        );
+
+
     const regions = [
         "01",
         "02",
@@ -2722,19 +2858,7 @@ function randomPlate(){
         main:
             randomLetter()
             +
-            " "
-            +
-            String(
-                Math.floor(
-                    Math.random()
-                    *
-                    900
-                )
-                +
-                100
-            )
-            +
-            " "
+            number
             +
             randomLetter()
             +
@@ -2859,26 +2983,30 @@ function confetti(
     ){
 
         const particle =
-            document.createElement(
+            document
+            .createElement(
                 "i"
             );
 
 
-        particle.className =
+        particle
+        .className =
             "particle";
 
 
-        particle.style.left =
-            (
-                Math.random()
-                *
-                100
-            )
+        particle
+        .style
+        .left =
+            Math.random()
+            *
+            100
             +
             "vw";
 
 
-        particle.style.background =
+        particle
+        .style
+        .background =
             colors[
                 Math.floor(
                     Math.random()
@@ -2888,12 +3016,12 @@ function confetti(
             ];
 
 
-        particle.style.animationDelay =
-            (
-                Math.random()
-                *
-                .25
-            )
+        particle
+        .style
+        .animationDelay =
+            Math.random()
+            *
+            .25
             +
             "s";
 
@@ -3198,13 +3326,9 @@ function sync(){
             </span>
 
             <b>
-
                 ${me.level}
-
                 /
-
                 ${fmt(me.xp)}
-
             </b>
 
         </div>
@@ -5257,8 +5381,37 @@ async function action(
 
 
             notify(
+
                 "Админ",
-                "Настройка мифика изменена"
+
+                button.dataset.mode ===
+                "clear"
+
+                ?
+
+                "Очередь мификов очищена"
+
+                :
+
+                button.dataset.mode ===
+                "all_off"
+
+                ?
+
+                "Все гарантии мифика отключены"
+
+                :
+
+                button.dataset.mode ===
+                "queue"
+
+                ?
+
+                "Гарантированный мифик добавлен"
+
+                :
+
+                "Режим 100% мифика изменён"
             );
 
 
@@ -5393,6 +5546,8 @@ async function openPage(
     }
 }
 
+
+/* EVENTS */
 
 $("spin-btn")
 .onclick =
@@ -5638,6 +5793,8 @@ $("modal-back")
         }
     };
 
+
+/* START */
 
 (async()=>{
 
