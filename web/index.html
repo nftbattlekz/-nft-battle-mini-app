@@ -2,8 +2,17 @@
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
-<meta name="theme-color" content="#07101d">
+
+<meta
+    name="viewport"
+    content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover"
+>
+
+<meta
+    name="theme-color"
+    content="#07111f"
+>
+
 <title>NOMER CLUB</title>
 
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
@@ -11,19 +20,26 @@
 <style>
 :root{
     --bg:#050a12;
+    --bg2:#07111f;
+
     --card:#0d1928;
     --card2:#111f31;
-    --line:#1e3a56;
+
+    --line:#1f3a55;
 
     --text:#f4f8ff;
-    --muted:#7d94ad;
+    --muted:#7f95ac;
 
     --blue:#2ca6ff;
     --cyan:#64e3ff;
+
     --green:#4adf9d;
+
     --gold:#ffd166;
+
     --red:#ff6680;
-    --purple:#a884ff;
+
+    --purple:#aa84ff;
 }
 
 *{
@@ -37,7 +53,9 @@ html{
 
 body{
     margin:0;
+
     min-height:100vh;
+
     color:var(--text);
 
     font:
@@ -50,12 +68,12 @@ body{
     background:
         radial-gradient(
             circle at 50% -10%,
-            rgba(44,166,255,.2),
-            transparent 34%
+            rgba(44,166,255,.22),
+            transparent 35%
         ),
         linear-gradient(
             180deg,
-            #07111f,
+            var(--bg2),
             var(--bg)
         );
 
@@ -80,7 +98,9 @@ button{
 
 .app{
     max-width:660px;
+
     margin:auto;
+
     padding:
         12px
         12px
@@ -91,11 +111,15 @@ button{
 
 .top{
     position:sticky;
+
     top:0;
-    z-index:30;
+
+    z-index:40;
 
     display:flex;
+
     align-items:center;
+
     justify-content:space-between;
 
     gap:10px;
@@ -112,12 +136,15 @@ button{
             transparent
         );
 
-    backdrop-filter:blur(14px);
+    backdrop-filter:
+        blur(14px);
 }
 
 .brand{
     display:flex;
+
     align-items:center;
+
     gap:10px;
 }
 
@@ -128,6 +155,7 @@ button{
     border-radius:14px;
 
     display:grid;
+
     place-items:center;
 
     background:
@@ -144,6 +172,7 @@ button{
         rgba(44,166,255,.28);
 
     position:relative;
+
     overflow:hidden;
 }
 
@@ -175,13 +204,16 @@ button{
 }
 
 @keyframes shine{
-    0%,55%{
+
+    0%,
+    55%{
         transform:
             translateX(-65px)
             rotate(20deg);
     }
 
-    85%,100%{
+    85%,
+    100%{
         transform:
             translateX(95px)
             rotate(20deg);
@@ -190,7 +222,9 @@ button{
 
 .brand h1{
     font-size:16px;
+
     margin:0;
+
     letter-spacing:.6px;
 }
 
@@ -200,11 +234,13 @@ button{
     color:var(--muted);
 
     font-size:9px;
+
     letter-spacing:1px;
 }
 
 .top-actions{
     display:flex;
+
     gap:6px;
 }
 
@@ -237,7 +273,7 @@ button{
     background:#211a0c;
 }
 
-/* PAGES */
+/* PAGE */
 
 .page{
     display:none;
@@ -253,13 +289,17 @@ button{
 }
 
 @keyframes pageIn{
+
     from{
         opacity:0;
-        transform:translateY(7px);
+
+        transform:
+            translateY(7px);
     }
 
     to{
         opacity:1;
+
         transform:none;
     }
 }
@@ -288,7 +328,8 @@ button{
         );
 
     box-shadow:
-        0 20px 55px #0006;
+        0 20px 55px
+        #0006;
 }
 
 .hero:before{
@@ -300,6 +341,7 @@ button{
     height:240px;
 
     right:-110px;
+
     top:-130px;
 
     border-radius:50%;
@@ -314,6 +356,7 @@ button{
 
 .hero>*{
     position:relative;
+
     z-index:1;
 }
 
@@ -321,6 +364,7 @@ button{
     color:#72d9ff;
 
     font-size:10px;
+
     font-weight:950;
 
     letter-spacing:1.3px;
@@ -384,10 +428,11 @@ button{
 
 .stat b{
     display:block;
+
     margin-top:4px;
 }
 
-/* SPIN STAGE */
+/* STAGE */
 
 .stage{
     position:relative;
@@ -415,6 +460,7 @@ button{
     position:absolute;
 
     left:-20%;
+
     right:-20%;
 
     height:1px;
@@ -435,8 +481,10 @@ button{
 }
 
 @keyframes scan{
+
     from{
         top:0;
+
         opacity:0;
     }
 
@@ -446,55 +494,66 @@ button{
 
     to{
         top:100%;
+
         opacity:0;
     }
 }
 
-/* NUMBER PLATE */
+/* NUMBER */
 
 .plate{
     width:
         min(
             100%,
-            470px
+            500px
         );
 
-    min-height:96px;
+    aspect-ratio:
+        5.2/1;
+
+    min-height:88px;
 
     margin:
-        10px
+        12px
         auto;
 
     display:flex;
+
     align-items:center;
+
     justify-content:space-between;
 
     padding:
+        10px
         12px
-        11px
-        12px
-        18px;
+        10px
+        22px;
 
     border:
-        3px
+        2px
         solid
-        #171c22;
+        #111;
 
-    border-radius:14px;
+    border-radius:9px;
 
     background:
         linear-gradient(
-            #fff,
-            #e7ecf0
+            180deg,
+            #fdfdfb 0%,
+            #f2f2ee 58%,
+            #e3e5e5 100%
         );
 
-    color:#111;
+    color:#0c0c0c;
 
     box-shadow:
-        inset 0 0 0 2px #fff,
-        0 18px 35px #0007;
+        inset 0 0 0 2px #cfd3d4,
+        inset 0 1px 0 #fff,
+        0 18px 35px #0008;
 
     position:relative;
+
+    overflow:hidden;
 }
 
 .plate:before{
@@ -502,57 +561,187 @@ button{
 
     position:absolute;
 
-    inset:5px;
+    inset:4px;
 
     border:
         1px
         solid
-        #aab5bf;
+        #73797d;
 
-    border-radius:8px;
+    border-radius:5px;
+
+    box-shadow:
+        inset 0 0 0 1px #fff9;
+}
+
+.plate:after{
+    content:"";
+
+    position:absolute;
+
+    inset:0;
+
+    background:
+        linear-gradient(
+            105deg,
+            transparent 0 42%,
+            rgba(255,255,255,.72) 49%,
+            transparent 56%
+        );
+
+    opacity:.28;
+
+    pointer-events:none;
+}
+
+.bolt{
+    position:absolute;
+
+    width:6px;
+    height:6px;
+
+    border-radius:50%;
+
+    background:
+        radial-gradient(
+            circle at 35% 35%,
+            #fff,
+            #8a8f92 45%,
+            #42474a 70%
+        );
+
+    box-shadow:
+        0 1px 1px
+        #0004;
+
+    z-index:3;
+}
+
+.bolt.left{
+    left:8px;
+
+    top:50%;
+
+    transform:
+        translateY(-50%);
+}
+
+.bolt.right{
+    right:7px;
+
+    top:50%;
+
+    transform:
+        translateY(-50%);
 }
 
 .plate-code,
 .plate-region{
     position:relative;
+
     z-index:2;
 }
 
 .plate-code{
+    font-family:
+        "Arial Narrow",
+        "DIN Condensed",
+        Arial,
+        sans-serif;
+
     font-size:
         clamp(
-            29px,
+            31px,
             8vw,
-            48px
+            50px
         );
 
-    font-weight:1000;
+    font-weight:900;
 
-    letter-spacing:1px;
+    letter-spacing:1.6px;
+
+    line-height:1;
 
     white-space:nowrap;
+
+    text-shadow:
+        .35px
+        .35px
+        0
+        #000;
 }
 
 .plate-region{
-    min-width:70px;
+    min-width:78px;
+
+    height:58px;
 
     border-left:
         2px
         solid
-        #111;
+        #151515;
 
     text-align:center;
 
-    font-size:18px;
-    font-weight:1000;
+    font-family:
+        Arial,
+        sans-serif;
+
+    font-size:19px;
+
+    font-weight:900;
+
+    line-height:1;
+
+    padding:
+        3px
+        4px
+        0
+        9px;
+
+    display:flex;
+
+    flex-direction:column;
+
+    justify-content:center;
+
+    align-items:center;
 }
 
-.plate-region small{
-    display:block;
-
+.plate-country{
     font-size:8px;
 
+    letter-spacing:.7px;
+
     margin-top:4px;
+
+    font-weight:700;
+}
+
+.ru-flag{
+    width:18px;
+
+    height:11px;
+
+    margin-top:3px;
+
+    border:
+        1px
+        solid
+        #777;
+
+    background:
+        linear-gradient(
+            to bottom,
+            #fff 0 33.33%,
+            #1256b8 33.33% 66.66%,
+            #d52b1e 66.66% 100%
+        );
+
+    box-shadow:
+        0 0 0 1px
+        #fff
+        inset;
 }
 
 .plate.spinning{
@@ -565,6 +754,7 @@ button{
 }
 
 @keyframes shake{
+
     from{
         transform:
             translateX(-2px)
@@ -582,7 +772,9 @@ button{
 
 .result{
     display:flex;
+
     justify-content:space-between;
+
     align-items:center;
 
     gap:8px;
@@ -590,6 +782,7 @@ button{
 
 .rarity{
     display:inline-flex;
+
     align-items:center;
 
     min-height:28px;
@@ -608,6 +801,7 @@ button{
     background:#07111c;
 
     font-size:10px;
+
     font-weight:950;
 }
 
@@ -672,7 +866,8 @@ button{
 }
 
 .btn:active{
-    transform:scale(.975);
+    transform:
+        scale(.975);
 }
 
 .btn:disabled{
@@ -777,6 +972,7 @@ button{
 }
 
 @keyframes pop{
+
     from{
         opacity:0;
 
@@ -787,6 +983,7 @@ button{
 
     to{
         opacity:1;
+
         transform:none;
     }
 }
@@ -797,6 +994,7 @@ button{
     display:flex;
 
     justify-content:space-between;
+
     align-items:flex-end;
 
     gap:10px;
@@ -809,6 +1007,7 @@ button{
 
 .section-head h3{
     margin:0;
+
     font-size:18px;
 }
 
@@ -853,20 +1052,26 @@ button{
 }
 
 @keyframes cardIn{
+
     from{
         opacity:0;
-        transform:translateY(5px);
+
+        transform:
+            translateY(5px);
     }
 
     to{
         opacity:1;
+
         transform:none;
     }
 }
 
 .row{
     display:flex;
+
     align-items:center;
+
     justify-content:space-between;
 
     gap:10px;
@@ -874,6 +1079,7 @@ button{
 
 .grow{
     flex:1;
+
     min-width:0;
 }
 
@@ -883,11 +1089,13 @@ button{
 
 .big{
     font-size:18px;
+
     font-weight:1000;
 }
 
 .badge{
     display:inline-flex;
+
     align-items:center;
 
     padding:
@@ -904,6 +1112,7 @@ button{
     background:#08131f;
 
     font-size:10px;
+
     font-weight:900;
 }
 
@@ -917,6 +1126,7 @@ button{
 
 .plate-name{
     font-size:21px;
+
     font-weight:1000;
 
     letter-spacing:.7px;
@@ -941,8 +1151,6 @@ button{
 
     margin-top:10px;
 }
-
-/* INPUTS */
 
 .toolbar{
     display:flex;
@@ -1029,10 +1237,9 @@ button{
     border-radius:99px;
 }
 
-/* PROFILE */
-
 .profile-head{
     display:flex;
+
     align-items:center;
 
     gap:11px;
@@ -1040,9 +1247,11 @@ button{
 
 .avatar{
     width:54px;
+
     height:54px;
 
     display:grid;
+
     place-items:center;
 
     border:
@@ -1060,6 +1269,7 @@ button{
         );
 
     font-size:21px;
+
     font-weight:1000;
 }
 
@@ -1128,6 +1338,7 @@ button{
     position:fixed;
 
     left:50%;
+
     bottom:0;
 
     transform:
@@ -1166,7 +1377,8 @@ button{
 
     background:#050b14ee;
 
-    backdrop-filter:blur(18px);
+    backdrop-filter:
+        blur(18px);
 }
 
 .nav button{
@@ -1209,6 +1421,7 @@ button{
     z-index:110;
 
     left:50%;
+
     bottom:92px;
 
     transform:
@@ -1275,6 +1488,7 @@ button{
     display:none;
 
     align-items:flex-end;
+
     justify-content:center;
 }
 
@@ -1361,6 +1575,7 @@ button{
     top:-20px;
 
     width:7px;
+
     height:13px;
 
     border-radius:2px;
@@ -1373,6 +1588,7 @@ button{
 }
 
 @keyframes fall{
+
     to{
         transform:
             translateY(85vh)
@@ -1386,6 +1602,7 @@ button{
 
     .app{
         padding-left:9px;
+
         padding-right:9px;
     }
 
@@ -1409,6 +1626,7 @@ button{
 
     .chip{
         font-size:10px;
+
         padding:8px;
     }
 }
@@ -1424,596 +1642,634 @@ button{
 
 <div class="app">
 
-    <header class="top">
+<header class="top">
 
-        <div class="brand">
+    <div class="brand">
 
-            <div class="logo">
-                NC
+        <div class="logo">
+            NC
+        </div>
+
+        <div>
+
+            <h1>
+                NOMER CLUB
+            </h1>
+
+            <small>
+                COLLECT • TRADE • RISE
+            </small>
+
+        </div>
+
+    </div>
+
+
+    <div class="top-actions">
+
+        <button
+            class="chip admin-chip hidden"
+            id="admin-btn">
+            ADMIN
+        </button>
+
+        <div
+            class="chip"
+            id="balance">
+            — NC
+        </div>
+
+    </div>
+
+</header>
+
+
+<section
+    class="page active"
+    id="page-home">
+
+    <div class="hero">
+
+        <div class="eyebrow">
+            ГЕНЕРАТОР НОМЕРОВ
+        </div>
+
+        <h2>
+            Собери лучшую коллекцию
+        </h2>
+
+        <p class="muted small">
+            Крутить можно
+            <b>без ограничений</b>.
+            Каждая прокрутка стоит
+            <b>100 NC</b>.
+        </p>
+
+
+        <div class="stats">
+
+            <div class="stat">
+
+                <span>
+                    СТОИМОСТЬ
+                </span>
+
+                <b>
+                    100 NC
+                </b>
+
             </div>
 
-            <div>
 
-                <h1>
-                    NOMER CLUB
-                </h1>
+            <div class="stat">
 
-                <small>
-                    COLLECT • TRADE • RISE
-                </small>
+                <span>
+                    УРОВЕНЬ
+                </span>
+
+                <b id="level">
+                    —
+                </b>
+
+            </div>
+
+
+            <div class="stat">
+
+                <span>
+                    НОМЕРА
+                </span>
+
+                <b id="count">
+                    —
+                </b>
 
             </div>
 
         </div>
 
 
-        <div class="top-actions">
-
-            <button
-                class="chip admin-chip hidden"
-                id="admin-btn">
-                ADMIN
-            </button>
+        <div class="stage">
 
             <div
-                class="chip"
-                id="balance">
-                — NC
-            </div>
+                class="plate"
+                id="plate">
 
-        </div>
+                <span class="bolt left"></span>
 
-    </header>
+                <span class="bolt right"></span>
 
-
-    <!-- HOME -->
-
-    <section
-        class="page active"
-        id="page-home">
-
-        <div class="hero">
-
-            <div class="eyebrow">
-                ГЕНЕРАТОР НОМЕРОВ
-            </div>
-
-            <h2>
-                Собери лучшую коллекцию
-            </h2>
-
-            <p class="muted small">
-                Одна прокрутка стоит
-                <b>100 NC</b>.
-                Чем выше редкость —
-                тем дороже номер.
-            </p>
-
-
-            <div class="stats">
-
-                <div class="stat">
-
-                    <span>
-                        ПОПЫТКИ
-                    </span>
-
-                    <b id="spins">
-                        —/20
-                    </b>
-
-                </div>
-
-
-                <div class="stat">
-
-                    <span>
-                        УРОВЕНЬ
-                    </span>
-
-                    <b id="level">
-                        —
-                    </b>
-
-                </div>
-
-
-                <div class="stat">
-
-                    <span>
-                        НОМЕРА
-                    </span>
-
-                    <b id="count">
-                        —
-                    </b>
-
-                </div>
-
-            </div>
-
-
-            <div
-                class="stage"
-                id="stage">
 
                 <div
-                    class="plate"
-                    id="plate">
+                    class="plate-code"
+                    id="plate-code">
 
-                    <div
-                        class="plate-code"
-                        id="plate-code">
-                        A 777 AA
-                    </div>
-
-
-                    <div
-                        class="plate-region"
-                        id="plate-region">
-
-                        77
-
-                        <small>
-                            RUS 🇷🇺
-                        </small>
-
-                    </div>
+                    A 777 AA
 
                 </div>
 
 
-                <div class="result">
+                <div
+                    class="plate-region"
+                    id="plate-region">
 
-                    <span
-                        class="rarity common"
-                        id="rarity">
-                        ГОТОВ
+                    <b>
+                        77
+                    </b>
+
+                    <span class="plate-country">
+                        RUS
                     </span>
 
-
-                    <span
-                        class="hint"
-                        id="result-text">
-                        Прокрутка стоит 100 NC
-                    </span>
+                    <span class="ru-flag"></span>
 
                 </div>
 
             </div>
 
 
-            <button
-                class="btn primary full"
-                id="spin-btn"
-                disabled>
-                КРУТИТЬ • 100 NC
-            </button>
+            <div class="result">
+
+                <span
+                    class="rarity common"
+                    id="rarity">
+
+                    ГОТОВ
+
+                </span>
 
 
-            <div
-                class="quick"
-                id="quick">
+                <span
+                    class="hint"
+                    id="result-text">
 
-                <button
-                    class="btn secondary"
-                    id="keep-btn">
-                    ОСТАВИТЬ
-                </button>
+                    Прокрутка стоит 100 NC
 
-                <button
-                    class="btn danger"
-                    id="sell-btn">
-                    ПРОДАТЬ
-                </button>
+                </span>
 
             </div>
 
         </div>
 
 
-        <div class="section-head">
+        <button
+            class="btn primary full"
+            id="spin-btn"
+            disabled>
 
-            <div>
+            КРУТИТЬ • 100 NC
 
-                <h3>
-                    Мой аккаунт
-                </h3>
+        </button>
 
-                <p>
-                    Основная информация
-                </p>
 
-            </div>
+        <div
+            class="quick"
+            id="quick">
+
+            <button
+                class="btn secondary"
+                id="keep-btn">
+
+                ОСТАВИТЬ В ГАРАЖЕ
+
+            </button>
+
+
+            <button
+                class="btn danger"
+                id="sell-btn">
+
+                ПРОДАТЬ
+
+            </button>
 
         </div>
 
 
         <div
-            class="card"
-            id="home-profile">
+            class="muted small"
+            style="
+                text-align:center;
+                margin-top:8px;
+            ">
+
+            Если номер не сохранить
+            и нажать «КРУТИТЬ» ещё раз —
+            предыдущий автоматически
+            продастся системе.
+
+        </div>
+
+    </div>
+
+
+    <div class="section-head">
+
+        <div>
+
+            <h3>
+                Мой аккаунт
+            </h3>
+
+            <p>
+                Основная информация
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <div
+        class="card"
+        id="home-profile">
+
+        Загрузка...
+
+    </div>
+
+</section>
+
+
+<section
+    class="page"
+    id="page-collection">
+
+    <div class="section-head">
+
+        <div>
+
+            <h3>
+                Моя коллекция
+            </h3>
+
+            <p>
+                Все сохранённые номера
+            </p>
+
+        </div>
+
+
+        <span
+            class="badge"
+            id="collection-count">
+
+            0
+
+        </span>
+
+    </div>
+
+
+    <div class="toolbar">
+
+        <input
+            class="input"
+            id="search"
+            placeholder="Поиск номера">
+
+
+        <select
+            class="select"
+            id="rarity-filter"
+            style="max-width:140px">
+
+            <option value="">
+                Все
+            </option>
+
+            <option>
+                Обычный
+            </option>
+
+            <option>
+                Необычный
+            </option>
+
+            <option>
+                Редкий
+            </option>
+
+            <option>
+                Эпический
+            </option>
+
+            <option>
+                Легендарный
+            </option>
+
+            <option>
+                Мифический
+            </option>
+
+        </select>
+
+    </div>
+
+
+    <div id="collection-list">
+
+        <div class="empty">
             Загрузка...
         </div>
 
-    </section>
+    </div>
+
+</section>
 
 
-    <!-- COLLECTION -->
+<section
+    class="page"
+    id="page-market">
 
-    <section
-        class="page"
-        id="page-collection">
+    <div class="section-head">
 
-        <div class="section-head">
+        <div>
 
-            <div>
+            <h3>
+                Маркет
+            </h3>
 
-                <h3>
-                    Моя коллекция
-                </h3>
+            <p>
+                Торговля между игроками
+            </p>
 
-                <p>
-                    Все полученные номера
-                </p>
+        </div>
+
+
+        <button
+            class="btn ghost smallbtn"
+            id="market-refresh">
+
+            ↻
+
+        </button>
+
+    </div>
+
+
+    <div id="market-list">
+
+        <div class="empty">
+            Загрузка...
+        </div>
+
+    </div>
+
+</section>
+
+
+<section
+    class="page"
+    id="page-tasks">
+
+    <div class="section-head">
+
+        <div>
+
+            <h3>
+                Ежедневные задания
+            </h3>
+
+            <p>
+                Прокрутки бесконечные,
+                прогресс заданий считается
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <div id="tasks-list">
+
+        <div class="empty">
+            Загрузка...
+        </div>
+
+    </div>
+
+
+    <div class="section-head">
+
+        <div>
+
+            <h3>
+                Достижения
+            </h3>
+
+            <p>
+                Постоянный прогресс
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <div id="achievements-list"></div>
+
+</section>
+
+
+<section
+    class="page"
+    id="page-profile">
+
+    <div class="card">
+
+        <div class="profile-head">
+
+            <div
+                class="avatar"
+                id="avatar">
+
+                N
+
+            </div>
+
+
+            <div class="grow">
+
+                <div
+                    class="big"
+                    id="profile-name">
+
+                    Игрок
+
+                </div>
+
+
+                <div
+                    class="muted small"
+                    id="profile-id">
+
+                    —
+
+                </div>
 
             </div>
 
 
             <span
-                class="badge"
-                id="collection-count">
-                0
+                class="badge creator hidden"
+                id="creator-badge">
+
+                👑 CREATOR
+
+            </span>
+
+        </div>
+
+    </div>
+
+
+    <div
+        class="card"
+        id="profile-info">
+    </div>
+
+
+    <div class="section-head">
+
+        <div>
+
+            <h3>
+                Рейтинг
+            </h3>
+
+            <p>
+                Лучшие игроки
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <div id="top-list"></div>
+
+</section>
+
+
+<section
+    class="page"
+    id="page-admin">
+
+    <div class="card admin-hero">
+
+        <div class="row">
+
+            <div>
+
+                <div class="eyebrow">
+                    CREATOR CONTROL
+                </div>
+
+                <div class="big">
+                    Админ-панель
+                </div>
+
+                <div class="muted small">
+                    ID 8518976778
+                </div>
+
+            </div>
+
+
+            <span class="badge creator">
+                ONLINE
             </span>
 
         </div>
 
 
-        <div class="toolbar">
+        <div
+            class="admin-stats"
+            id="admin-stats">
+        </div>
 
-            <input
-                class="input"
-                id="search"
-                placeholder="Поиск номера">
+    </div>
 
 
-            <select
-                class="select"
-                id="rarity-filter"
-                style="max-width:140px">
+    <div class="card">
 
-                <option value="">
-                    Все
-                </option>
-
-                <option>
-                    Обычный
-                </option>
-
-                <option>
-                    Необычный
-                </option>
-
-                <option>
-                    Редкий
-                </option>
-
-                <option>
-                    Эпический
-                </option>
-
-                <option>
-                    Легендарный
-                </option>
-
-                <option>
-                    Мифический
-                </option>
-
-            </select>
-
+        <div class="title">
+            Управление игроком
         </div>
 
 
-        <div id="collection-list">
-
-            <div class="empty">
-                Загрузка...
-            </div>
-
-        </div>
-
-    </section>
-
-
-    <!-- MARKET -->
-
-    <section
-        class="page"
-        id="page-market">
-
-        <div class="section-head">
-
-            <div>
-
-                <h3>
-                    Маркет
-                </h3>
-
-                <p>
-                    Торговля между игроками
-                </p>
-
-            </div>
-
-
-            <button
-                class="btn ghost smallbtn"
-                id="market-refresh">
-                ↻
-            </button>
-
-        </div>
-
-
-        <div id="market-list">
-
-            <div class="empty">
-                Загрузка...
-            </div>
-
-        </div>
-
-    </section>
-
-
-    <!-- TASKS -->
-
-    <section
-        class="page"
-        id="page-tasks">
-
-        <div class="section-head">
-
-            <div>
-
-                <h3>
-                    Ежедневные задания
-                </h3>
-
-                <p>
-                    Выполняй и получай NC + XP
-                </p>
-
-            </div>
-
-        </div>
-
-
-        <div id="tasks-list">
-
-            <div class="empty">
-                Загрузка...
-            </div>
-
-        </div>
-
-
-        <div class="section-head">
-
-            <div>
-
-                <h3>
-                    Достижения
-                </h3>
-
-                <p>
-                    Постоянный прогресс
-                </p>
-
-            </div>
-
-        </div>
-
-
-        <div id="achievements-list"></div>
-
-    </section>
-
-
-    <!-- PROFILE -->
-
-    <section
-        class="page"
-        id="page-profile">
-
-        <div class="card">
-
-            <div class="profile-head">
-
-                <div
-                    class="avatar"
-                    id="avatar">
-                    N
-                </div>
-
-
-                <div class="grow">
-
-                    <div
-                        class="big"
-                        id="profile-name">
-                        Игрок
-                    </div>
-
-
-                    <div
-                        class="muted small"
-                        id="profile-id">
-                        —
-                    </div>
-
-                </div>
-
-
-                <span
-                    class="badge creator hidden"
-                    id="creator-badge">
-                    👑 CREATOR
-                </span>
-
-            </div>
-
-        </div>
+        <input
+            class="input"
+            id="admin-target"
+            inputmode="numeric"
+            placeholder="Telegram ID"
+            style="margin-top:10px">
 
 
         <div
-            class="card"
-            id="profile-info">
-        </div>
-
-
-        <div class="section-head">
-
-            <div>
-
-                <h3>
-                    Рейтинг
-                </h3>
-
-                <p>
-                    Лучшие игроки
-                </p>
-
-            </div>
-
-        </div>
-
-
-        <div id="top-list"></div>
-
-    </section>
-
-
-    <!-- ADMIN -->
-
-    <section
-        class="page"
-        id="page-admin">
-
-        <div class="card admin-hero">
-
-            <div class="row">
-
-                <div>
-
-                    <div class="eyebrow">
-                        CREATOR CONTROL
-                    </div>
-
-
-                    <div class="big">
-                        Админ-панель
-                    </div>
-
-
-                    <div class="muted small">
-                        ID 8518976778
-                    </div>
-
-                </div>
-
-
-                <span class="badge creator">
-                    ONLINE
-                </span>
-
-            </div>
-
-
-            <div
-                class="admin-stats"
-                id="admin-stats">
-            </div>
-
-        </div>
-
-
-        <div class="card">
-
-            <div class="title">
-                Управление игроком
-            </div>
-
+            class="toolbar"
+            style="margin-top:7px">
 
             <input
                 class="input"
-                id="admin-target"
+                id="admin-nc"
                 inputmode="numeric"
-                placeholder="Telegram ID"
-                style="margin-top:10px">
-
-
-            <div
-                class="toolbar"
-                style="margin-top:7px">
-
-                <input
-                    class="input"
-                    id="admin-nc"
-                    inputmode="numeric"
-                    placeholder="NC">
-
-
-                <input
-                    class="input"
-                    id="admin-xp"
-                    inputmode="numeric"
-                    placeholder="XP">
-
-            </div>
+                placeholder="NC">
 
 
             <input
                 class="input"
-                id="admin-reason"
-                placeholder="Причина">
-
-
-            <button
-                class="btn gold full"
-                id="admin-grant"
-                style="margin-top:7px">
-                ВЫДАТЬ
-            </button>
+                id="admin-xp"
+                inputmode="numeric"
+                placeholder="XP">
 
         </div>
 
 
-        <div class="toolbar">
-
-            <input
-                class="input"
-                id="admin-search"
-                placeholder="ID / имя / username">
+        <input
+            class="input"
+            id="admin-reason"
+            placeholder="Причина">
 
 
-            <button
-                class="btn ghost smallbtn"
-                id="admin-search-btn">
-                Найти
-            </button>
+        <button
+            class="btn gold full"
+            id="admin-grant"
+            style="margin-top:7px">
 
-        </div>
+            ВЫДАТЬ
+
+        </button>
+
+    </div>
 
 
-        <div id="admin-players"></div>
+    <div class="toolbar">
 
-    </section>
+        <input
+            class="input"
+            id="admin-search"
+            placeholder="ID / имя / username">
+
+
+        <button
+            class="btn ghost smallbtn"
+            id="admin-search-btn">
+
+            Найти
+
+        </button>
+
+    </div>
+
+
+    <div id="admin-players"></div>
+
+</section>
 
 </div>
 
-
-<!-- NAVIGATION -->
 
 <nav class="nav">
 
@@ -2021,51 +2277,64 @@ button{
         class="active"
         data-tab="home">
 
-        <span>⌂</span>
+        <span>
+            ⌂
+        </span>
 
         Главная
+
     </button>
 
 
     <button
         data-tab="collection">
 
-        <span>▤</span>
+        <span>
+            ▤
+        </span>
 
         Гараж
+
     </button>
 
 
     <button
         data-tab="market">
 
-        <span>⇄</span>
+        <span>
+            ⇄
+        </span>
 
         Маркет
+
     </button>
 
 
     <button
         data-tab="tasks">
 
-        <span>✓</span>
+        <span>
+            ✓
+        </span>
 
         Задания
+
     </button>
 
 
     <button
         data-tab="profile">
 
-        <span>◉</span>
+        <span>
+            ◉
+        </span>
 
         Профиль
+
     </button>
 
 </nav>
 
-
-<!-- TOAST -->
 
 <div
     class="toast"
@@ -2080,8 +2349,6 @@ button{
 </div>
 
 
-<!-- MODAL -->
-
 <div
     class="modal-back"
     id="modal-back">
@@ -2095,12 +2362,12 @@ button{
 
 
 <script>
-
 const tg =
     window.Telegram?.WebApp;
 
 
 tg?.ready();
+
 tg?.expand();
 
 
@@ -2109,6 +2376,7 @@ try{
     tg?.setHeaderColor?.(
         "#07111f"
     );
+
 
     tg?.setBackgroundColor?.(
         "#050a12"
@@ -2135,11 +2403,17 @@ const fmt =
 
 
 const S = {
+
     me:null,
+
     collection:[],
+
     market:[],
+
     last:null,
+
     busy:false,
+
     page:"home"
 };
 
@@ -2159,6 +2433,7 @@ const esc =
         )
         .replace(
             /[&<>"']/g,
+
             char => ({
                 "&":"&amp;",
                 "<":"&lt;",
@@ -2172,36 +2447,62 @@ const esc =
 const rarityClass =
     rarity =>
         ({
-            "Обычный":"common",
-            "Необычный":"uncommon",
-            "Редкий":"rare",
-            "Эпический":"epic",
-            "Легендарный":"legendary",
-            "Мифический":"mythic"
+            "Обычный":
+                "common",
+
+            "Необычный":
+                "uncommon",
+
+            "Редкий":
+                "rare",
+
+            "Эпический":
+                "epic",
+
+            "Легендарный":
+                "legendary",
+
+            "Мифический":
+                "mythic"
+
         }[
             rarity
-        ] || "common");
+        ]
+        ||
+        "common");
 
 
 const fallbackPrice =
     rarity =>
         ({
-            "Обычный":35,
-            "Необычный":75,
-            "Редкий":220,
-            "Эпический":800,
-            "Легендарный":3500,
-            "Мифический":15000
+            "Обычный":
+                35,
+
+            "Необычный":
+                75,
+
+            "Редкий":
+                220,
+
+            "Эпический":
+                800,
+
+            "Легендарный":
+                3500,
+
+            "Мифический":
+                15000
+
         }[
             rarity
-        ] || 1);
+        ]
+        ||
+        1);
 
-
-/* NOTIFY */
 
 function notify(
     title,
-    text = ""
+    text=""
 ){
 
     $("toast-title")
@@ -2264,46 +2565,72 @@ function fail(
 
     notify(
         "Ошибка",
-        error?.message ||
+        error?.message
+        ||
         "Что-то пошло не так"
     );
 }
 
 
-/* API */
+function requestId(){
+
+    return (
+        crypto?.randomUUID?.()
+
+        ||
+
+        (
+            "spin-"
+            +
+            Date.now()
+            +
+            "-"
+            +
+            Math.random()
+            .toString(36)
+            .slice(2)
+        )
+    );
+}
+
 
 async function api(
     path,
-    method = "GET",
+    method="GET",
     data
 ){
 
     const response =
         await fetch(
-            "/api/" +
-            path,
+            "/api/" + path,
             {
                 method,
 
-                cache:"no-store",
+                cache:
+                    "no-store",
 
                 headers:{
                     "Content-Type":
                         "application/json",
 
                     "X-Telegram-Init-Data":
-                        tg?.initData ||
+                        tg?.initData
+                        ||
                         "",
 
                     "X-Client-Version":
-                        "6.1.1"
+                        "6.4"
                 },
 
                 body:
                     data === undefined
+
                     ?
+
                     undefined
+
                     :
+
                     JSON.stringify(
                         data
                     )
@@ -2322,9 +2649,11 @@ async function api(
 
     }catch{
 
-        throw new Error(
-            "Сервер вернул " +
-            response.status +
+        throw Error(
+            "Сервер вернул "
+            +
+            response.status
+            +
             " вместо JSON"
         );
     }
@@ -2334,10 +2663,14 @@ async function api(
         !response.ok
     ){
 
-        throw new Error(
-            json.error ||
-            "Ошибка " +
-            response.status
+        throw Error(
+            json.error
+            ||
+            (
+                "Ошибка "
+                +
+                response.status
+            )
         );
     }
 
@@ -2346,28 +2679,28 @@ async function api(
 }
 
 
-/* REQUEST ID */
+function regionHTML(
+    region
+){
 
-function requestId(){
+    return `
 
-    return (
-        crypto?.randomUUID?.() ||
-        (
-            "spin-" +
-            Date.now() +
-            "-" +
-            Math.random()
-            .toString(36)
-            .slice(2)
-        )
-    );
+        <b>
+            ${esc(region)}
+        </b>
+
+        <span class="plate-country">
+            RUS
+        </span>
+
+        <span class="ru-flag"></span>
+    `;
 }
 
 
-/* PLATE */
-
-function parsePlate(
-    code
+function showPlate(
+    code,
+    rarity
 ){
 
     const match =
@@ -2380,53 +2713,27 @@ function parsePlate(
 
 
     if(
-        !match
-    ){
-
-        return null;
-    }
-
-
-    return {
-        main:
-            match[1] +
-            " " +
-            match[2] +
-            " " +
-            match[3],
-
-        region:
-            match[4]
-    };
-}
-
-
-function showPlate(
-    code,
-    rarity
-){
-
-    const plate =
-        parsePlate(
-            code
-        );
-
-
-    if(
-        plate
+        match
     ){
 
         $("plate-code")
         .textContent =
-            plate.main;
+            match[1]
+            +
+            " "
+            +
+            match[2]
+            +
+            " "
+            +
+            match[3];
 
 
         $("plate-region")
         .innerHTML =
-            esc(
-                plate.region
-            ) +
-            "<small>RUS 🇷🇺</small>";
+            regionHTML(
+                match[4]
+            );
     }
 
 
@@ -2441,7 +2748,8 @@ function showPlate(
 
         $("rarity")
         .className =
-            "rarity " +
+            "rarity "
+            +
             rarityClass(
                 rarity
             );
@@ -2460,21 +2768,12 @@ function randomPlate(){
 
             return letters[
                 Math.floor(
-                    Math.random() *
+                    Math.random()
+                    *
                     letters.length
                 )
             ];
         };
-
-
-    const number =
-        String(
-            Math.floor(
-                Math.random() *
-                900
-            ) +
-            100
-        );
 
 
     const regions = [
@@ -2494,56 +2793,83 @@ function randomPlate(){
     ];
 
 
-    const region =
-        regions[
-            Math.floor(
-                Math.random() *
-                regions.length
-            )
-        ];
-
-
     return {
+
         main:
-            randomLetter() +
-            " " +
-            number +
-            " " +
-            randomLetter() +
+            randomLetter()
+            +
+            " "
+            +
+            String(
+                Math.floor(
+                    Math.random()
+                    *
+                    900
+                )
+                +
+                100
+            )
+            +
+            " "
+            +
+            randomLetter()
+            +
             randomLetter(),
 
-        region
+        region:
+            regions[
+                Math.floor(
+                    Math.random()
+                    *
+                    regions.length
+                )
+            ]
     };
 }
 
-
-/* EFFECT */
 
 function confetti(
     rarity
 ){
 
     const count =
+
         rarity ===
         "Мифический"
+
         ?
-        45
+
+        46
+
         :
+
         rarity ===
         "Легендарный"
+
         ?
+
         30
+
         :
+
         rarity ===
         "Эпический"
+
         ?
+
         18
+
         :
+
         rarity ===
         "Редкий"
+
         ?
+
         10
+
         :
+
         0;
 
 
@@ -2556,33 +2882,46 @@ function confetti(
 
 
     const colors =
+
         rarity ===
         "Мифический"
+
         ?
+
         [
             "#ff6680",
             "#a884ff",
             "#64e3ff",
             "#fff"
         ]
+
         :
+
         rarity ===
         "Легендарный"
+
         ?
+
         [
             "#ffd166",
             "#fff2ad",
             "#fff"
         ]
+
         :
+
         rarity ===
         "Эпический"
+
         ?
+
         [
             "#a884ff",
             "#64e3ff"
         ]
+
         :
+
         [
             "#2ca6ff",
             "#bdeaff"
@@ -2590,47 +2929,48 @@ function confetti(
 
 
     for(
-        let i = 0;
-        i < count;
+        let i=0;
+        i<count;
         i++
     ){
 
         const particle =
-            document
-            .createElement(
+            document.createElement(
                 "i"
             );
 
 
-        particle
-        .className =
+        particle.className =
             "particle";
 
 
-        particle
-        .style
-        .left =
-            Math.random() *
-            100 +
+        particle.style.left =
+            (
+                Math.random()
+                *
+                100
+            )
+            +
             "vw";
 
 
-        particle
-        .style
-        .background =
+        particle.style.background =
             colors[
                 Math.floor(
-                    Math.random() *
+                    Math.random()
+                    *
                     colors.length
                 )
             ];
 
 
-        particle
-        .style
-        .animationDelay =
-            Math.random() *
-            .25 +
+        particle.style.animationDelay =
+            (
+                Math.random()
+                *
+                .25
+            )
+            +
             "s";
 
 
@@ -2652,8 +2992,6 @@ function confetti(
 }
 
 
-/* PROFILE SYNC */
-
 function sync(){
 
     const me =
@@ -2672,14 +3010,9 @@ function sync(){
     .textContent =
         fmt(
             me.balance
-        ) +
+        )
+        +
         " NC";
-
-
-    $("spins")
-    .textContent =
-        me.spins_left +
-        "/20";
 
 
     $("level")
@@ -2692,16 +3025,59 @@ function sync(){
         me.collection;
 
 
+    if(
+        Object.prototype
+        .hasOwnProperty
+        .call(
+            me,
+            "pending_plate"
+        )
+    ){
+
+        S.last =
+            me.pending_plate;
+    }
+
+
+    const possibleBalance =
+
+        me.balance
+
+        +
+
+        (
+            S.last
+
+            ?
+
+            Number(
+                S.last.sell_price
+                ||
+                fallbackPrice(
+                    S.last.rarity
+                )
+            )
+
+            :
+
+            0
+        );
+
+
     $("spin-btn")
     .disabled =
-        S.busy ||
-        me.spins_left <= 0 ||
-        me.balance < 100;
+
+        S.busy
+
+        ||
+
+        possibleBalance < 100;
 
 
     $("profile-name")
     .textContent =
-        me.name ||
+        me.name
+        ||
         "Игрок";
 
 
@@ -2709,21 +3085,30 @@ function sync(){
     .textContent =
         (
             me.username
+
             ?
-            "@" +
-            me.username +
+
+            "@"
+            +
+            me.username
+            +
             " • "
+
             :
+
             ""
-        ) +
-        "ID " +
+        )
+        +
+        "ID "
+        +
         me.id;
 
 
     $("avatar")
     .textContent =
         (
-            me.name ||
+            me.name
+            ||
             "N"
         )[0]
         .toUpperCase();
@@ -2756,13 +3141,7 @@ function sync(){
 
                     ${esc(me.name)}
 
-                    ${
-                        me.creator
-                        ?
-                        "👑"
-                        :
-                        ""
-                    }
+                    ${me.creator ? "👑" : ""}
 
                 </div>
 
@@ -2771,13 +3150,19 @@ function sync(){
 
                     ${
                         me.username
+
                         ?
-                        "@" +
+
+                        "@"
+                        +
                         esc(
                             me.username
-                        ) +
+                        )
+                        +
                         " • "
+
                         :
+
                         ""
                     }
 
@@ -2810,8 +3195,7 @@ function sync(){
 
             <span class="badge">
 
-                Прокрутка
-                100 NC
+                Без лимита прокруток
 
             </span>
 
@@ -2824,7 +3208,9 @@ function sync(){
                 `
                     <span
                         class="badge mythic">
+
                         100% MYTHIC
+
                     </span>
                 `
 
@@ -2841,7 +3227,9 @@ function sync(){
 
                 `
                     <span class="badge">
+
                         MYTHIC ×${me.mythic_queue}
+
                     </span>
                 `
 
@@ -2880,9 +3268,13 @@ function sync(){
             </span>
 
             <b>
+
                 ${me.level}
+
                 /
+
                 ${fmt(me.xp)}
+
             </b>
 
         </div>
@@ -2908,15 +3300,69 @@ function sync(){
             style="margin-top:9px">
 
             <span class="muted">
-                Попытки
+                Прокрутки
             </span>
 
             <b>
-                ${me.spins_left}/20
+                Без ограничений
             </b>
 
         </div>
     `;
+
+
+    if(
+        me.pending_plate
+    ){
+
+        S.last =
+            me.pending_plate;
+
+
+        showPlate(
+            me.pending_plate.code,
+            me.pending_plate.rarity
+        );
+
+
+        const price =
+            Number(
+                me.pending_plate.sell_price
+                ||
+                fallbackPrice(
+                    me.pending_plate.rarity
+                )
+            );
+
+
+        $("result-text")
+        .textContent =
+            "Не сохранён • продажа: "
+            +
+            fmt(
+                price
+            )
+            +
+            " NC";
+
+
+        $("sell-btn")
+        .textContent =
+            "ПРОДАТЬ • "
+            +
+            fmt(
+                price
+            )
+            +
+            " NC";
+
+
+        $("quick")
+        .classList
+        .add(
+            "show"
+        );
+    }
 }
 
 
@@ -2931,8 +3377,6 @@ async function refreshMe(){
     sync();
 }
 
-
-/* SPIN */
 
 async function spin(){
 
@@ -2951,6 +3395,10 @@ async function spin(){
     sync();
 
 
+    const hadPending =
+        !!S.last;
+
+
     $("quick")
     .classList
     .remove(
@@ -2967,6 +3415,15 @@ async function spin(){
 
     $("result-text")
     .textContent =
+
+        hadPending
+
+        ?
+
+        "Автопродажа прошлого • новая прокрутка..."
+
+        :
+
         "Генерация...";
 
 
@@ -2974,19 +3431,20 @@ async function spin(){
         setInterval(
             ()=>{
 
-                const temp =
+                const plate =
                     randomPlate();
 
 
                 $("plate-code")
                 .textContent =
-                    temp.main;
+                    plate.main;
 
 
                 $("plate-region")
                 .innerHTML =
-                    temp.region +
-                    "<small>RUS 🇷🇺</small>";
+                    regionHTML(
+                        plate.region
+                    );
 
             },
             55
@@ -3043,7 +3501,8 @@ async function spin(){
 
         const price =
             Number(
-                result.plate.sell_price ||
+                result.plate.sell_price
+                ||
                 fallbackPrice(
                     result.plate.rarity
                 )
@@ -3052,19 +3511,23 @@ async function spin(){
 
         $("result-text")
         .textContent =
-            "Продажа системе: " +
+            "Продажа системе: "
+            +
             fmt(
                 price
-            ) +
+            )
+            +
             " NC";
 
 
         $("sell-btn")
         .textContent =
-            "ПРОДАТЬ • " +
+            "ПРОДАТЬ • "
+            +
             fmt(
                 price
-            ) +
+            )
+            +
             " NC";
 
 
@@ -3083,10 +3546,33 @@ async function spin(){
         sync();
 
 
-        notify(
-            result.plate.rarity,
-            result.plate.code
-        );
+        if(
+            result.auto_sold
+        ){
+
+            notify(
+
+                "Автопродажа + новая прокрутка",
+
+                "Предыдущий: +"
+                +
+                fmt(
+                    result.auto_sold.reward
+                )
+                +
+                " NC • Новый: "
+                +
+                result.plate.code
+            );
+
+        }else{
+
+            notify(
+                result.plate.rarity,
+                result.plate.code
+            );
+        }
+
 
     }catch(error){
 
@@ -3106,6 +3592,7 @@ async function spin(){
             error
         );
 
+
     }finally{
 
         S.busy =
@@ -3117,7 +3604,66 @@ async function spin(){
 }
 
 
-/* SYSTEM SELL */
+async function keepCurrent(){
+
+    if(
+        !S.last
+    ){
+
+        return;
+    }
+
+
+    try{
+
+        const result =
+            await api(
+                "keep",
+                "POST",
+                {
+                    plate_id:
+                        S.last.id
+                }
+            );
+
+
+        S.me =
+            result.user;
+
+
+        S.last =
+            null;
+
+
+        $("quick")
+        .classList
+        .remove(
+            "show"
+        );
+
+
+        $("result-text")
+        .textContent =
+            "Номер сохранён в гараже";
+
+
+        sync();
+
+
+        notify(
+            "Сохранено",
+            "Номер больше не будет автопродан"
+        );
+
+
+    }catch(error){
+
+        fail(
+            error
+        );
+    }
+}
+
 
 async function sellSystem(
     id
@@ -3131,9 +3677,7 @@ async function sellSystem(
                 "POST",
                 {
                     plate_id:
-                        Number(
-                            id
-                        )
+                        Number(id)
                 }
             );
 
@@ -3144,9 +3688,7 @@ async function sellSystem(
 
         if(
             S.last?.id ===
-            Number(
-                id
-            )
+            Number(id)
         ){
 
             S.last =
@@ -3171,10 +3713,12 @@ async function sellSystem(
 
         notify(
             "Продано",
-            "+" +
+            "+"
+            +
             fmt(
                 result.reward
-            ) +
+            )
+            +
             " NC"
         );
 
@@ -3187,6 +3731,7 @@ async function sellSystem(
             await loadCollection();
         }
 
+
     }catch(error){
 
         fail(
@@ -3196,15 +3741,14 @@ async function sellSystem(
 }
 
 
-/* COLLECTION */
-
 function cardPlate(
     plate
 ){
 
     const price =
         Number(
-            plate.sell_price ||
+            plate.sell_price
+            ||
             fallbackPrice(
                 plate.rarity
             )
@@ -3242,8 +3786,10 @@ function cardPlate(
                         Системная цена:
 
                         <b>
+
                             ${fmt(price)}
                             NC
+
                         </b>
 
                     </div>
@@ -3269,14 +3815,12 @@ function cardPlate(
 
                     `
                         <button
-                            class="
-                                btn
-                                ghost
-                                smallbtn
-                            "
+                            class="btn ghost smallbtn"
                             data-act="cancel"
                             data-id="${plate.listing_id}">
+
                             Снять с маркета
+
                         </button>
                     `
 
@@ -3284,28 +3828,24 @@ function cardPlate(
 
                     `
                         <button
-                            class="
-                                btn
-                                secondary
-                                smallbtn
-                            "
+                            class="btn secondary smallbtn"
                             data-act="list"
                             data-id="${plate.id}"
                             data-code="${esc(plate.code)}">
+
                             На маркет
+
                         </button>
 
 
                         <button
-                            class="
-                                btn
-                                danger
-                                smallbtn
-                            "
+                            class="btn danger smallbtn"
                             data-act="sell"
                             data-id="${plate.id}"
                             data-price="${price}">
+
                             Продать ${fmt(price)}
+
                         </button>
                     `
                 }
@@ -3328,7 +3868,8 @@ async function loadCollection(){
 
 
         S.collection =
-            result.plates ||
+            result.plates
+            ||
             [];
 
 
@@ -3338,6 +3879,7 @@ async function loadCollection(){
 
 
         renderCollection();
+
 
     }catch(error){
 
@@ -3365,30 +3907,36 @@ function renderCollection(){
     const rows =
         S.collection
         .filter(
-            plate =>{
+            plate =>
 
-                return (
-                    (
-                        !search ||
-                        plate.code
-                        .toLowerCase()
-                        .includes(
-                            search
-                        )
+                (
+                    !search
+
+                    ||
+
+                    plate.code
+                    .toLowerCase()
+                    .includes(
+                        search
                     )
-                    &&
-                    (
-                        !rarity ||
-                        plate.rarity ===
-                        rarity
-                    )
-                );
-            }
+                )
+
+                &&
+
+                (
+                    !rarity
+
+                    ||
+
+                    plate.rarity ===
+                    rarity
+                )
         );
 
 
     $("collection-list")
     .innerHTML =
+
         rows.length
 
         ?
@@ -3403,13 +3951,13 @@ function renderCollection(){
 
         `
             <div class="empty">
+
                 Ничего не найдено
+
             </div>
         `;
 }
 
-
-/* MARKET */
 
 async function loadMarket(){
 
@@ -3422,12 +3970,14 @@ async function loadMarket(){
 
 
         S.market =
-            result.listings ||
+            result.listings
+            ||
             [];
 
 
         $("market-list")
         .innerHTML =
+
             S.market.length
 
             ?
@@ -3469,7 +4019,8 @@ async function loadMarket(){
 
                                         ?
 
-                                        "@" +
+                                        "@"
+                                        +
                                         esc(
                                             item.seller_username
                                         )
@@ -3504,14 +4055,12 @@ async function loadMarket(){
 
                                 `
                                     <button
-                                        class="
-                                            btn
-                                            ghost
-                                            smallbtn
-                                        "
+                                        class="btn ghost smallbtn"
                                         data-act="cancel"
                                         data-id="${item.id}">
+
                                         Отменить
+
                                     </button>
                                 `
 
@@ -3519,15 +4068,13 @@ async function loadMarket(){
 
                                 `
                                     <button
-                                        class="
-                                            btn
-                                            primary
-                                            smallbtn
-                                        "
+                                        class="btn primary smallbtn"
                                         data-act="buy"
                                         data-id="${item.id}"
                                         data-price="${item.price}">
+
                                         Купить
+
                                     </button>
                                 `
                             }
@@ -3543,9 +4090,12 @@ async function loadMarket(){
 
             `
                 <div class="empty">
+
                     На маркете пока пусто
+
                 </div>
             `;
+
 
     }catch(error){
 
@@ -3555,8 +4105,6 @@ async function loadMarket(){
     }
 }
 
-
-/* TASKS */
 
 async function loadTasks(){
 
@@ -3570,6 +4118,7 @@ async function loadTasks(){
                 api(
                     "tasks"
                 ),
+
                 api(
                     "achievements"
                 )
@@ -3578,18 +4127,23 @@ async function loadTasks(){
 
         $("tasks-list")
         .innerHTML =
-            (tasks.tasks || [])
+            (
+                tasks.tasks
+                ||
+                []
+            )
             .map(
                 task =>{
 
                     const percent =
                         Math.min(
                             100,
+
                             Math.round(
-                                (
-                                    task.progress /
-                                    task.target
-                                ) *
+                                task.progress
+                                /
+                                task.target
+                                *
                                 100
                             )
                         );
@@ -3636,7 +4190,9 @@ async function loadTasks(){
 
                                     `
                                         <span class="badge">
+
                                             Получено
+
                                         </span>
                                     `
 
@@ -3648,14 +4204,12 @@ async function loadTasks(){
 
                                     `
                                         <button
-                                            class="
-                                                btn
-                                                primary
-                                                smallbtn
-                                            "
+                                            class="btn primary smallbtn"
                                             data-act="claim"
                                             data-key="${esc(task.key)}">
+
                                             Забрать
+
                                         </button>
                                     `
 
@@ -3663,7 +4217,9 @@ async function loadTasks(){
 
                                     `
                                         <span class="badge">
+
                                             ${percent}%
+
                                         </span>
                                     `
                                 }
@@ -3688,18 +4244,23 @@ async function loadTasks(){
 
         $("achievements-list")
         .innerHTML =
-            (achievements.achievements || [])
+            (
+                achievements.achievements
+                ||
+                []
+            )
             .map(
                 item =>{
 
                     const percent =
                         Math.min(
                             100,
+
                             Math.round(
-                                (
-                                    item.progress /
-                                    item.target
-                                ) *
+                                item.progress
+                                /
+                                item.target
+                                *
                                 100
                             )
                         );
@@ -3733,10 +4294,15 @@ async function loadTasks(){
 
                                     ${
                                         item.completed
+
                                         ?
+
                                         "✓"
+
                                         :
-                                        percent +
+
+                                        percent
+                                        +
                                         "%"
                                     }
 
@@ -3759,6 +4325,7 @@ async function loadTasks(){
             )
             .join("");
 
+
     }catch(error){
 
         fail(
@@ -3767,8 +4334,6 @@ async function loadTasks(){
     }
 }
 
-
-/* TOP */
 
 async function loadTop(){
 
@@ -3782,7 +4347,11 @@ async function loadTop(){
 
         $("top-list")
         .innerHTML =
-            (result.players || [])
+            (
+                result.players
+                ||
+                []
+            )
             .slice(
                 0,
                 25
@@ -3805,9 +4374,13 @@ async function loadTop(){
 
                                     ${
                                         player.creator
+
                                         ?
+
                                         "👑 "
+
                                         :
+
                                         ""
                                     }
 
@@ -3845,6 +4418,7 @@ async function loadTop(){
             )
             .join("");
 
+
     }catch(error){
 
         fail(
@@ -3854,10 +4428,8 @@ async function loadTop(){
 }
 
 
-/* ADMIN */
-
 async function loadAdmin(
-    query = ""
+    query=""
 ){
 
     if(
@@ -3875,12 +4447,14 @@ async function loadAdmin(
             players
         ] =
             await Promise.all([
+
                 api(
                     "admin/stats"
                 ),
 
                 api(
-                    "admin/players?q=" +
+                    "admin/players?q="
+                    +
                     encodeURIComponent(
                         query
                     )
@@ -3946,7 +4520,12 @@ async function loadAdmin(
 
         $("admin-players")
         .innerHTML =
-            (players.players || [])
+
+            (
+                players.players
+                ||
+                []
+            )
             .map(
                 player => `
 
@@ -3960,9 +4539,13 @@ async function loadAdmin(
 
                                     ${
                                         player.creator
+
                                         ?
+
                                         "👑 "
+
                                         :
+
                                         ""
                                     }
 
@@ -3970,12 +4553,17 @@ async function loadAdmin(
 
                                     ${
                                         player.username
+
                                         ?
-                                        "@" +
+
+                                        "@"
+                                        +
                                         esc(
                                             player.username
                                         )
+
                                         :
+
                                         ""
                                     }
 
@@ -4012,9 +4600,13 @@ async function loadAdmin(
 
                                         ${
                                             player.mythic_mode
+
                                             ?
+
                                             "ON"
+
                                             :
+
                                             "OFF"
                                         }
 
@@ -4032,14 +4624,12 @@ async function loadAdmin(
 
 
                             <button
-                                class="
-                                    btn
-                                    ghost
-                                    smallbtn
-                                "
+                                class="btn ghost smallbtn"
                                 data-act="admin-select"
                                 data-id="${player.id}">
+
                                 Выбрать
+
                             </button>
 
                         </div>
@@ -4048,53 +4638,78 @@ async function loadAdmin(
                         <div class="actions">
 
                             <button
-                                class="
-                                    btn
-                                    secondary
-                                    smallbtn
-                                "
+                                class="btn secondary smallbtn"
                                 data-act="admin-fast"
                                 data-id="${player.id}"
                                 data-kind="nc"
                                 data-amount="1000">
+
                                 +1000 NC
+
                             </button>
 
 
                             <button
-                                class="
-                                    btn
-                                    secondary
-                                    smallbtn
-                                "
+                                class="btn secondary smallbtn"
                                 data-act="admin-fast"
                                 data-id="${player.id}"
                                 data-kind="xp"
                                 data-amount="1000">
+
                                 +1000 XP
+
                             </button>
 
 
                             <button
-                                class="
-                                    btn
-                                    gold
-                                    smallbtn
-                                "
+                                class="btn gold smallbtn"
                                 data-act="admin-mythic"
                                 data-id="${player.id}"
                                 data-mode="queue"
                                 data-count="1">
+
                                 МИФИК ×1
+
                             </button>
 
 
                             <button
-                                class="
-                                    btn
-                                    gold
-                                    smallbtn
-                                "
+                                class="btn gold smallbtn"
+                                data-act="admin-mythic"
+                                data-id="${player.id}"
+                                data-mode="queue"
+                                data-count="10">
+
+                                МИФИК ×10
+
+                            </button>
+
+
+                            ${
+                                player.mythic_queue
+
+                                ?
+
+                                `
+                                    <button
+                                        class="btn danger smallbtn"
+                                        data-act="admin-mythic"
+                                        data-id="${player.id}"
+                                        data-mode="clear">
+
+                                        СБРОСИТЬ ×${player.mythic_queue}
+
+                                    </button>
+                                `
+
+                                :
+
+                                ""
+                            }
+
+
+                            <button
+                                class="btn gold smallbtn"
                                 data-act="admin-mythic"
                                 data-id="${player.id}"
                                 data-mode="${
@@ -4109,13 +4724,44 @@ async function loadAdmin(
 
                                 ${
                                     player.mythic_mode
+
                                     ?
+
                                     "OFF"
+
                                     :
+
                                     "ON"
                                 }
 
                             </button>
+
+
+                            ${
+                                (
+                                    player.mythic_mode
+                                    ||
+                                    player.mythic_queue
+                                )
+
+                                ?
+
+                                `
+                                    <button
+                                        class="btn ghost smallbtn"
+                                        data-act="admin-mythic"
+                                        data-id="${player.id}"
+                                        data-mode="all_off">
+
+                                        МИФИКИ OFF
+
+                                    </button>
+                                `
+
+                                :
+
+                                ""
+                            }
 
                         </div>
 
@@ -4128,9 +4774,12 @@ async function loadAdmin(
 
             `
                 <div class="empty">
+
                     Игроки не найдены
+
                 </div>
             `;
+
 
     }catch(error){
 
@@ -4141,15 +4790,20 @@ async function loadAdmin(
 }
 
 
-/* MODAL */
-
 function modal({
+
     title,
-    text = "",
-    input = false,
-    placeholder = "",
-    value = "",
-    ok = "Готово"
+
+    text="",
+
+    input=false,
+
+    placeholder="",
+
+    value="",
+
+    ok="Готово"
+
 }){
 
     return new Promise(
@@ -4207,22 +4861,20 @@ function modal({
                 <div class="modal-buttons">
 
                     <button
-                        class="
-                            btn
-                            ghost
-                        "
+                        class="btn ghost"
                         id="modal-cancel">
+
                         Отмена
+
                     </button>
 
 
                     <button
-                        class="
-                            btn
-                            primary
-                        "
+                        class="btn primary"
                         id="modal-ok">
+
                         ${esc(ok)}
+
                     </button>
 
                 </div>
@@ -4252,10 +4904,14 @@ function modal({
 
                     closeModal(
                         input
+
                         ?
+
                         $("modal-input")
                         .value
+
                         :
+
                         true
                     );
                 };
@@ -4289,8 +4945,6 @@ function closeModal(
 }
 
 
-/* ACTIONS */
-
 async function action(
     button
 ){
@@ -4301,7 +4955,8 @@ async function action(
 
     const id =
         Number(
-            button.dataset.id ||
+            button.dataset.id
+            ||
             0
         );
 
@@ -4315,14 +4970,17 @@ async function action(
 
             const accepted =
                 await modal({
+
                     title:
                         "Продать номер?",
 
                     text:
-                        "Ты получишь " +
+                        "Ты получишь "
+                        +
                         fmt(
                             button.dataset.price
-                        ) +
+                        )
+                        +
                         " NC",
 
                     ok:
@@ -4348,13 +5006,15 @@ async function action(
 
             const value =
                 await modal({
+
                     title:
                         "Выставить на маркет",
 
                     text:
                         button.dataset.code,
 
-                    input:true,
+                    input:
+                        true,
 
                     placeholder:
                         "Цена NC",
@@ -4365,8 +5025,7 @@ async function action(
 
 
             if(
-                value ===
-                null
+                value === null
             ){
 
                 return;
@@ -4382,11 +5041,12 @@ async function action(
             if(
                 !Number.isSafeInteger(
                     price
-                ) ||
+                )
+                ||
                 price < 100
             ){
 
-                throw new Error(
+                throw Error(
                     "Цена должна быть от 100 NC"
                 );
             }
@@ -4396,7 +5056,9 @@ async function action(
                 "list",
                 "POST",
                 {
-                    plate_id:id,
+                    plate_id:
+                        id,
+
                     price
                 }
             );
@@ -4409,6 +5071,9 @@ async function action(
 
 
             await loadCollection();
+
+
+            await refreshMe();
         }
 
 
@@ -4421,7 +5086,8 @@ async function action(
                 "cancel",
                 "POST",
                 {
-                    listing_id:id
+                    listing_id:
+                        id
                 }
             );
 
@@ -4453,14 +5119,17 @@ async function action(
 
             const accepted =
                 await modal({
+
                     title:
                         "Купить номер?",
 
                     text:
-                        "Цена " +
+                        "Цена "
+                        +
                         fmt(
                             button.dataset.price
-                        ) +
+                        )
+                        +
                         " NC",
 
                     ok:
@@ -4481,7 +5150,8 @@ async function action(
                     "buy",
                     "POST",
                     {
-                        listing_id:id
+                        listing_id:
+                            id
                     }
                 );
 
@@ -4527,15 +5197,21 @@ async function action(
 
 
             notify(
+
                 "Награда",
-                "+" +
+
+                "+"
+                +
                 fmt(
                     result.reward_nc
-                ) +
-                " NC • +" +
+                )
+                +
+                " NC • +"
+                +
                 fmt(
                     result.reward_xp
-                ) +
+                )
+                +
                 " XP"
             );
 
@@ -4556,7 +5232,8 @@ async function action(
 
             notify(
                 "Игрок выбран",
-                "ID " +
+                "ID "
+                +
                 id
             );
         }
@@ -4568,7 +5245,10 @@ async function action(
         ){
 
             const body = {
-                user_id:id,
+
+                user_id:
+                    id,
+
                 reason:
                     "Быстрая выдача"
             };
@@ -4591,9 +5271,12 @@ async function action(
 
             notify(
                 "Админ",
-                "Выдано " +
-                button.dataset.amount +
-                " " +
+                "Выдано "
+                +
+                button.dataset.amount
+                +
+                " "
+                +
                 button.dataset.kind
                 .toUpperCase()
             );
@@ -4615,14 +5298,16 @@ async function action(
                 "admin/mythic",
                 "POST",
                 {
-                    user_id:id,
+                    user_id:
+                        id,
 
                     mode:
                         button.dataset.mode,
 
                     count:
                         Number(
-                            button.dataset.count ||
+                            button.dataset.count
+                            ||
                             1
                         )
                 }
@@ -4630,8 +5315,37 @@ async function action(
 
 
             notify(
+
                 "Админ",
-                "Настройка мифика изменена"
+
+                button.dataset.mode ===
+                "clear"
+
+                ?
+
+                "Очередь мификов очищена"
+
+                :
+
+                button.dataset.mode ===
+                "all_off"
+
+                ?
+
+                "Все гарантии мифика отключены"
+
+                :
+
+                button.dataset.mode ===
+                "queue"
+
+                ?
+
+                "Гарантированный мифик добавлен"
+
+                :
+
+                "Режим 100% мифика изменён"
             );
 
 
@@ -4640,6 +5354,7 @@ async function action(
                 .value
             );
         }
+
 
     }catch(error){
 
@@ -4650,15 +5365,14 @@ async function action(
 }
 
 
-/* NAVIGATION */
-
 async function openPage(
     page
 ){
 
     if(
         page ===
-        "admin" &&
+        "admin"
+        &&
         !S.me?.creator
     ){
 
@@ -4686,7 +5400,8 @@ async function openPage(
             .toggle(
                 "active",
                 element.id ===
-                "page-" +
+                "page-"
+                +
                 page
             );
         }
@@ -4766,8 +5481,6 @@ async function openPage(
 }
 
 
-/* EVENTS */
-
 $("spin-btn")
 .onclick =
     spin;
@@ -4775,24 +5488,7 @@ $("spin-btn")
 
 $("keep-btn")
 .onclick =
-    ()=>{
-
-        $("quick")
-        .classList
-        .remove(
-            "show"
-        );
-
-
-        S.last =
-            null;
-
-
-        notify(
-            "Сохранено",
-            "Номер остался в коллекции"
-        );
-    };
+    keepCurrent;
 
 
 $("sell-btn")
@@ -4878,7 +5574,8 @@ $("admin-grant")
             const nc =
                 Number(
                     $("admin-nc")
-                    .value ||
+                    .value
+                    ||
                     0
                 );
 
@@ -4886,14 +5583,16 @@ $("admin-grant")
             const xp =
                 Number(
                     $("admin-xp")
-                    .value ||
+                    .value
+                    ||
                     0
                 );
 
 
             const reason =
                 $("admin-reason")
-                .value ||
+                .value
+                ||
                 "Админ-панель";
 
 
@@ -4901,18 +5600,19 @@ $("admin-grant")
                 !user_id
             ){
 
-                throw new Error(
+                throw Error(
                     "Укажи Telegram ID"
                 );
             }
 
 
             if(
-                !nc &&
+                !nc
+                &&
                 !xp
             ){
 
-                throw new Error(
+                throw Error(
                     "Укажи NC или XP"
                 );
             }
@@ -4950,6 +5650,7 @@ $("admin-grant")
                 $("admin-search")
                 .value
             );
+
 
         }catch(error){
 
@@ -5025,8 +5726,6 @@ $("modal-back")
     };
 
 
-/* START */
-
 (async()=>{
 
     try{
@@ -5049,12 +5748,13 @@ $("modal-back")
 
 
         if(
-            health?.version &&
+            health?.version
+            &&
             !String(
                 health.version
             )
             .includes(
-                "6.1"
+                "6.4"
             )
         ){
 
@@ -5068,9 +5768,14 @@ $("modal-back")
         await refreshMe();
 
 
-        showPlate(
-            "A777AA 77"
-        );
+        if(
+            !S.me?.pending_plate
+        ){
+
+            showPlate(
+                "A777AA 77"
+            );
+        }
 
 
         if(
@@ -5082,6 +5787,7 @@ $("modal-back")
                 "Кнопка ADMIN доступна сверху"
             );
         }
+
 
     }catch(error){
 
